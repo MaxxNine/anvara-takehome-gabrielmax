@@ -11,7 +11,7 @@ Move the sponsor dashboard read path to the server so data is fetched before ren
 - added a server-only dashboard read helper for sponsor campaigns
 - added a server-only API helper that:
   - prefers non-public backend env vars (`BACKEND_URL`, `API_URL`) before `NEXT_PUBLIC_API_URL`
-  - accepts forwarded request headers so backend auth cookies can be passed through later
+  - accepts forwarded request headers so backend auth cookies can be passed through later (challenge 03)
 - updated the shared role helper to use the same server-side API path and forwarded headers
 - added route-level `loading.tsx` and `error.tsx` for the sponsor dashboard
 - kept the dashboard cards presentational so future create/update/delete work can layer on top cleanly
