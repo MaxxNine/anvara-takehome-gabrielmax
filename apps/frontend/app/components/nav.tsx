@@ -3,27 +3,41 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { authClient } from '@/auth-client';
+import type { RoleInfo } from '@/lib/types';
 
 type UserRole = 'sponsor' | 'publisher' | null;
+type ResolvedRole = { userId: string; role: UserRole } | null;
 
 export function Nav() {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
-  const [role, setRole] = useState<UserRole>(null);
+  const [resolvedRole, setResolvedRole] = useState<ResolvedRole>(null);
+  const role = user?.id && resolvedRole?.userId === user.id ? resolvedRole.role : null;
 
   // TODO: Convert to server component and fetch role server-side
   // Fetch user role from backend when user is logged in
   useEffect(() => {
-    if (user?.id) {
-      fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/auth/role/${user.id}`
-      )
-        .then((res) => res.json())
-        .then((data) => setRole(data.role))
-        .catch(() => setRole(null));
-    } else {
-      setRole(null);
-    }
+    if (!user?.id) return;
+
+    let cancelled = false;
+    const userId = user.id;
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/auth/role/${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) {
+          setResolvedRole({ userId, role: (data as RoleInfo).role });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setResolvedRole({ userId, role: null });
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [user?.id]);
 
   // TODO: Add active link styling using usePathname() from next/navigation

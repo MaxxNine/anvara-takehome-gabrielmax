@@ -4,33 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getAdSlot } from '@/lib/api';
 import { authClient } from '@/auth-client';
-
-interface AdSlot {
-  id: string;
-  name: string;
-  description?: string;
-  type: string;
-  basePrice: number;
-  isAvailable: boolean;
-  publisher?: {
-    id: string;
-    name: string;
-    website?: string;
-  };
-}
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
-interface RoleInfo {
-  role: 'sponsor' | 'publisher' | null;
-  sponsorId?: string;
-  publisherId?: string;
-  name?: string;
-}
+import type { AdSlot, RoleInfo, SessionUser } from '@/lib/types';
 
 const typeColors: Record<string, string> = {
   DISPLAY: 'bg-blue-100 text-blue-700',
@@ -47,7 +21,7 @@ export function AdSlotDetail({ id }: Props) {
   const [adSlot, setAdSlot] = useState<AdSlot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<SessionUser | null>(null);
   const [roleInfo, setRoleInfo] = useState<RoleInfo | null>(null);
   const [roleLoading, setRoleLoading] = useState(true);
   const [message, setMessage] = useState('');
@@ -67,7 +41,7 @@ export function AdSlotDetail({ id }: Props) {
       .getSession()
       .then(({ data }) => {
         if (data?.user) {
-          const sessionUser = data.user as User;
+          const sessionUser = data.user as SessionUser;
           setUser(sessionUser);
 
           // Fetch role info from backend
@@ -75,7 +49,7 @@ export function AdSlotDetail({ id }: Props) {
             `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/auth/role/${sessionUser.id}`
           )
             .then((res) => res.json())
-            .then((data) => setRoleInfo(data))
+            .then((data) => setRoleInfo(data as RoleInfo))
             .catch(() => setRoleInfo(null))
             .finally(() => setRoleLoading(false));
         } else {
