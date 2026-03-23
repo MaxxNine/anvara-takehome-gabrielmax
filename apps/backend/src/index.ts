@@ -8,7 +8,6 @@ const app: Application = express();
 const PORT = process.env.BACKEND_PORT || 4291;
 
 // Middleware
-// TODO: Add rate limiting middleware to prevent abuse (e.g., express-rate-limit)
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3847',

@@ -70,9 +70,9 @@ export function AdSlotDetail({ id }: Props) {
         `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/ad-slots/${adSlot.id}/book`,
         {
           method: 'POST',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            sponsorId: roleInfo.sponsorId,
             message: message || undefined,
           }),
         }
@@ -100,6 +100,7 @@ export function AdSlotDetail({ id }: Props) {
         `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/ad-slots/${adSlot.id}/unbook`,
         {
           method: 'POST',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
         }
       );
