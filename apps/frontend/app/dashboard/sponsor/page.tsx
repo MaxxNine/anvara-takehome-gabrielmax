@@ -3,10 +3,12 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { getUserRole } from '@/lib/auth-helpers';
 import { CampaignList } from './components/campaign-list';
+import { getSponsorCampaigns } from './data';
 
 export default async function SponsorDashboard() {
+  const requestHeaders = await headers();
   const session = await auth.api.getSession({
-    headers: await headers(),
+    headers: requestHeaders,
   });
 
   if (!session?.user) {
@@ -14,10 +16,12 @@ export default async function SponsorDashboard() {
   }
 
   // Verify user has 'sponsor' role
-  const roleData = await getUserRole(session.user.id);
-  if (roleData.role !== 'sponsor') {
+  const roleData = await getUserRole(session.user.id, requestHeaders);
+  if (roleData.role !== 'sponsor' || !roleData.sponsorId) {
     redirect('/');
   }
+
+  const campaigns = await getSponsorCampaigns(roleData.sponsorId, requestHeaders);
 
   return (
     <div className="space-y-6">
@@ -26,7 +30,7 @@ export default async function SponsorDashboard() {
         {/* TODO: Add CreateCampaignButton here */}
       </div>
 
-      <CampaignList />
+      <CampaignList campaigns={campaigns} />
     </div>
   );
 }

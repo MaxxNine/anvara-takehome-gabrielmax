@@ -1,4 +1,6 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+import 'server-only';
+
+import { serverApi, type ForwardedRequestHeaders } from './server-api';
 
 export type UserRole = 'sponsor' | 'publisher' | null;
 
@@ -11,18 +13,15 @@ export interface RoleData {
 
 /**
  * Fetch user role from the backend based on userId.
- * Returns role info including sponsorId/publisherId if applicable.
+ * Forwarding request headers keeps this helper compatible with future
+ * backend auth middleware that expects session cookies or auth headers.
  */
-export async function getUserRole(userId: string): Promise<RoleData> {
-  try {
-    const res = await fetch(`${API_URL}/api/auth/role/${userId}`, {
-      cache: 'no-store', // Always fetch fresh role data
-    });
-    if (!res.ok) {
-      return { role: null };
-    }
-    return await res.json();
-  } catch {
-    return { role: null };
-  }
+export async function getUserRole(
+  userId: string,
+  requestHeaders?: ForwardedRequestHeaders
+): Promise<RoleData> {
+  return serverApi<RoleData>(`/api/auth/role/${userId}`, {
+    cache: 'no-store',
+    requestHeaders,
+  });
 }
