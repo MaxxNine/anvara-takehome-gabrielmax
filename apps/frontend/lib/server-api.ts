@@ -44,8 +44,17 @@ export async function serverApi<T>(
   });
 
   if (!response.ok) {
-    throw new Error(`API request failed with status ${response.status}`);
+    let message = `API request failed with status ${response.status}`;
+    try {
+      const body = await response.json();
+      if (body.error) message = body.error;
+    } catch {
+      // Response body isn't JSON — use the default message
+    }
+    throw new Error(message);
   }
+
+  if (response.status === 204) return undefined as T;
 
   return response.json() as Promise<T>;
 }
