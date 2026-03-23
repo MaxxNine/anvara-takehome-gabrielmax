@@ -1,5 +1,6 @@
 import { Router, type Request, type Response, type IRouter } from 'express';
 import { prisma } from '../db.js';
+import { getParam } from '../utils/helpers.js';
 
 const router: IRouter = Router();
 
@@ -24,7 +25,12 @@ router.get('/me', async (req: Request, res: Response) => {
 // GET /api/auth/role/:userId - Get user role based on Sponsor/Publisher records
 router.get('/role/:userId', async (req: Request, res: Response) => {
   try {
-    const { userId } = req.params;
+    const userId = getParam(req.params.userId);
+
+    if (!userId) {
+      res.status(400).json({ error: 'userId is required' });
+      return;
+    }
 
     // Check if user is a sponsor
     const sponsor = await prisma.sponsor.findUnique({
