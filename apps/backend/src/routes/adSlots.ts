@@ -1,19 +1,24 @@
 import { Router, type Request, type Response, type IRouter } from 'express';
-import { prisma } from '../db.js';
+import { AdSlotType, prisma } from '../db.js';
 import { getParam } from '../utils/helpers.js';
 
 const router: IRouter = Router();
+
+function isAdSlotType(value: unknown): value is (typeof AdSlotType)[keyof typeof AdSlotType] {
+  return typeof value === 'string' && Object.values(AdSlotType).includes(value as keyof typeof AdSlotType);
+}
 
 // GET /api/ad-slots - List available ad slots
 router.get('/', async (req: Request, res: Response) => {
   try {
     const { publisherId, type, available } = req.query;
+    const adSlotType = isAdSlotType(type) ? type : undefined;
 
     const adSlots = await prisma.adSlot.findMany({
       where: {
         ...(publisherId && { publisherId: getParam(publisherId) }),
-        ...(type && {
-          type: type as string as 'DISPLAY' | 'VIDEO' | 'NATIVE' | 'NEWSLETTER' | 'PODCAST',
+        ...(adSlotType && {
+          type: adSlotType,
         }),
         ...(available === 'true' && { isAvailable: true }),
       },
@@ -60,11 +65,11 @@ router.get('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /api/ad-slots - Create new ad slot
-// BUG: This accepts 'dimensions' and 'pricingModel' fields that don't exist in Prisma schema
+// BUG: This accepts a loose request body and needs proper runtime validation
 // BUG: No input validation for basePrice (could be negative or zero)
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { name, description, type, dimensions, basePrice, pricingModel, publisherId } = req.body;
+    const { name, description, type, basePrice, publisherId, width, height } = req.body;
 
     if (!name || !type || !basePrice || !publisherId) {
       res.status(400).json({
@@ -73,18 +78,22 @@ router.post('/', async (req: Request, res: Response) => {
       return;
     }
 
+    if (!isAdSlotType(type)) {
+      res.status(400).json({ error: 'Invalid ad slot type' });
+      return;
+    }
+
     // TODO: Add authentication middleware to verify user owns publisherId
     // TODO: Validate that basePrice is positive
-    // TODO: Validate that 'type' is valid enum value
 
     const adSlot = await prisma.adSlot.create({
       data: {
         name,
         description,
         type,
-        dimensions, // BUG: This field doesn't exist in schema
+        ...(width !== undefined && { width }),
+        ...(height !== undefined && { height }),
         basePrice,
-        pricingModel: pricingModel || 'CPM', // BUG: This field doesn't exist in schema
         publisherId,
       },
       include: {
@@ -154,7 +163,7 @@ router.post('/:id/book', async (req: Request, res: Response) => {
 // POST /api/ad-slots/:id/unbook - Reset ad slot to available (for testing)
 router.post('/:id/unbook', async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = getParam(req.params.id);
 
     const updatedSlot = await prisma.adSlot.update({
       where: { id },

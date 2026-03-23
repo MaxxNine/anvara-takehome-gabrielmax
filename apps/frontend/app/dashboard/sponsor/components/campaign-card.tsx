@@ -1,16 +1,9 @@
 'use client';
 
+import type { Campaign } from '@/lib/types';
+
 interface CampaignCardProps {
-  campaign: {
-    id: string;
-    name: string;
-    description?: string;
-    budget: number;
-    spent: number;
-    status: string;
-    startDate: string;
-    endDate: string;
-  };
+  campaign: Campaign;
 }
 
 const statusColors: Record<string, string> = {
@@ -21,8 +14,9 @@ const statusColors: Record<string, string> = {
 };
 
 export function CampaignCard({ campaign }: CampaignCardProps) {
-  const progress =
-    campaign.budget > 0 ? (Number(campaign.spent) / Number(campaign.budget)) * 100 : 0;
+  const budget = Number(campaign.budget);
+  const spent = Number(campaign.spent);
+  const progress = budget > 0 ? (spent / budget) * 100 : 0;
 
   return (
     <div className="rounded-lg border border-[--color-border] p-4">
@@ -43,7 +37,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         <div className="flex justify-between text-sm">
           <span className="text-[--color-muted]">Budget</span>
           <span>
-            ${Number(campaign.spent).toLocaleString()} / ${Number(campaign.budget).toLocaleString()}
+            ${spent.toLocaleString()} / ${budget.toLocaleString()}
           </span>
         </div>
         <div className="mt-1 h-1.5 rounded-full bg-gray-200">
