@@ -25,6 +25,7 @@ const ROOT_DIR = join(__dirname, '..');
 const FINGERPRINT_FILE = join(ROOT_DIR, '.setup-fingerprint');
 const SAFE_DB_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
 
+// Load .env file into process.env
 function loadEnv(): void {
   const envPath = join(ROOT_DIR, '.env');
   if (!existsSync(envPath)) {
@@ -41,6 +42,7 @@ function loadEnv(): void {
   });
 }
 
+// Colors for terminal output
 const colors = {
   reset: '\x1b[0m',
   green: '\x1b[32m',
@@ -155,12 +157,14 @@ ${colors.cyan}╔═════════════════════
 ╚══════════════════════════════════════════════════════════╝${colors.reset}
 `);
 
+  // Check if setup has already run
   if (existsSync(FINGERPRINT_FILE)) {
     const fingerprint = readFileSync(FINGERPRINT_FILE, 'utf-8');
     logSuccess(`Setup previously completed at: ${fingerprint}`);
     console.log('');
   }
 
+  // Step 1: Check prerequisites
   logStep('1', 'Checking prerequisites...');
 
   if (!checkCommand('node')) {
@@ -193,11 +197,13 @@ ${colors.cyan}╔═════════════════════
     process.exit(1);
   }
 
+  // Step 2: Verify pnpm version
   logStep('2', 'Verifying pnpm version...');
   const pkgJson = JSON.parse(readFileSync(join(ROOT_DIR, 'package.json'), 'utf-8'));
   const requiredPnpm = pkgJson.packageManager?.split('@')[1] || pnpmVersion;
   logSuccess(`pnpm ${requiredPnpm} (required)`);
 
+  // Step 3: Setup environment file
   logStep('3', 'Setting up environment...');
 
   const envPath = join(ROOT_DIR, '.env');
@@ -208,10 +214,11 @@ ${colors.cyan}╔═════════════════════
 
   if (!existsSync(envPath)) {
     dbName = `anvara_${generateRandomString(8)}`;
-    const dbPassword = 'postgres';
+    const dbPassword = 'postgres'; // Must match docker-compose.yml POSTGRES_PASSWORD
     const betterAuthSecret = generateRandomString(32);
     databaseUrl = `postgresql://postgres:${dbPassword}@localhost:5498/${dbName}`;
 
+    // Create fingerprint file EARLY with database info
     const timestamp = new Date().toISOString();
     const fingerprintData = JSON.stringify(
       {
@@ -241,15 +248,18 @@ ${colors.cyan}╔═════════════════════
     logSuccess('Created .env with unique credentials');
     logSuccess('Authentication is ready - use demo accounts to login');
   } else {
+    // Read from existing .env
     const envContent = readFileSync(envPath, 'utf-8');
     const match = envContent.match(/DATABASE_URL=(.+)/);
     databaseUrl = match
       ? match[1]
       : 'postgresql://postgres:postgres@localhost:5498/anvara_sponsorships';
 
+    // Extract database name from URL
     const dbNameMatch = databaseUrl.match(/\/([^/?]+)(\?|$)/);
     dbName = dbNameMatch ? dbNameMatch[1] : 'anvara_sponsorships';
 
+    // Check if DATABASE_URL has the correct port
     const portMatch = databaseUrl.match(/:(\d+)\//);
     const currentPort = portMatch ? portMatch[1] : null;
     if (currentPort && currentPort !== '5498') {
@@ -264,22 +274,27 @@ ${colors.cyan}╔═════════════════════
   ensureSafeDbName(dbName);
   loadEnv();
 
+  // Step 4: Install dependencies
   logStep('4', 'Installing dependencies...');
   run('pnpm install');
   logSuccess('Dependencies installed');
 
+  // Step 5a: Start Docker containers
   logStep('5a', 'Starting Docker containers...');
   run('docker compose down', { ignoreError: true, silent: true });
   run('docker compose up -d');
   logSuccess('Docker containers started');
 
+  // Step 5b: Wait for PostgreSQL
   const dbReady = await waitForPostgres();
   if (!dbReady) {
     process.exit(1);
   }
 
+  // Step 5c: Create database
   logStep('5c', 'Creating application database...');
 
+  // Create database (ignore error if it already exists)
   const createDatabaseCommand = `docker exec anvara_postgres psql -U postgres -c "CREATE DATABASE ${dbName};"`;
   const createResult = run(createDatabaseCommand, { silent: true, ignoreError: true });
 
@@ -291,6 +306,7 @@ ${colors.cyan}╔═════════════════════
     logSuccess(`Database '${dbName}' ready`);
   }
 
+  // Verify database is accessible with a simple query
   try {
     const verifyResult = execSync(
       `docker exec anvara_postgres psql -U postgres -d ${dbName} -c "SELECT 1;"`,
@@ -304,8 +320,11 @@ ${colors.cyan}╔═════════════════════
     logSuccess('Proceeding with setup...');
   }
 
+  // Step 6: Setup database schema
   logStep('6', 'Setting up database schema...');
 
+  // 6a: Better Auth tables (user, session, account, verification)
+  // Use the pinned workspace CLI instead of an unpinned runtime download.
   try {
     run('pnpm --filter @anvara/frontend exec better-auth migrate --yes');
     logSuccess('Better Auth tables created');
@@ -317,6 +336,7 @@ ${colors.cyan}╔═════════════════════
     process.exit(1);
   }
 
+  // 6b: Prisma schema
   run('pnpm --filter @anvara/backend db:generate');
   logSuccess('Prisma client generated');
 
@@ -326,6 +346,7 @@ ${colors.cyan}╔═════════════════════
   run('pnpm --filter @anvara/backend seed');
   logSuccess('Database seeded with sample data');
 
+  // Step 7: Verify setup
   logStep('7', 'Verifying setup...');
 
   try {
