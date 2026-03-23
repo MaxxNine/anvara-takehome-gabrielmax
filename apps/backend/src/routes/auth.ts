@@ -1,5 +1,5 @@
 import { Router, type Request, type Response, type IRouter } from 'express';
-import { prisma } from '../db.js';
+import { resolveUserRole } from '../services/auth.service.js';
 import { getParam } from '../utils/helpers.js';
 
 const router: IRouter = Router();
@@ -32,25 +32,15 @@ router.get('/role/:userId', async (req: Request, res: Response) => {
       return;
     }
 
-    // Check if user is a sponsor
-    const sponsor = await prisma.sponsor.findUnique({
-      where: { userId },
-      select: { id: true, name: true },
-    });
+    const roleData = await resolveUserRole(userId);
 
-    if (sponsor) {
-      res.json({ role: 'sponsor', sponsorId: sponsor.id, name: sponsor.name });
+    if (roleData.role === 'SPONSOR') {
+      res.json({ role: 'sponsor', sponsorId: roleData.sponsorId, name: roleData.name });
       return;
     }
 
-    // Check if user is a publisher
-    const publisher = await prisma.publisher.findUnique({
-      where: { userId },
-      select: { id: true, name: true },
-    });
-
-    if (publisher) {
-      res.json({ role: 'publisher', publisherId: publisher.id, name: publisher.name });
+    if (roleData.role === 'PUBLISHER') {
+      res.json({ role: 'publisher', publisherId: roleData.publisherId, name: roleData.name });
       return;
     }
 

@@ -4,20 +4,20 @@
 
 ### Phase 1: Foundation
 
-- [ ] **1.1** Create `src/types/` — `auth.ts` (AuthUser, AuthRequest), `errors.ts` (NotFoundError, ValidationError, ForbiddenError), `index.ts` (barrel re-exports only)
-- [ ] **1.2** Rewrite `src/auth.ts` — Better Auth instance + `requireAuth` middleware
-- [ ] **1.3** Create `src/services/auth.service.ts` — `resolveUserRole()` extracted from routes
-- [ ] **1.4** Fix CORS in `src/index.ts` — add `origin` + `credentials: true`
-- [ ] **1.5** Fix `apps/frontend/lib/api.ts` — add `credentials: 'include'`
-- [ ] **1.6** Create `src/middleware/error-handler.ts` — centralized error handling
+- [x] **1.1** Create `src/types/` — `auth.ts` (AuthUser, AuthRequest), `errors.ts` (NotFoundError, ValidationError, ForbiddenError), `index.ts` (barrel re-exports only)
+- [x] **1.2** Rewrite `src/auth.ts` — Better Auth instance + `requireAuth` middleware
+- [x] **1.3** Create `src/services/auth.service.ts` — `resolveUserRole()` extracted from routes
+- [x] **1.4** Fix CORS in `src/index.ts` — add `origin` + `credentials: true`
+- [x] **1.5** Fix `apps/frontend/lib/api.ts` — add `credentials: 'include'`
+- [x] **1.6** Create `src/middleware/error-handler.ts` — centralized error handling
 
 ### Phase 1b: Rate Limiting (Redis)
 
-- [ ] **1.7** Add Redis service to `docker-compose.yml` (redis:7-alpine, port 6379)
-- [ ] **1.8** Add `REDIS_URL=redis://localhost:6379` to `.env`
-- [ ] **1.9** Install `express-rate-limit` + `rate-limit-redis` + `ioredis` in backend
-- [ ] **1.10** Create `src/middleware/rate-limiter.ts` — configure rate limit with Redis store
-- [ ] **1.11** Mount rate limiter in `src/index.ts` (global limit + stricter limit for auth routes)
+- [x] **1.7** Add Redis service to `docker-compose.yml` (redis:7-alpine, port 6379)
+- [x] **1.8** Add `REDIS_URL=redis://localhost:6379` to `.env`
+- [x] **1.9** Install `express-rate-limit` + `rate-limit-redis` + `ioredis` in backend
+- [x] **1.10** Create `src/middleware/rate-limiter.ts` — configure rate limit with Redis store
+- [x] **1.11** Mount rate limiter in `src/index.ts` (global limit + stricter limit for auth routes)
 
 ### Phase 2: Secure Routes
 

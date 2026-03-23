@@ -1,18 +1,27 @@
 import express, { type Application } from 'express';
 import cors from 'cors';
+import { errorHandler } from './middleware/error-handler.js';
+import { authLimiter, globalLimiter } from './middleware/rate-limiter.js';
 import routes from './routes/index.js';
 
 const app: Application = express();
 const PORT = process.env.BACKEND_PORT || 4291;
 
 // Middleware
-// FIXME: CORS is configured with defaults - for production, specify allowed origins
 // TODO: Add rate limiting middleware to prevent abuse (e.g., express-rate-limit)
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3847',
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use('/api', globalLimiter);
+app.use('/api/auth', authLimiter);
 
 // Mount all API routes
 app.use('/api', routes);
+app.use(errorHandler);
 
 // ============================================================================
 // SERVER STARTUP
