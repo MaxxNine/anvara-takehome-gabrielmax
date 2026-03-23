@@ -46,7 +46,7 @@ router.get('/:id', async (req: AuthRequest, res: Response, next: NextFunction) =
     }
 
     if (req.user?.role === 'PUBLISHER' && adSlot.publisherId !== req.user.publisherId) {
-      throw new ForbiddenError();
+      throw new NotFoundError('Ad slot not found');
     }
 
     res.json(adSlot);
@@ -133,7 +133,7 @@ router.post('/:id/unbook', async (req: AuthRequest, res: Response, next: NextFun
     }
 
     if (req.user?.role === 'PUBLISHER' && adSlot.publisherId !== req.user.publisherId) {
-      throw new ForbiddenError();
+      throw new NotFoundError('Ad slot not found');
     }
 
     const updatedSlot = await unbookAdSlot(id);

@@ -43,7 +43,7 @@ router.get('/:id', async (req: AuthRequest, res: Response, next: NextFunction) =
     }
 
     if (req.user?.role === 'SPONSOR' && campaign.sponsorId !== req.user.sponsorId) {
-      throw new ForbiddenError();
+      throw new NotFoundError('Campaign not found');
     }
 
     res.json(campaign);

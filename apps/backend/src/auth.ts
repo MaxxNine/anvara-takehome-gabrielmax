@@ -2,7 +2,7 @@ import { betterAuth } from 'better-auth';
 import { fromNodeHeaders } from 'better-auth/node';
 import { type Response, type NextFunction } from 'express';
 import { Pool } from 'pg';
-import { resolveUserRole } from './services/auth.service.js';
+import { resolveUserRole } from './services/auth/index.js';
 import type { AuthRequest, AuthUser, AuthUserRole } from './types/index.js';
 
 const connectionString = process.env.DATABASE_URL;

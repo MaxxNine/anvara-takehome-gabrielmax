@@ -1,5 +1,7 @@
-import { prisma } from '../db.js';
-import type { RoleAssignment } from '../types/index.js';
+import { prisma } from '../../db.js';
+import type { AuthProfileResponse, RoleAssignment } from '../../types/auth.js';
+
+import { toAuthProfileResponse } from './auth.helpers.js';
 
 export async function resolveUserRole(userId: string): Promise<RoleAssignment> {
   const sponsor = await prisma.sponsor.findUnique({
@@ -29,4 +31,9 @@ export async function resolveUserRole(userId: string): Promise<RoleAssignment> {
   }
 
   return { role: null };
+}
+
+export async function getAuthProfile(userId: string): Promise<AuthProfileResponse> {
+  const roleData = await resolveUserRole(userId);
+  return toAuthProfileResponse(roleData);
 }

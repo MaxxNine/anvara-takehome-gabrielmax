@@ -1,26 +1,17 @@
 import 'server-only';
 
+import type { RoleInfo } from './types';
 import { serverApi, type ForwardedRequestHeaders } from './server-api';
 
-export type UserRole = 'sponsor' | 'publisher' | null;
-
-export interface RoleData {
-  role: UserRole;
-  sponsorId?: string;
-  publisherId?: string;
-  name?: string;
-}
-
 /**
- * Fetch user role from the backend based on userId.
- * Forwarding request headers keeps this helper compatible with future
- * backend auth middleware that expects session cookies or auth headers.
+ * Fetch the authenticated user's frontend bootstrap profile from the backend.
+ * Forwarding request headers keeps this helper compatible with backend
+ * auth middleware that expects session cookies or auth headers.
  */
-export async function getUserRole(
-  userId: string,
+export async function getCurrentUserProfile(
   requestHeaders?: ForwardedRequestHeaders
-): Promise<RoleData> {
-  return serverApi<RoleData>(`/api/auth/role/${userId}`, {
+): Promise<RoleInfo> {
+  return serverApi<RoleInfo>('/api/auth/profile', {
     cache: 'no-store',
     requestHeaders,
   });

@@ -46,7 +46,8 @@ export function AdSlotDetail({ id }: Props) {
 
           // Fetch role info from backend
           fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/auth/role/${sessionUser.id}`
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/auth/profile`,
+            { credentials: 'include' }
           )
             .then((res) => res.json())
             .then((data) => setRoleInfo(data as RoleInfo))

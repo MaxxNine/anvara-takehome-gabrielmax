@@ -23,8 +23,8 @@
 
 - [x] **2.1** Apply `requireAuth` to campaign routes (GET list, GET :id, POST)
 - [x] **2.2** Apply `requireAuth` to ad-slot routes (GET list, GET :id, POST, book, unbook)
-- [ ] **2.3** Wire up `GET /auth/me` with real auth
-- [ ] **2.4** Protect `GET /auth/role/:userId` + refactor to use auth service
+- [x] **2.3** Wire up `GET /auth/me` with real auth (pure auth principal)
+- [x] **2.4** Add protected `GET /auth/profile` for frontend bootstrap; keep `GET /auth/role/:userId` as deprecated compatibility wrapper
 
 ### Verification — Challenge 03
 

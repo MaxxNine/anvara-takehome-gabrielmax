@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
-import { getUserRole } from '@/lib/auth-helpers';
+import { getCurrentUserProfile } from '@/lib/auth-helpers';
 import { AdSlotList } from './components/ad-slot-list';
 
 export default async function PublisherDashboard() {
@@ -15,7 +15,7 @@ export default async function PublisherDashboard() {
   }
 
   // Verify user has 'publisher' role
-  const roleData = await getUserRole(session.user.id, requestHeaders);
+  const roleData = await getCurrentUserProfile(requestHeaders);
   if (roleData.role !== 'publisher') {
     redirect('/');
   }

@@ -20,6 +20,11 @@ export interface UnassignedRole {
 
 export type RoleAssignment = SponsorRoleAssignment | PublisherRoleAssignment | UnassignedRole;
 
+export type AuthProfileResponse =
+  | { role: 'sponsor'; sponsorId: string; name: string }
+  | { role: 'publisher'; publisherId: string; name: string }
+  | { role: null };
+
 interface BaseAuthUser {
   id: string;
   email: string;
