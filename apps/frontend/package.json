@@ -26,6 +26,7 @@
     "@anvara/config": "workspace:*",
     "@anvara/eslint-config": "workspace:*",
     "@anvara/prettier-config": "workspace:*",
+    "@better-auth/cli": "1.4.21",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@types/pg": "^8.16.0",
