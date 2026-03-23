@@ -12,7 +12,7 @@ The backend follows a **three-layer** pattern:
 |-------|----------|----------------|
 | **Routes** | `src/routes/*.ts` | Parse HTTP input, check auth/ownership, call service, format HTTP response |
 | **Services** | `src/services/*.ts` | Business logic, validation, Prisma queries |
-| **Middleware** | `src/auth.ts`, `src/middleware/` | Cross-cutting: auth, error handling |
+| **Middleware** | `src/middleware/` | Cross-cutting: auth, error handling, rate limiting |
 
 **Routes are thin.** They should NOT contain Prisma calls or business logic directly. They extract params/body, call a service function, and return the result with the correct status code.
 
