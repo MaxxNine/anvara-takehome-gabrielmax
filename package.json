@@ -8,8 +8,8 @@
     "e2e": "pnpm -r e2e",
     "format": "pnpm -r format",
     "lint": "pnpm -r lint",
-    "reset": "node scripts/reset.js",
-    "setup-project": "node scripts/setup.js",
+    "reset": "pnpm dlx tsx scripts/reset.ts",
+    "setup-project": "pnpm dlx tsx scripts/setup.ts",
     "stop": "docker compose down",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck"
@@ -18,7 +18,8 @@
     "@anvara/prettier-config": "workspace:*",
     "@playwright/test": "^1.57.0",
     "dotenv-cli": "^11.0.0",
-    "prettier": "^3.8.0"
+    "prettier": "^3.8.0",
+    "tsx": "^4.21.0"
   },
   "packageManager": "pnpm@10.28.0",
   "engines": {

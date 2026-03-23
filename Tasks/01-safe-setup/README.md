@@ -1,29 +1,32 @@
-# Task 01: Hardening Local Setup Execution
+# Task 01: Safer Better Auth Setup
 
-## Goal
+## Objective
 
-Remove live package execution from the local setup path so the repo setup is reproducible and easier to trust on a real machine.
+Reduce trust in live runtime downloads during setup without changing the existing TypeScript-based workflow.
 
-## Why this change exists
+## Problem
 
-The original setup flow had two weak points:
+The original setup script executed the Better Auth migration with:
 
-- `pnpm setup-project` ran `pnpm dlx tsx scripts/setup.ts`
-- `scripts/setup.ts` ran `npx @better-auth/cli migrate --yes`
+- `npx @better-auth/cli migrate --yes`
 
-Both commands can download and execute packages at runtime outside the repo lockfile. That is common in many projects, but it is a weaker trust model than running only pinned workspace dependencies.
+That meant the CLI was resolved at runtime instead of through the workspace lockfile. Even if the package itself is legitimate, this is weaker than running a pinned local dependency.
 
-## Scope
+## Change
 
-- Replace the TypeScript helper entrypoints with Node-run JavaScript files
-- Keep the public command the same: `pnpm setup-project`
-- Pin `@better-auth/cli` in the workspace and invoke it with `pnpm exec`
-- Add a small safety check for the database name before interpolating it into shell commands
+- Add `@better-auth/cli` as a pinned dev dependency in the frontend workspace
+- Replace the migration step with `pnpm --filter @anvara/frontend exec better-auth migrate --yes`
+- Keep `scripts/setup.ts`, `scripts/reset.ts`, and the `pnpm dlx tsx` entrypoints unchanged
+- Add a small validation step for the database name before interpolating it into shell commands
 
-## Expected outcome
+## Result
 
-After this change:
+- Better Auth migrations now run through a lockfile-backed dependency
+- The setup flow stays familiar for the candidate
+- The only behavioral change is tighter control over the auth CLI execution path and a small input-safety guard
 
-- `pnpm setup-project` no longer depends on `pnpm dlx`
-- Better Auth migrations run through a pinned workspace dependency
-- The setup path is easier to audit because it stays inside repo-tracked tooling
+## Out Of Scope
+
+- Reworking the TypeScript bootstrap path
+- Converting setup scripts to JavaScript
+- Changing the overall developer onboarding flow

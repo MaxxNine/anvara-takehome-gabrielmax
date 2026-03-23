@@ -104,8 +104,9 @@ apps/
     └── prettier-config/      # Shared Prettier config
 
 scripts/
-├── setup.js                  # Automated setup script
-├── reset.js                  # Local reset script
+├── setup.ts                  # Automated setup script
+├── reset.ts                  # Local reset script
+└── tsconfig.json             # Scripts TypeScript config
 ```
 
 ## Quick Start

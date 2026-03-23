@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env pnpm dlx tsx
 
 /**
  * Anvara Take-Home Project Reset Script
@@ -25,25 +25,27 @@ const colors = {
   yellow: '\x1b[33m',
   red: '\x1b[31m',
   cyan: '\x1b[36m',
-};
+} as const;
 
-function log(message, color = 'reset') {
+type ColorKey = keyof typeof colors;
+
+function log(message: string, color: ColorKey = 'reset'): void {
   console.log(`${colors[color]}${message}${colors.reset}`);
 }
 
-function logSuccess(message) {
+function logSuccess(message: string): void {
   console.log(`${colors.green}✓${colors.reset} ${message}`);
 }
 
-function logWarning(message) {
+function logWarning(message: string): void {
   console.log(`${colors.yellow}⚠${colors.reset} ${message}`);
 }
 
-function logError(message) {
+function logError(message: string): void {
   console.log(`${colors.red}✗${colors.reset} ${message}`);
 }
 
-function removeDir(path, name) {
+function removeDir(path: string, name: string): void {
   if (!existsSync(path)) {
     return;
   }
@@ -56,7 +58,7 @@ function removeDir(path, name) {
   }
 }
 
-async function main() {
+async function main(): Promise<void> {
   console.log(`
 ${colors.cyan}╔══════════════════════════════════════════════════════════╗
 ║             Anvara Take-Home Project Reset               ║
@@ -121,7 +123,7 @@ To set up again, run:
 `);
 }
 
-main().catch((error) => {
+main().catch((error: Error) => {
   logError(`Reset failed: ${error.message}`);
   process.exit(1);
 });

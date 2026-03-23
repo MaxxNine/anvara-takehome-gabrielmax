@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env pnpm dlx tsx
 
 /**
  * Anvara Take-Home Project Setup Script
@@ -25,7 +25,7 @@ const ROOT_DIR = join(__dirname, '..');
 const FINGERPRINT_FILE = join(ROOT_DIR, '.setup-fingerprint');
 const SAFE_DB_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
 
-function loadEnv() {
+function loadEnv(): void {
   const envPath = join(ROOT_DIR, '.env');
   if (!existsSync(envPath)) {
     return;
@@ -48,25 +48,35 @@ const colors = {
   red: '\x1b[31m',
   cyan: '\x1b[36m',
   dim: '\x1b[2m',
-};
+} as const;
 
-function logStep(step, message) {
+type ColorKey = keyof typeof colors;
+
+function logStep(step: string, message: string): void {
   console.log(`\n${colors.cyan}[${step}]${colors.reset} ${message}`);
 }
 
-function logSuccess(message) {
+function logSuccess(message: string): void {
   console.log(`${colors.green}✓${colors.reset} ${message}`);
 }
 
-function logWarning(message) {
+function logWarning(message: string): void {
   console.log(`${colors.yellow}⚠${colors.reset} ${message}`);
 }
 
-function logError(message) {
+function logError(message: string): void {
   console.log(`${colors.red}✗${colors.reset} ${message}`);
 }
 
-function run(command, options = {}) {
+interface RunOptions {
+  silent?: boolean;
+  ignoreError?: boolean;
+  cwd?: string;
+  encoding?: BufferEncoding;
+  stdio?: 'inherit' | 'pipe';
+}
+
+function run(command: string, options: RunOptions = {}): string | null {
   try {
     return execSync(command, {
       cwd: ROOT_DIR,
@@ -86,7 +96,7 @@ function run(command, options = {}) {
   }
 }
 
-function checkCommand(command, versionFlag = '--version') {
+function checkCommand(command: string, versionFlag = '--version'): boolean {
   try {
     execSync(`${command} ${versionFlag}`, { stdio: 'pipe' });
     return true;
@@ -95,11 +105,11 @@ function checkCommand(command, versionFlag = '--version') {
   }
 }
 
-function generateRandomString(length) {
+function generateRandomString(length: number): string {
   return randomBytes(length).toString('hex').slice(0, length);
 }
 
-function ensureSafeDbName(dbName) {
+function ensureSafeDbName(dbName: string): void {
   if (SAFE_DB_NAME.test(dbName)) {
     return;
   }
@@ -109,20 +119,11 @@ function ensureSafeDbName(dbName) {
   process.exit(1);
 }
 
-function readFingerprintTimestamp() {
-  try {
-    const fingerprint = JSON.parse(readFileSync(FINGERPRINT_FILE, 'utf-8'));
-    return fingerprint.timestamp || null;
-  } catch {
-    return null;
-  }
-}
-
-async function sleep(ms) {
+async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function waitForPostgres(maxAttempts = 30) {
+async function waitForPostgres(maxAttempts = 30): Promise<boolean> {
   logStep('5b', 'Waiting for PostgreSQL to be ready...');
 
   for (let i = 0; i < maxAttempts; i += 1) {
@@ -136,9 +137,8 @@ async function waitForPostgres(maxAttempts = 30) {
         return true;
       }
     } catch {
-      // Keep polling until the container is ready.
+      // Ignore errors while waiting for the container to become healthy.
     }
-
     process.stdout.write('.');
     await sleep(1000);
   }
@@ -148,7 +148,7 @@ async function waitForPostgres(maxAttempts = 30) {
   return false;
 }
 
-async function main() {
+async function main(): Promise<void> {
   console.log(`
 ${colors.cyan}╔══════════════════════════════════════════════════════════╗
 ║          Anvara Take-Home Project Setup                  ║
@@ -156,14 +156,9 @@ ${colors.cyan}╔═════════════════════
 `);
 
   if (existsSync(FINGERPRINT_FILE)) {
-    const timestamp = readFingerprintTimestamp();
-    if (timestamp) {
-      logSuccess(`Setup previously completed at: ${timestamp}`);
-      console.log('');
-    } else {
-      logWarning('Existing setup fingerprint found, but it could not be parsed.');
-      console.log('');
-    }
+    const fingerprint = readFileSync(FINGERPRINT_FILE, 'utf-8');
+    logSuccess(`Setup previously completed at: ${fingerprint}`);
+    console.log('');
   }
 
   logStep('1', 'Checking prerequisites...');
@@ -208,8 +203,8 @@ ${colors.cyan}╔═════════════════════
   const envPath = join(ROOT_DIR, '.env');
   const envExamplePath = join(ROOT_DIR, '.env.example');
 
-  let databaseUrl;
-  let dbName;
+  let databaseUrl: string;
+  let dbName: string;
 
   if (!existsSync(envPath)) {
     dbName = `anvara_${generateRandomString(8)}`;
@@ -314,7 +309,7 @@ ${colors.cyan}╔═════════════════════
   try {
     run('pnpm --filter @anvara/frontend exec better-auth migrate --yes');
     logSuccess('Better Auth tables created');
-  } catch (error) {
+  } catch (error: any) {
     logError('Failed to create Better Auth tables');
     logError(`Database: ${dbName}`);
     logError(`DATABASE_URL: ${databaseUrl}`);
@@ -379,7 +374,7 @@ ${colors.yellow}Note:${colors.reset} Better Auth is configured with demo credent
 `);
 }
 
-main().catch((error) => {
+main().catch((error: Error) => {
   logError(`Setup failed: ${error.message}`);
   process.exit(1);
 });
