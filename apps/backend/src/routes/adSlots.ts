@@ -8,32 +8,6 @@ function isAdSlotType(value: unknown): value is (typeof AdSlotType)[keyof typeof
   return typeof value === 'string' && Object.values(AdSlotType).includes(value as keyof typeof AdSlotType);
 }
 
-function parseDimensions(dimensions: unknown): { width?: number; height?: number } {
-  if (typeof dimensions === 'string') {
-    const match = dimensions.match(/^(\d+)\s*x\s*(\d+)$/i);
-
-    if (!match) {
-      return {};
-    }
-
-    return {
-      width: Number(match[1]),
-      height: Number(match[2]),
-    };
-  }
-
-  if (typeof dimensions !== 'object' || dimensions === null) {
-    return {};
-  }
-
-  const { width, height } = dimensions as { width?: unknown; height?: unknown };
-
-  return {
-    ...(typeof width === 'number' && { width }),
-    ...(typeof height === 'number' && { height }),
-  };
-}
-
 // GET /api/ad-slots - List available ad slots
 router.get('/', async (req: Request, res: Response) => {
   try {
@@ -91,11 +65,11 @@ router.get('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /api/ad-slots - Create new ad slot
-// BUG: This accepts 'dimensions' and 'pricingModel' fields that don't exist in Prisma schema
+// BUG: This accepts a loose request body and needs proper runtime validation
 // BUG: No input validation for basePrice (could be negative or zero)
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { name, description, type, dimensions, basePrice, publisherId } = req.body;
+    const { name, description, type, basePrice, publisherId, width, height } = req.body;
 
     if (!name || !type || !basePrice || !publisherId) {
       res.status(400).json({
@@ -104,10 +78,13 @@ router.post('/', async (req: Request, res: Response) => {
       return;
     }
 
+    if (!isAdSlotType(type)) {
+      res.status(400).json({ error: 'Invalid ad slot type' });
+      return;
+    }
+
     // TODO: Add authentication middleware to verify user owns publisherId
     // TODO: Validate that basePrice is positive
-    // TODO: Validate that 'type' is valid enum value
-    const { width, height } = parseDimensions(dimensions);
 
     const adSlot = await prisma.adSlot.create({
       data: {
