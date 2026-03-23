@@ -19,7 +19,7 @@ Stabilize the workspace TypeScript and ESLint setup without adding features or c
 - no schema changes made only to satisfy TypeScript or ESLint
 - no compatibility shims for API shapes that are not present in the actual Prisma model
 - no broad `eslint-disable` suppression for real problems
-- warnings were left as warnings where that matched the current lint policy, especially `no-console`
+- warnings were left as warnings where that matched the current lint policy, especially `no-console` - We'll work on that later when improving Observability.
 
 ## Result
 
