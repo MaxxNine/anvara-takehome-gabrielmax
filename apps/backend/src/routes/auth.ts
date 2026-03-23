@@ -1,6 +1,6 @@
 import { Router, type Request, type Response, type NextFunction, type IRouter } from 'express';
 
-import { requireAuth } from '../auth.js';
+import { requireAuth } from '../middleware/auth.js';
 import { getAuthProfile } from '../services/auth/index.js';
 import type { AuthRequest } from '../types/auth.js';
 import { ForbiddenError, ValidationError } from '../types/errors.js';

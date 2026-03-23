@@ -1,5 +1,5 @@
 import { Router, type Response, type NextFunction, type IRouter } from 'express';
-import { requireAuth, roleMiddleware } from '../auth.js';
+import { requireAuth, roleMiddleware } from '../middleware/auth.js';
 import {
   createCampaign,
   getCampaignById,
