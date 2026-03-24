@@ -3,19 +3,41 @@ import { NextResponse } from 'next/server';
 
 import {
   AB_TEST_COOKIE_NAME,
+  type ABTestCookieData,
   assignConfiguredVariant,
   createABTestCookieData,
   getActiveABTests,
   isValidABTestVariant,
   parseABTestCookieValue,
   serializeABTestCookie,
+  serializeABTestCookieValue,
 } from '@/lib/ab-testing';
 
 function getABTestCookieValue(request: NextRequest): string | undefined {
   return request.cookies.get(AB_TEST_COOKIE_NAME)?.value;
 }
 
-function getUpdatedABTestCookieValue(request: NextRequest): string | null {
+function upsertRequestCookieHeader(
+  cookieHeader: string | null,
+  cookieName: string,
+  cookieValue: string
+): string {
+  const existingParts = cookieHeader
+    ?.split(';')
+    .map((part) => part.trim())
+    .filter(Boolean) ?? [];
+
+  const filteredParts = existingParts.filter((part) => !part.startsWith(`${cookieName}=`));
+  filteredParts.push(`${cookieName}=${cookieValue}`);
+  return filteredParts.join('; ');
+}
+
+type UpdatedABTestCookie = {
+  data: ABTestCookieData;
+  setCookieHeader: string;
+};
+
+function getUpdatedABTestCookie(request: NextRequest): UpdatedABTestCookie | null {
   const existingData = parseABTestCookieValue(getABTestCookieValue(request));
   const abTestData = existingData ?? createABTestCookieData();
   let hasChanges = existingData === null;
@@ -35,17 +57,37 @@ function getUpdatedABTestCookieValue(request: NextRequest): string | null {
     return null;
   }
 
-  return serializeABTestCookie(abTestData, {
-    secure: request.nextUrl.protocol === 'https:',
-  });
+  return {
+    data: abTestData,
+    setCookieHeader: serializeABTestCookie(abTestData, {
+      secure: request.nextUrl.protocol === 'https:',
+    }),
+  };
 }
 
 export function middleware(request: NextRequest) {
-  const response = NextResponse.next();
-  const cookieValue = getUpdatedABTestCookieValue(request);
+  const updatedCookie = getUpdatedABTestCookie(request);
+  const requestHeaders = new Headers(request.headers);
 
-  if (cookieValue) {
-    response.headers.append('Set-Cookie', cookieValue);
+  if (updatedCookie) {
+    requestHeaders.set(
+      'cookie',
+      upsertRequestCookieHeader(
+        request.headers.get('cookie'),
+        AB_TEST_COOKIE_NAME,
+        serializeABTestCookieValue(updatedCookie.data)
+      )
+    );
+  }
+
+  const response = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+
+  if (updatedCookie) {
+    response.headers.append('Set-Cookie', updatedCookie.setCookieHeader);
   }
 
   return response;

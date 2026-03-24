@@ -11,17 +11,17 @@
 
 ## Phase 2 - Variant Access APIs
 
-- [ ] Create `apps/frontend/lib/ab-testing/server.ts` for server-side variant reads from `next/headers`.
-- [ ] Create `apps/frontend/lib/ab-testing/debug.ts` for `ab_force` parsing and debug logging helpers.
-- [ ] Create `apps/frontend/lib/ab-testing/hooks.ts` with `useABTest(testName, initialVariant?)`.
+- [x] Create `apps/frontend/lib/ab-testing/server.ts` for server-side variant reads from `next/headers`.
+- [x] Create `apps/frontend/lib/ab-testing/debug.ts` for `ab_force` parsing and debug logging helpers.
+- [x] Create `apps/frontend/lib/ab-testing/hooks.ts` with `useABTest(testName, initialVariant?)`.
 - [ ] Keep `app/page.tsx` server-first by using server-side variant reads instead of converting the page to a client component.
-- [ ] Ensure forced variants do not overwrite the persisted experiment cookie.
+- [x] Ensure forced variants do not overwrite the persisted experiment cookie.
 
 ## Phase 3 - Analytics Integration
 
-- [ ] Add `variant_assigned` to `apps/frontend/lib/analytics/events.ts`.
-- [ ] Track `variant_assigned` only for real new assignments or explicit forced-debug usage.
-- [ ] Update `apps/frontend/app/components/analytics-provider.tsx` to set GA4 `user_properties` from active A/B assignments.
+- [x] Add `variant_assigned` to `apps/frontend/lib/analytics/events.ts`.
+- [x] Track `variant_assigned` only for real new assignments or explicit forced-debug usage.
+- [x] Update `apps/frontend/app/components/analytics-provider.tsx` to set GA4 `user_properties` from active A/B assignments.
 - [ ] Include experiment metadata in relevant conversion events, starting with the marketplace CTA flow.
 
 ## Phase 4 - UI Rollout

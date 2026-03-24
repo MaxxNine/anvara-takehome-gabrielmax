@@ -96,12 +96,16 @@ export function createABTestCookieData(
   };
 }
 
+export function serializeABTestCookieValue(data: ABTestCookieData): string {
+  return encodeURIComponent(JSON.stringify(data));
+}
+
 export function serializeABTestCookie(
   data: ABTestCookieData,
   options: SerializeABTestCookieOptions = {}
 ): string {
   const cookieParts = [
-    `${AB_TEST_COOKIE_NAME}=${encodeURIComponent(JSON.stringify(data))}`,
+    `${AB_TEST_COOKIE_NAME}=${serializeABTestCookieValue(data)}`,
     `Max-Age=${AB_TEST_COOKIE_MAX_AGE}`,
     'Path=/',
     'SameSite=Lax',

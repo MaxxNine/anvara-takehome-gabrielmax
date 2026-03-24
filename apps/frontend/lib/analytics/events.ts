@@ -35,6 +35,7 @@ export type MacroConversionEvent =
   | 'signup_complete';
 
 export type EngagementEvent = 'form_error' | 'form_submit' | 'logout';
+export type ExperimentEvent = 'variant_assigned';
 
 export type AnalyticsEventMap = {
   ad_slot_click: AdSlotAnalyticsParams;
@@ -83,13 +84,19 @@ export type AnalyticsEventMap = {
   signup_complete: {
     method?: string;
   };
+  variant_assigned: {
+    source: 'forced' | 'new_assignment';
+    test_name: string;
+    variant: string;
+  };
 };
 
 export type AnalyticsEventName =
   | keyof AnalyticsEventMap
   | MicroConversionEvent
   | MacroConversionEvent
-  | EngagementEvent;
+  | EngagementEvent
+  | ExperimentEvent;
 
 export const GA_EVENTS = {
   AD_SLOT_CLICK: 'ad_slot_click',
@@ -107,6 +114,7 @@ export const GA_EVENTS = {
   PLACEMENT_REQUEST_SUCCESS: 'placement_request_success',
   PLACEMENT_SUCCESS: 'placement_success',
   SIGNUP_COMPLETE: 'signup_complete',
+  VARIANT_ASSIGNED: 'variant_assigned',
 } as const satisfies Record<string, AnalyticsEventName>;
 
 function toNumericValue(value: number | string): number {
