@@ -2,7 +2,7 @@
 
 - [x] Refactor `apps/frontend/app/components/nav.tsx` to a server-first architecture.
 - [x] Move nav session and role resolution to the server using `auth.api.getSession(...)` and shared auth helpers.
-- [ ] Extract tiny client leaves for tracked navigation and logout behavior.
+- [x] Extract tiny client leaves for tracked navigation and logout behavior.
 - [x] Move marketplace list reads out of client `useEffect` and into `apps/frontend/app/marketplace/data.ts`.
 - [x] Update `apps/frontend/app/marketplace/page.tsx` to fetch marketplace data on the server and pass props down.
 - [x] Split marketplace list UI into smaller components if needed (`ad-slot-grid`, `ad-slot-card`, tracked link leaf).
@@ -11,10 +11,10 @@
 - [x] Split `apps/frontend/app/marketplace/[id]/components/ad-slot-detail.tsx` into smaller UI and interaction components.
 - [x] Convert booking to a server action in `apps/frontend/app/marketplace/[id]/actions/`.
 - [x] Convert unbooking/reset to a server action in `apps/frontend/app/marketplace/[id]/actions/`.
-- [ ] Keep analytics in small client boundaries only; avoid pushing GA runtime logic into server actions.
+- [x] Keep analytics in small client boundaries only; avoid pushing GA runtime logic into server actions.
 - [x] Tighten analytics typing with an event-to-params map.
-- [ ] Centralize navigation-sensitive analytics behavior in shared helpers only.
-- [ ] Remove duplicated auth/bootstrap logic from client components.
-- [ ] Re-run browser verification for `cta_click`, `nav_click`, `logout`, `login_success`, `ad_slot_click`, `ad_slot_view`, `placement_request`, and `placement_success` after the refactor.
-- [ ] Re-run `pnpm --filter @anvara/frontend typecheck`.
-- [ ] Re-run `pnpm --filter @anvara/frontend lint`.
+- [x] Centralize navigation-sensitive analytics behavior in shared helpers only.
+- [x] Remove duplicated auth/bootstrap logic from client components.
+- [x] Re-run browser verification for `cta_click`, `nav_click`, `logout`, `login_success`, `ad_slot_click`, `ad_slot_view`, `placement_request`, and `placement_success` after the refactor.
+- [x] Re-run `pnpm --filter @anvara/frontend typecheck`.
+- [x] Re-run `pnpm --filter @anvara/frontend lint`.

@@ -33,6 +33,7 @@ export type AnalyticsEventMap = {
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventMap;
+type AnyAnalyticsEventParams = AnalyticsEventMap[AnalyticsEventName];
 
 type TrackEventArgs<K extends AnalyticsEventName> =
   undefined extends AnalyticsEventMap[K]
@@ -43,6 +44,11 @@ type TrackEventAndWaitArgs<K extends AnalyticsEventName> =
   undefined extends AnalyticsEventMap[K]
     ? [params?: AnalyticsEventMap[K], timeout?: number]
     : [params: AnalyticsEventMap[K], timeout?: number];
+
+type TrackEventAndRunArgs<K extends AnalyticsEventName> =
+  undefined extends AnalyticsEventMap[K]
+    ? [run: () => void | Promise<void>, params?: AnalyticsEventMap[K], timeout?: number]
+    : [run: () => void | Promise<void>, params: AnalyticsEventMap[K], timeout?: number];
 
 type GtagEventParams = Record<string, AnalyticsEventValue | (() => void)> & {
   event_callback?: () => void;
@@ -71,33 +77,40 @@ export const GA_EVENTS = {
   PLACEMENT_SUCCESS: 'placement_success',
 } as const satisfies Record<string, AnalyticsEventName>;
 
-export function trackEvent<K extends AnalyticsEventName>(
-  eventName: K,
-  ...args: TrackEventArgs<K>
-): void {
+function getGtag() {
   if (typeof window === 'undefined' || typeof window.gtag !== 'function') {
+    return null;
+  }
+
+  return window.gtag;
+}
+
+function sendEvent(
+  eventName: AnalyticsEventName,
+  params?: AnyAnalyticsEventParams
+): void {
+  const gtag = getGtag();
+
+  if (!gtag) {
     return;
   }
 
-  const params = args[0];
-
-  window.gtag('event', eventName, {
+  gtag('event', eventName, {
     ...(params ?? {}),
     transport_type: 'beacon',
   });
 }
 
-export async function trackEventAndWait<K extends AnalyticsEventName>(
-  eventName: K,
-  ...args: TrackEventAndWaitArgs<K>
+async function sendEventAndWait(
+  eventName: AnalyticsEventName,
+  params?: AnyAnalyticsEventParams,
+  timeout = 300
 ): Promise<void> {
-  if (typeof window === 'undefined' || typeof window.gtag !== 'function') {
+  const gtag = getGtag();
+
+  if (!gtag) {
     return;
   }
-
-  const params = args[0];
-  const timeout = args[1] ?? 300;
-  const gtag = window.gtag;
 
   await new Promise<void>((resolve) => {
     let settled = false;
@@ -120,4 +133,35 @@ export async function trackEventAndWait<K extends AnalyticsEventName>(
 
     window.setTimeout(finish, timeout);
   });
+}
+
+export function trackEvent<K extends AnalyticsEventName>(
+  eventName: K,
+  ...args: TrackEventArgs<K>
+): void {
+  sendEvent(eventName, args[0] as AnyAnalyticsEventParams);
+}
+
+export async function trackEventAndWait<K extends AnalyticsEventName>(
+  eventName: K,
+  ...args: TrackEventAndWaitArgs<K>
+): Promise<void> {
+  await sendEventAndWait(
+    eventName,
+    args[0] as AnyAnalyticsEventParams,
+    args[1] ?? 300
+  );
+}
+
+export async function trackEventAndRun<K extends AnalyticsEventName>(
+  eventName: K,
+  ...args: TrackEventAndRunArgs<K>
+): Promise<void> {
+  const run = args[0];
+  const params = args[1];
+  const timeout = args[2] ?? 300;
+
+  await sendEventAndWait(eventName, params as AnyAnalyticsEventParams, timeout);
+
+  await run();
 }

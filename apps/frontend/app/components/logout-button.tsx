@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { authClient } from '@/auth-client';
-import { GA_EVENTS, trackEventAndWait } from '@/lib/analytics';
+import { GA_EVENTS, trackEventAndRun } from '@/lib/analytics';
 
 export function LogoutButton() {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleLogout(): Promise<void> {
@@ -16,15 +18,20 @@ export function LogoutButton() {
     setIsSubmitting(true);
 
     try {
-      await trackEventAndWait(GA_EVENTS.LOGOUT, undefined, 800);
-
-      await authClient.signOut({
-        fetchOptions: {
-          onSuccess: () => {
-            window.location.href = '/';
-          },
+      await trackEventAndRun(
+        GA_EVENTS.LOGOUT,
+        async () => {
+          await authClient.signOut({
+            fetchOptions: {
+              onSuccess: () => {
+                router.replace('/');
+              },
+            },
+          });
         },
-      });
+        undefined,
+        800
+      );
     } finally {
       setIsSubmitting(false);
     }

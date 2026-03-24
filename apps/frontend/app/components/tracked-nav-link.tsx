@@ -1,9 +1,9 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import Link from 'next/link';
 
-import { GA_EVENTS, trackEvent } from '@/lib/analytics';
+import { GA_EVENTS } from '@/lib/analytics';
+import { TrackedLink } from './tracked-link';
 
 type TrackedNavLinkProps = {
   children: ReactNode;
@@ -18,13 +18,14 @@ export function TrackedNavLink({
   destination,
   href,
 }: TrackedNavLinkProps) {
-  function handleClick(): void {
-    trackEvent(GA_EVENTS.NAV_CLICK, { destination });
-  }
-
   return (
-    <Link href={href} onClick={handleClick} className={className}>
+    <TrackedLink
+      href={href}
+      className={className}
+      eventName={GA_EVENTS.NAV_CLICK}
+      eventParams={{ destination }}
+    >
       {children}
-    </Link>
+    </TrackedLink>
   );
 }
