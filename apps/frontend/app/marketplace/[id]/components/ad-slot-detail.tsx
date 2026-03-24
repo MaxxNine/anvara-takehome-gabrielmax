@@ -9,6 +9,7 @@ import { AdSlotOverview } from './ad-slot-overview';
 import { AdSlotStatusBar } from './ad-slot-status-bar';
 import { PlacementRequestForm } from './placement-request-form';
 import { PlacementSuccessNotice } from './placement-success-notice';
+import { ResetListingButton } from './reset-listing-button';
 
 const RECENT_AD_SLOT_VIEW_WINDOW_MS = 1000;
 const recentAdSlotViews = new Map<string, number>();
@@ -50,39 +51,22 @@ export function AdSlotDetail({ adSlot, roleInfo, user }: AdSlotDetailProps) {
     }
   }, [adSlot.basePrice, adSlot.id, adSlot.type]);
 
-  async function handleUnbook(): Promise<void> {
-    setResetError(null);
-
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/ad-slots/${currentAdSlot.id}/unbook`,
-        {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
-
-      if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        throw new Error(data?.error || 'Failed to reset booking');
-      }
-
-      setBookingSuccess(false);
-      setCurrentAdSlot((slot) => ({ ...slot, isAvailable: true }));
-    } catch (error) {
-      setResetError(error instanceof Error ? error.message : 'Failed to reset booking');
-    }
-  }
-
   function handleBooked(): void {
     setBookingSuccess(true);
     setResetError(null);
     setCurrentAdSlot((slot) => ({ ...slot, isAvailable: false }));
   }
 
+  function handleReset(): void {
+    setBookingSuccess(false);
+    setResetError(null);
+    setCurrentAdSlot((slot) => ({ ...slot, isAvailable: true }));
+  }
+
   const companyName = roleInfo?.name || user?.name || 'Unknown sponsor';
   const canRequestPlacement = roleInfo?.role === 'sponsor' && Boolean(roleInfo.sponsorId);
+  const canResetListing =
+    roleInfo?.role === 'publisher' && roleInfo.publisherId === currentAdSlot.publisherId;
 
   return (
     <div className="space-y-6">
@@ -96,7 +80,18 @@ export function AdSlotDetail({ adSlot, roleInfo, user }: AdSlotDetailProps) {
         <AdSlotStatusBar
           adSlot={currentAdSlot}
           bookingSuccess={bookingSuccess}
-          onReset={() => void handleUnbook()}
+          resetControl={
+            canResetListing ? (
+              <ResetListingButton
+                adSlotId={currentAdSlot.id}
+                label="Reset listing"
+                pendingLabel="Resetting..."
+                className="ml-3 text-sm text-[--color-primary] underline hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
+                onErrorChange={setResetError}
+                onResetSuccess={handleReset}
+              />
+            ) : undefined
+          }
         />
 
         {resetError ? <p className="mt-3 text-sm text-red-600">{resetError}</p> : null}
@@ -131,7 +126,20 @@ export function AdSlotDetail({ adSlot, roleInfo, user }: AdSlotDetailProps) {
         ) : null}
 
         {bookingSuccess ? (
-          <PlacementSuccessNotice onReset={() => void handleUnbook()} />
+          <PlacementSuccessNotice
+            resetControl={
+              canResetListing ? (
+                <ResetListingButton
+                  adSlotId={currentAdSlot.id}
+                  label="Remove Booking (reset for testing)"
+                  pendingLabel="Resetting..."
+                  className="mt-3 text-sm text-green-700 underline hover:text-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  onErrorChange={setResetError}
+                  onResetSuccess={handleReset}
+                />
+              ) : undefined
+            }
+          />
         ) : null}
       </div>
     </div>

@@ -10,9 +10,9 @@
 - [x] Update `apps/frontend/app/marketplace/[id]/page.tsx` to fetch slot, session, and role data on the server.
 - [x] Split `apps/frontend/app/marketplace/[id]/components/ad-slot-detail.tsx` into smaller UI and interaction components.
 - [x] Convert booking to a server action in `apps/frontend/app/marketplace/[id]/actions/`.
-- [ ] Convert unbooking/reset to a server action in `apps/frontend/app/marketplace/[id]/actions/`.
+- [x] Convert unbooking/reset to a server action in `apps/frontend/app/marketplace/[id]/actions/`.
 - [ ] Keep analytics in small client boundaries only; avoid pushing GA runtime logic into server actions.
-- [ ] Tighten analytics typing with an event-to-params map.
+- [x] Tighten analytics typing with an event-to-params map.
 - [ ] Centralize navigation-sensitive analytics behavior in shared helpers only.
 - [ ] Remove duplicated auth/bootstrap logic from client components.
 - [ ] Re-run browser verification for `cta_click`, `nav_click`, `logout`, `login_success`, `ad_slot_click`, `ad_slot_view`, `placement_request`, and `placement_success` after the refactor.

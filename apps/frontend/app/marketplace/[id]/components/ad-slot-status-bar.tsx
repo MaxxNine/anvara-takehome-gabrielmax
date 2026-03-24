@@ -1,12 +1,18 @@
+import type { ReactNode } from 'react';
+
 import type { AdSlot } from '@/lib/types';
 
 type AdSlotStatusBarProps = {
   adSlot: AdSlot;
   bookingSuccess: boolean;
-  onReset: () => void;
+  resetControl?: ReactNode;
 };
 
-export function AdSlotStatusBar({ adSlot, bookingSuccess, onReset }: AdSlotStatusBarProps) {
+export function AdSlotStatusBar({
+  adSlot,
+  bookingSuccess,
+  resetControl,
+}: AdSlotStatusBarProps) {
   return (
     <div className="flex items-center justify-between border-t border-[--color-border] pt-4">
       <div>
@@ -15,15 +21,7 @@ export function AdSlotStatusBar({ adSlot, bookingSuccess, onReset }: AdSlotStatu
         >
           {adSlot.isAvailable ? '● Available' : '○ Currently Booked'}
         </span>
-        {!adSlot.isAvailable && !bookingSuccess ? (
-          <button
-            type="button"
-            onClick={onReset}
-            className="ml-3 text-sm text-[--color-primary] underline hover:opacity-80"
-          >
-            Reset listing
-          </button>
-        ) : null}
+        {!adSlot.isAvailable && !bookingSuccess ? resetControl : null}
       </div>
 
       <div className="text-right">
