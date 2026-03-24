@@ -1,120 +1,99 @@
-'use client';
+import { headers } from 'next/headers';
 
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { authClient } from '@/auth-client';
-import { GA_EVENTS, trackEvent, trackEventAndWait } from '@/lib/analytics';
-import type { RoleInfo } from '@/lib/types';
+import { auth } from '@/auth';
+import { getCurrentUserProfile } from '@/lib/auth-helpers';
+import type { UserRole } from '@/lib/types';
+import { LogoutButton } from './logout-button';
+import { TrackedNavLink } from './tracked-nav-link';
 
-type UserRole = 'sponsor' | 'publisher' | null;
-type ResolvedRole = { userId: string; role: UserRole } | null;
+type NavUser = {
+  name: string;
+  role: UserRole | null;
+} | null;
 
-export function Nav() {
-  const { data: session, isPending } = authClient.useSession();
-  const user = session?.user;
-  const [resolvedRole, setResolvedRole] = useState<ResolvedRole>(null);
-  const role = user?.id && resolvedRole?.userId === user.id ? resolvedRole.role : null;
+async function getNavUser(): Promise<NavUser> {
+  const requestHeaders = await headers();
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  });
 
-  useEffect(() => {
-    if (!user?.id) return;
-
-    let cancelled = false;
-
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/auth/profile`, {
-      credentials: 'include',
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled) {
-          setResolvedRole({ userId: user.id, role: (data as RoleInfo).role });
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setResolvedRole({ userId: user.id, role: null });
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [user?.id]);
-
-  async function handleLogout() {
-    await trackEventAndWait(GA_EVENTS.LOGOUT, undefined, 800);
-
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          window.location.href = '/';
-        },
-      },
-    });
+  if (!session?.user) {
+    return null;
   }
+
+  try {
+    const profile = await getCurrentUserProfile(requestHeaders);
+
+    return {
+      name: session.user.name,
+      role: profile.role,
+    };
+  } catch {
+    return {
+      name: session.user.name,
+      role: null,
+    };
+  }
+}
+
+export async function Nav() {
+  const user = await getNavUser();
+  const role = user?.role ?? null;
 
   return (
     <header className="border-b border-[--color-border]">
       <nav className="mx-auto flex max-w-6xl items-center justify-between p-4">
-        <Link
+        <TrackedNavLink
           href="/"
-          onClick={() => trackEvent(GA_EVENTS.NAV_CLICK, { destination: '/' })}
+          destination="/"
           className="text-xl font-bold text-[--color-primary]"
         >
           Anvara
-        </Link>
+        </TrackedNavLink>
 
         <div className="flex items-center gap-6">
-          <Link
+          <TrackedNavLink
             href="/marketplace"
-            onClick={() => trackEvent(GA_EVENTS.NAV_CLICK, { destination: '/marketplace' })}
+            destination="/marketplace"
             className="text-[--color-muted] hover:text-[--color-foreground]"
           >
             Marketplace
-          </Link>
+          </TrackedNavLink>
 
-          {user && role === 'sponsor' && (
-            <Link
+          {user && role === 'sponsor' ? (
+            <TrackedNavLink
               href="/dashboard/sponsor"
-              onClick={() => trackEvent(GA_EVENTS.NAV_CLICK, { destination: '/dashboard/sponsor' })}
+              destination="/dashboard/sponsor"
               className="text-[--color-muted] hover:text-[--color-foreground]"
             >
               My Campaigns
-            </Link>
-          )}
-          {user && role === 'publisher' && (
-            <Link
+            </TrackedNavLink>
+          ) : null}
+          {user && role === 'publisher' ? (
+            <TrackedNavLink
               href="/dashboard/publisher"
-              onClick={() =>
-                trackEvent(GA_EVENTS.NAV_CLICK, { destination: '/dashboard/publisher' })
-              }
+              destination="/dashboard/publisher"
               className="text-[--color-muted] hover:text-[--color-foreground]"
             >
               My Ad Slots
-            </Link>
-          )}
+            </TrackedNavLink>
+          ) : null}
 
-          {isPending ? (
-            <span className="text-[--color-muted]">...</span>
-          ) : user ? (
+          {user ? (
             <div className="flex items-center gap-4">
               <span className="text-sm text-[--color-muted]">
-                {user.name} {role && `(${role})`}
+                {user.name} {role ? `(${role})` : null}
               </span>
-              <button
-                onClick={() => void handleLogout()}
-                className="rounded bg-gray-600 px-3 py-1.5 text-sm text-white hover:bg-gray-500"
-              >
-                Logout
-              </button>
+              <LogoutButton />
             </div>
           ) : (
-            <Link
+            <TrackedNavLink
               href="/login"
-              onClick={() => trackEvent(GA_EVENTS.NAV_CLICK, { destination: '/login' })}
+              destination="/login"
               className="rounded bg-[--color-primary] px-4 py-2 text-sm text-white hover:bg-[--color-primary-hover]"
             >
               Login
-            </Link>
+            </TrackedNavLink>
           )}
         </div>
       </nav>

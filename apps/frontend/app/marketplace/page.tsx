@@ -1,11 +1,12 @@
+import { headers } from 'next/headers';
+
 import { AdSlotGrid } from './components/ad-slot-grid';
+import { getMarketplaceAdSlots } from './data';
 
-// FIXME: This page fetches all ad slots client-side. Consider:
-// 1. Server-side pagination with searchParams
-// 2. Filtering by category, price range, slot type
-// 3. Search functionality
+export default async function MarketplacePage() {
+  const requestHeaders = await headers();
+  const adSlots = await getMarketplaceAdSlots(requestHeaders);
 
-export default function MarketplacePage() {
   return (
     <div className="space-y-6">
       <div>
@@ -14,7 +15,7 @@ export default function MarketplacePage() {
         {/* TODO: Add search input and filter controls */}
       </div>
 
-      <AdSlotGrid />
+      <AdSlotGrid adSlots={adSlots} />
     </div>
   );
 }
