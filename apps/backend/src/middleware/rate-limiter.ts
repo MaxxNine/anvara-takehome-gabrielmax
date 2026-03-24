@@ -88,4 +88,4 @@ const globalStore = createStore(redisClient, 'anvara:rate-limit:global:');
 const authStore = createStore(redisClient, 'anvara:rate-limit:auth:');
 
 export const globalLimiter = createLimiter(100, globalStore);
-export const authLimiter = createLimiter(10, authStore);
+export const authLimiter = createLimiter(50, authStore);

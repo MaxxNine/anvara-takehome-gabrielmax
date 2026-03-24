@@ -35,9 +35,13 @@ export interface Campaign {
   description?: string | null;
   budget: DecimalValue;
   spent: DecimalValue;
+  cpmRate?: DecimalValue | null;
+  cpcRate?: DecimalValue | null;
   status: CampaignStatus;
   startDate: string;
   endDate: string;
+  targetCategories?: string[];
+  targetRegions?: string[];
   sponsorId: string;
   sponsor?: SponsorSummary;
   _count?: { creatives: number; placements: number };
