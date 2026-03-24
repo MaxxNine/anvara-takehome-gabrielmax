@@ -1,10 +1,8 @@
-'use client';
-
 import type { AdSlot } from '@/lib/types';
 
-interface AdSlotCardProps {
+type AdSlotCardProps = {
   adSlot: AdSlot;
-}
+};
 
 const typeColors: Record<string, string> = {
   DISPLAY: 'bg-blue-100 text-blue-700',

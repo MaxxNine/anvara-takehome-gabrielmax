@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { getCurrentUserProfile } from '@/lib/auth-helpers';
 import { AdSlotList } from './components/ad-slot-list';
+import { getPublisherAdSlots } from './data';
 
 export default async function PublisherDashboard() {
   const requestHeaders = await headers();
@@ -16,9 +17,11 @@ export default async function PublisherDashboard() {
 
   // Verify user has 'publisher' role
   const roleData = await getCurrentUserProfile(requestHeaders);
-  if (roleData.role !== 'publisher') {
+  if (roleData.role !== 'publisher' || !roleData.publisherId) {
     redirect('/');
   }
+
+  const adSlots = await getPublisherAdSlots(requestHeaders);
 
   return (
     <div className="space-y-6">
@@ -27,7 +30,7 @@ export default async function PublisherDashboard() {
         {/* TODO: Add CreateAdSlotButton here */}
       </div>
 
-      <AdSlotList />
+      <AdSlotList adSlots={adSlots} />
     </div>
   );
 }

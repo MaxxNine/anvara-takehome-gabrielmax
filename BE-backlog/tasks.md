@@ -77,11 +77,11 @@
 
 ### Phase 1: Publisher Dashboard Migration
 
-- [ ] **5.1.1** Create `dashboard/publisher/data.ts` — server-side fetch with `serverApi` (mirror sponsor `data.ts`)
-- [ ] **5.1.2** Create `dashboard/publisher/loading.tsx` — skeleton UI (mirror sponsor `loading.tsx`)
-- [ ] **5.1.3** Rewrite `dashboard/publisher/components/ad-slot-list.tsx` — remove `'use client'`, useEffect, useState; accept `adSlots` as prop
-- [ ] **5.1.4** Update `dashboard/publisher/page.tsx` — call `data.ts`, pass props to `AdSlotList`
-- [ ] **5.1.5** Remove `'use client'` from `ad-slot-card.tsx`
+- [x] **5.1.1** Create `dashboard/publisher/data.ts` — server-side fetch with `serverApi` (mirror sponsor `data.ts`)
+- [x] **5.1.2** Create `dashboard/publisher/loading.tsx` — skeleton UI (mirror sponsor `loading.tsx`)
+- [x] **5.1.3** Rewrite `dashboard/publisher/components/ad-slot-list.tsx` — remove `'use client'`, useEffect, useState; accept `adSlots` as prop
+- [x] **5.1.4** Update `dashboard/publisher/page.tsx` — call `data.ts`, pass props to `AdSlotList`
+- [x] **5.1.5** Remove `'use client'` from `ad-slot-card.tsx`
 
 ### Phase 2: Sponsor Server Actions + Forms
 
