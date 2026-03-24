@@ -9,7 +9,7 @@ Add clean, explicit rate-limiting boundaries for the Next frontend and backend A
 - Backend API traffic is rate-limited in `apps/backend/src/index.ts` via middleware from `apps/backend/src/middleware/rate-limiter.ts`.
 - Frontend server actions currently call the backend through `apps/frontend/lib/server-api.ts`.
 - This means server actions do pass through the backend limiter, but the backend may only see the Next server as the caller unless we preserve trusted client identity.
-- There is no dedicated server-action limiter yet.
+- Sensitive frontend server actions now have a dedicated limiter, and the Next auth route now has its own dedicated route limiter because it bypasses the backend Express middleware.
 
 ## Design Principles
 
@@ -137,6 +137,14 @@ Start with the most abuse-prone or operationally expensive actions.
 - Whether frontend server actions should reuse the same Redis namespace as the backend or use a dedicated prefix.
 - Whether action-level limits should be keyed strictly by user id, by user plus action name, or by a hybrid user/IP strategy.
 - Whether some actions are sufficiently protected by backend API limiting alone and should remain unthrottled at the Next layer.
+
+## Implemented Status
+
+- Client identity is preserved from Next to the backend API.
+- Backend API limits key by authenticated user when available and trusted client IP otherwise.
+- Marketplace booking and reset server actions have dedicated action-level throttling.
+- The Next auth route has dedicated throttling with stricter limits for credential-entry and recovery flows.
+- Shared `429` handling and focused verification are in place.
 
 ## Recommended Execution Order
 

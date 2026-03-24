@@ -15,7 +15,7 @@ This audit covers the current Next server actions and Next route handlers in `ap
 
 | Surface | Current path | Current limiter coverage | Dedicated action/route limiter? | Reason |
 |---|---|---|---|---|
-| Better Auth route handler | `apps/frontend/app/api/auth/[...all]/route.ts` | **No backend coverage** | **Yes** | High-risk auth entrypoint; bypasses backend Express middleware entirely. |
+| Better Auth route handler | `apps/frontend/app/api/auth/[...all]/route.ts` | **No backend coverage** | **Implemented** | High-risk auth entrypoint; now covered by dedicated Next route throttling. |
 | Login redirect helper | `apps/frontend/app/login/actions/resolve-login-redirect.ts` | N/A | No | Lightweight redirect resolution; not abuse-prone and does not fan out into expensive work. |
 | Create campaign | `apps/frontend/app/dashboard/sponsor/actions/create-campaign.ts` | Backend global limiter | Not yet | Authenticated mutation, but current backend limiter is sufficient for now after client identity preservation. |
 | Update campaign | `apps/frontend/app/dashboard/sponsor/actions/update-campaign.ts` | Backend global limiter | Not yet | Same rationale as create campaign. |
@@ -23,8 +23,8 @@ This audit covers the current Next server actions and Next route handlers in `ap
 | Create ad slot | `apps/frontend/app/dashboard/publisher/actions/create-ad-slot.ts` | Backend global limiter | Not yet | Authenticated mutation, but not the highest-abuse flow today. |
 | Update ad slot | `apps/frontend/app/dashboard/publisher/actions/update-ad-slot.ts` | Backend global limiter | Not yet | Same rationale as create ad slot. |
 | Delete ad slot | `apps/frontend/app/dashboard/publisher/actions/delete-ad-slot.ts` | Backend global limiter | Not yet | Same rationale as create ad slot. |
-| Book placement | `apps/frontend/app/marketplace/[id]/actions/book-placement.ts` | Backend global limiter | **Yes, next** | User-facing marketplace action with repeat-submission risk and state mutation. |
-| Reset listing | `apps/frontend/app/marketplace/[id]/actions/reset-listing.ts` | Backend global limiter | **Yes, next** | State mutation with potential abuse/admin-style reset behavior. |
+| Book placement | `apps/frontend/app/marketplace/[id]/actions/book-placement.ts` | Backend global limiter + frontend action limiter | **Implemented** | User-facing marketplace action with repeat-submission risk and state mutation. |
+| Reset listing | `apps/frontend/app/marketplace/[id]/actions/reset-listing.ts` | Backend global limiter + frontend action limiter | **Implemented** | State mutation with potential abuse/admin-style reset behavior. |
 
 ## Recommended Order
 
@@ -32,6 +32,10 @@ This audit covers the current Next server actions and Next route handlers in `ap
 2. Tighten backend limiter keys and trust proxy settings.
 3. Add dedicated rate limiting to the Next auth route.
 4. Add a shared action-level limiter for `bookPlacementAction` and `resetListingAction`.
+
+## Status
+
+- The recommended order above has now been completed for the currently identified high-risk flows.
 
 ## Notes
 
