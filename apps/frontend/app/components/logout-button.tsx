@@ -25,6 +25,7 @@ export function LogoutButton() {
             fetchOptions: {
               onSuccess: () => {
                 router.replace('/');
+                router.refresh();
               },
             },
           });

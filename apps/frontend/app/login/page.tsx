@@ -37,7 +37,10 @@ export default function LoginPage() {
 
           await trackEventAndRun(
             GA_EVENTS.LOGIN_SUCCESS,
-            () => router.push(redirectPath),
+            () => {
+              router.push(redirectPath);
+              router.refresh();
+            },
             { method: 'email' }
           );
         },
