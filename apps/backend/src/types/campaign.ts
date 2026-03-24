@@ -19,3 +19,16 @@ export interface CreateCampaignInput {
   targetRegions: string[];
   sponsorId: string;
 }
+
+export interface UpdateCampaignInput {
+  name?: string;
+  description?: string | null;
+  budget?: number;
+  cpmRate?: number | null;
+  cpcRate?: number | null;
+  startDate?: Date;
+  endDate?: Date;
+  targetCategories?: string[];
+  targetRegions?: string[];
+  status?: CampaignStatusValue;
+}

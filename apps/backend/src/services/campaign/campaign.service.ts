@@ -1,12 +1,19 @@
-import { CampaignStatus, prisma } from '../db.js';
-import type { CampaignListFilters, CampaignStatusValue, CreateCampaignInput } from '../types/index.js';
+import { prisma } from '../../db.js';
+import type {
+  CampaignListFilters,
+  CreateCampaignInput,
+  UpdateCampaignInput,
+} from '../../types/index.js';
 
-export function isCampaignStatus(value: unknown): value is CampaignStatusValue {
-  return (
-    typeof value === 'string' &&
-    Object.values(CampaignStatus).includes(value as CampaignStatusValue)
-  );
-}
+export {
+  buildCreateCampaignInput,
+  buildUpdateCampaignInput,
+  isCampaignStatus,
+} from './campaign.helpers.js';
+
+const campaignSummaryInclude = {
+  sponsor: { select: { id: true, name: true } },
+};
 
 export async function listCampaigns(filters: CampaignListFilters) {
   return prisma.campaign.findMany({
@@ -41,8 +48,20 @@ export async function getCampaignById(id: string) {
 export async function createCampaign(data: CreateCampaignInput) {
   return prisma.campaign.create({
     data,
-    include: {
-      sponsor: { select: { id: true, name: true } },
-    },
+    include: campaignSummaryInclude,
+  });
+}
+
+export async function updateCampaign(id: string, data: UpdateCampaignInput) {
+  return prisma.campaign.update({
+    where: { id },
+    data,
+    include: campaignSummaryInclude,
+  });
+}
+
+export async function deleteCampaign(id: string) {
+  await prisma.campaign.delete({
+    where: { id },
   });
 }

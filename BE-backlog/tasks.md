@@ -45,11 +45,11 @@
 
 - [x] **3.1** Create `src/services/campaign.service.ts` — list, getById, create (done); update, delete (pending)
 - [x] **3.2** Create `src/services/ad-slot.service.ts` — list, getById, create, book, unbook (done); update, delete (pending)
-- [ ] **3.3** Add `PUT /api/campaigns/:id` — ownership check + validation + 200
-- [ ] **3.4** Add `DELETE /api/campaigns/:id` — ownership check + 204
-- [ ] **3.5** Add `PUT /api/ad-slots/:id` — ownership check + validation + 200
-- [ ] **3.6** Add `DELETE /api/ad-slots/:id` — ownership check + 204
-- [ ] **3.7** Fix `POST /api/ad-slots` — basePrice > 0, use `req.user.publisherId`
+- [x] **3.3** Add `PUT /api/campaigns/:id` — ownership check + validation + 200
+- [x] **3.4** Add `DELETE /api/campaigns/:id` — ownership check + 204
+- [x] **3.5** Add `PUT /api/ad-slots/:id` — ownership check + validation + 200
+- [x] **3.6** Add `DELETE /api/ad-slots/:id` — ownership check + 204
+- [x] **3.7** Fix `POST /api/ad-slots` — basePrice > 0, use `req.user.publisherId`
 - [x] **3.8** Refactor existing GET/POST handlers to use service layer (done during Challenge 03)
 
 ### Verification — Challenge 04
