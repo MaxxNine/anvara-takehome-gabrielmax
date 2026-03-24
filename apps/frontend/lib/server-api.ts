@@ -8,6 +8,32 @@ const SERVER_API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   'http://localhost:4291';
 
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+
+  get isUnauthorized() {
+    return this.status === 401;
+  }
+
+  get isForbidden() {
+    return this.status === 403;
+  }
+
+  get isNotFound() {
+    return this.status === 404;
+  }
+
+  get isValidation() {
+    return this.status === 400;
+  }
+}
+
 function buildServerApiHeaders(
   requestHeaders?: ForwardedRequestHeaders,
   extraHeaders?: HeadersInit
@@ -51,7 +77,7 @@ export async function serverApi<T>(
     } catch {
       // Response body isn't JSON — use the default message
     }
-    throw new Error(message);
+    throw new ApiError(message, response.status);
   }
 
   if (response.status === 204) return undefined as T;

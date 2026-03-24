@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 
 import { serverApi } from '@/lib/server-api';
 import type { ActionState } from '@/lib/action-types';
+import { handleActionError } from '@/lib/action-helpers';
 import { adSlotSchema } from '@/lib/schemas/ad-slot';
 import { extractFieldValues, validationError } from '@/lib/schemas/utils';
 
@@ -15,8 +16,7 @@ export async function createAdSlotAction(
   formData: FormData
 ): Promise<ActionState> {
   const fieldValues = extractFieldValues(formData, FIELD_KEYS);
-  const raw = Object.fromEntries(formData);
-  const result = adSlotSchema.safeParse(raw);
+  const result = adSlotSchema.safeParse(Object.fromEntries(formData));
 
   if (!result.success) {
     return validationError(result.error.flatten().fieldErrors, fieldValues);
@@ -38,11 +38,7 @@ export async function createAdSlotAction(
       requestHeaders,
     });
   } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to create ad slot',
-      fieldValues,
-    };
+    return handleActionError(error, 'Failed to create ad slot', fieldValues);
   }
 
   revalidatePath('/dashboard/publisher');

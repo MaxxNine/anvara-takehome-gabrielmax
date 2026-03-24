@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 
 import { serverApi } from '@/lib/server-api';
 import type { ActionState } from '@/lib/action-types';
+import { handleActionError } from '@/lib/action-helpers';
 import { campaignSchema } from '@/lib/schemas/campaign';
 import { extractFieldValues, validationError } from '@/lib/schemas/utils';
 
@@ -15,8 +16,7 @@ export async function createCampaignAction(
   formData: FormData
 ): Promise<ActionState> {
   const fieldValues = extractFieldValues(formData, FIELD_KEYS);
-  const raw = Object.fromEntries(formData);
-  const result = campaignSchema.safeParse(raw);
+  const result = campaignSchema.safeParse(Object.fromEntries(formData));
 
   if (!result.success) {
     return validationError(result.error.flatten().fieldErrors, fieldValues);
@@ -38,11 +38,7 @@ export async function createCampaignAction(
       requestHeaders,
     });
   } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to create campaign',
-      fieldValues,
-    };
+    return handleActionError(error, 'Failed to create campaign', fieldValues);
   }
 
   revalidatePath('/dashboard/sponsor');

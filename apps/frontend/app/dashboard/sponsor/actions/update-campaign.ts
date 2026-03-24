@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 
 import { serverApi } from '@/lib/server-api';
 import type { ActionState } from '@/lib/action-types';
+import { handleActionError } from '@/lib/action-helpers';
 import { updateCampaignSchema } from '@/lib/schemas/campaign';
 import { extractFieldValues, validationError } from '@/lib/schemas/utils';
 
@@ -15,8 +16,7 @@ export async function updateCampaignAction(
   formData: FormData
 ): Promise<ActionState> {
   const fieldValues = extractFieldValues(formData, FIELD_KEYS);
-  const raw = Object.fromEntries(formData);
-  const result = updateCampaignSchema.safeParse(raw);
+  const result = updateCampaignSchema.safeParse(Object.fromEntries(formData));
 
   if (!result.success) {
     return validationError(result.error.flatten().fieldErrors, fieldValues);
@@ -44,11 +44,7 @@ export async function updateCampaignAction(
       requestHeaders,
     });
   } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to update campaign',
-      fieldValues,
-    };
+    return handleActionError(error, 'Failed to update campaign', fieldValues);
   }
 
   revalidatePath('/dashboard/sponsor');

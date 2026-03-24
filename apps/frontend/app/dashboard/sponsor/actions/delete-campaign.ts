@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 
 import { serverApi } from '@/lib/server-api';
 import type { ActionState } from '@/lib/action-types';
+import { handleActionError } from '@/lib/action-helpers';
 
 export async function deleteCampaignAction(
   _prevState: ActionState,
@@ -20,10 +21,7 @@ export async function deleteCampaignAction(
       requestHeaders,
     });
   } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete campaign',
-    };
+    return handleActionError(error, 'Failed to delete campaign');
   }
 
   revalidatePath('/dashboard/sponsor');
