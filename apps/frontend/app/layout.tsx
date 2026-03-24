@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import './globals.css';
+import { AnalyticsProvider } from './components/analytics-provider';
 import { Nav } from './components/nav';
 
 // TODO: Add ErrorBoundary wrapper for graceful error handling
@@ -21,8 +22,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="min-h-screen antialiased">
-        <Nav />
-        <main className="mx-auto max-w-6xl p-4">{children}</main>
+        <AnalyticsProvider>
+          <Nav />
+          <main className="mx-auto max-w-6xl p-4">{children}</main>
+        </AnalyticsProvider>
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ? (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
         ) : null}

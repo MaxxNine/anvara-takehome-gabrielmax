@@ -8,6 +8,21 @@ import {
 
 const WINDOW_MS = 15 * 60 * 1000;
 
+function isLocalRuntime(): boolean {
+  return process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test';
+}
+
+function resolveLimit(envKey: string, productionDefault: number, localDefault: number): number {
+  const envValue = process.env[envKey];
+  const parsedValue = envValue ? Number.parseInt(envValue, 10) : Number.NaN;
+
+  if (Number.isFinite(parsedValue) && parsedValue > 0) {
+    return parsedValue;
+  }
+
+  return isLocalRuntime() ? localDefault : productionDefault;
+}
+
 type AuthRouteRateLimitPolicy = {
   actor: 'authenticated_or_ip' | 'ip_only';
   limit: number;
@@ -26,7 +41,7 @@ export function resolveAuthRouteRateLimitPolicy(request: Request): AuthRouteRate
   if (request.method === 'GET') {
     return {
       actor: 'authenticated_or_ip',
-      limit: 120,
+      limit: resolveLimit('FRONTEND_AUTH_GET_RATE_LIMIT', 120, 300),
       scope: 'auth:get',
       windowMs: WINDOW_MS,
     };
@@ -35,7 +50,7 @@ export function resolveAuthRouteRateLimitPolicy(request: Request): AuthRouteRate
   if (/\/(sign-in|sign-up)(\/|$)/.test(pathname)) {
     return {
       actor: 'ip_only',
-      limit: 10,
+      limit: resolveLimit('FRONTEND_AUTH_CREDENTIAL_RATE_LIMIT', 10, 50),
       scope: 'auth:credential-entry',
       windowMs: WINDOW_MS,
     };
@@ -48,7 +63,7 @@ export function resolveAuthRouteRateLimitPolicy(request: Request): AuthRouteRate
   ) {
     return {
       actor: 'ip_only',
-      limit: 10,
+      limit: resolveLimit('FRONTEND_AUTH_RECOVERY_RATE_LIMIT', 10, 30),
       scope: 'auth:recovery',
       windowMs: WINDOW_MS,
     };
@@ -57,7 +72,7 @@ export function resolveAuthRouteRateLimitPolicy(request: Request): AuthRouteRate
   if (/\/sign-out(\/|$)/.test(pathname)) {
     return {
       actor: 'authenticated_or_ip',
-      limit: 30,
+      limit: resolveLimit('FRONTEND_AUTH_SIGN_OUT_RATE_LIMIT', 30, 90),
       scope: 'auth:sign-out',
       windowMs: WINDOW_MS,
     };
@@ -65,7 +80,7 @@ export function resolveAuthRouteRateLimitPolicy(request: Request): AuthRouteRate
 
   return {
     actor: 'authenticated_or_ip',
-    limit: 60,
+    limit: resolveLimit('FRONTEND_AUTH_MUTATION_RATE_LIMIT', 60, 180),
     scope: 'auth:mutation',
     windowMs: WINDOW_MS,
   };

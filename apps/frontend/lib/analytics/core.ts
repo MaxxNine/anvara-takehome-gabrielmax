@@ -1,39 +1,19 @@
-import type { AdSlotType } from './types';
+import type { AnalyticsEventMap, AnalyticsEventName } from './events';
 
 type AnalyticsEventValue = string | number | boolean | undefined;
 
-export type AnalyticsEventMap = {
-  ad_slot_click: {
-    ad_slot_id: string;
-    ad_slot_name: string;
-    ad_slot_type: AdSlotType;
-  };
-  ad_slot_view: {
-    ad_slot_id: string;
-    ad_slot_type: AdSlotType;
-    price: number;
-  };
-  cta_click: {
-    label: string;
-    location: string;
-  };
-  login_success: {
-    method: string;
-  };
-  logout: undefined;
-  nav_click: {
-    destination: string;
-  };
-  placement_request: {
-    ad_slot_id: string;
-  };
-  placement_success: {
-    ad_slot_id: string;
-  };
+type AnyAnalyticsEventParams = AnalyticsEventMap[AnalyticsEventName];
+type AnalyticsDebugMode = 'fire_and_forget' | 'wait';
+
+export type AnalyticsDebugEvent = {
+  eventName: AnalyticsEventName;
+  mode: AnalyticsDebugMode;
+  params?: AnyAnalyticsEventParams;
+  timestamp: number;
 };
 
-export type AnalyticsEventName = keyof AnalyticsEventMap;
-type AnyAnalyticsEventParams = AnalyticsEventMap[AnalyticsEventName];
+export const ANALYTICS_DEBUG_EVENT_NAME = 'anvara:analytics-debug';
+const MAX_DEBUG_EVENTS = 200;
 
 type TrackEventArgs<K extends AnalyticsEventName> =
   undefined extends AnalyticsEventMap[K]
@@ -58,6 +38,7 @@ type GtagEventParams = Record<string, AnalyticsEventValue | (() => void)> & {
 
 declare global {
   interface Window {
+    __analyticsDebugEvents?: AnalyticsDebugEvent[];
     gtag?: (
       command: 'event',
       eventName: string,
@@ -66,16 +47,40 @@ declare global {
   }
 }
 
-export const GA_EVENTS = {
-  CTA_CLICK: 'cta_click',
-  NAV_CLICK: 'nav_click',
-  LOGIN_SUCCESS: 'login_success',
-  LOGOUT: 'logout',
-  AD_SLOT_CLICK: 'ad_slot_click',
-  AD_SLOT_VIEW: 'ad_slot_view',
-  PLACEMENT_REQUEST: 'placement_request',
-  PLACEMENT_SUCCESS: 'placement_success',
-} as const satisfies Record<string, AnalyticsEventName>;
+function isAnalyticsDebugEnabled(): boolean {
+  return typeof window !== 'undefined' && process.env.NODE_ENV !== 'production';
+}
+
+function recordDebugEvent(
+  eventName: AnalyticsEventName,
+  mode: AnalyticsDebugMode,
+  params?: AnyAnalyticsEventParams
+): void {
+  if (!isAnalyticsDebugEnabled()) {
+    return;
+  }
+
+  const event: AnalyticsDebugEvent = {
+    eventName,
+    mode,
+    params,
+    timestamp: Date.now(),
+  };
+
+  const events = window.__analyticsDebugEvents ?? [];
+
+  if (!window.__analyticsDebugEvents) {
+    window.__analyticsDebugEvents = events;
+  }
+
+  events.push(event);
+
+  if (events.length > MAX_DEBUG_EVENTS) {
+    events.splice(0, events.length - MAX_DEBUG_EVENTS);
+  }
+
+  window.dispatchEvent(new CustomEvent(ANALYTICS_DEBUG_EVENT_NAME, { detail: event }));
+}
 
 function getGtag() {
   if (typeof window === 'undefined' || typeof window.gtag !== 'function') {
@@ -85,10 +90,16 @@ function getGtag() {
   return window.gtag;
 }
 
+export function isAnalyticsEnabled(): boolean {
+  return getGtag() !== null;
+}
+
 function sendEvent(
   eventName: AnalyticsEventName,
   params?: AnyAnalyticsEventParams
 ): void {
+  recordDebugEvent(eventName, 'fire_and_forget', params);
+
   const gtag = getGtag();
 
   if (!gtag) {
@@ -106,6 +117,8 @@ async function sendEventAndWait(
   params?: AnyAnalyticsEventParams,
   timeout = 300
 ): Promise<void> {
+  recordDebugEvent(eventName, 'wait', params);
+
   const gtag = getGtag();
 
   if (!gtag) {
@@ -162,6 +175,5 @@ export async function trackEventAndRun<K extends AnalyticsEventName>(
   const timeout = args[2] ?? 300;
 
   await sendEventAndWait(eventName, params as AnyAnalyticsEventParams, timeout);
-
   await run();
 }

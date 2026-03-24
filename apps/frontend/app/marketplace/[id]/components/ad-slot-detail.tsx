@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { ActionErrorNotice } from '@/app/components/action-error-notice';
-import { GA_EVENTS, trackEvent } from '@/lib/analytics';
+import { adSlotEventParams, GA_EVENTS, trackEvent } from '@/lib/analytics';
 import type { ActionState } from '@/lib/action-types';
 import type { AdSlot, RoleInfo, SessionUser } from '@/lib/types';
 import { AdSlotOverview } from './ad-slot-overview';
@@ -46,12 +46,11 @@ export function AdSlotDetail({ adSlot, roleInfo, user }: AdSlotDetailProps) {
     // Deduplicate the extra development-only remount from React Strict Mode.
     if (shouldTrackAdSlotView(adSlot.id)) {
       trackEvent(GA_EVENTS.AD_SLOT_VIEW, {
-        ad_slot_id: adSlot.id,
-        ad_slot_type: adSlot.type,
-        price: Number(adSlot.basePrice),
+        ...adSlotEventParams(adSlot),
+        conversion_type: 'micro',
       });
     }
-  }, [adSlot.basePrice, adSlot.id, adSlot.type]);
+  }, [adSlot]);
 
   function handleBooked(): void {
     setBookingSuccess(true);
@@ -108,7 +107,7 @@ export function AdSlotDetail({ adSlot, roleInfo, user }: AdSlotDetailProps) {
 
             {canRequestPlacement ? (
               <PlacementRequestForm
-                adSlotId={currentAdSlot.id}
+                adSlot={currentAdSlot}
                 companyName={companyName}
                 onBooked={handleBooked}
               />

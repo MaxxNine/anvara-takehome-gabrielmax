@@ -5,26 +5,28 @@ import { useActionState, useEffect, useRef } from 'react';
 import { ActionErrorNotice } from '@/app/components/action-error-notice';
 import { SubmitButton } from '@/app/components/submit-button';
 import { initialActionState } from '@/lib/action-types';
-import { GA_EVENTS, trackEvent } from '@/lib/analytics';
+import { adSlotEventParams, GA_EVENTS, trackEvent } from '@/lib/analytics';
+import type { AdSlot } from '@/lib/types';
 import { bookPlacementAction } from '../actions/book-placement';
 
 type PlacementRequestFormProps = {
-  adSlotId: string;
+  adSlot: AdSlot;
   companyName: string;
   onBooked: () => void;
 };
 
-export function PlacementRequestForm({
-  adSlotId,
-  companyName,
-  onBooked,
-}: PlacementRequestFormProps) {
+export function PlacementRequestForm({ adSlot, companyName, onBooked }: PlacementRequestFormProps) {
   const [state, formAction] = useActionState(bookPlacementAction, initialActionState);
   const handledSuccessRef = useRef(false);
+  const adSlotId = adSlot.id;
 
   useEffect(() => {
     if (state.success && !handledSuccessRef.current) {
       handledSuccessRef.current = true;
+      trackEvent(GA_EVENTS.PLACEMENT_REQUEST_SUCCESS, {
+        ...adSlotEventParams(adSlot),
+        conversion_type: 'macro',
+      });
       trackEvent(GA_EVENTS.PLACEMENT_SUCCESS, { ad_slot_id: adSlotId });
       onBooked();
       return;
@@ -33,9 +35,13 @@ export function PlacementRequestForm({
     if (!state.success) {
       handledSuccessRef.current = false;
     }
-  }, [adSlotId, onBooked, state.success]);
+  }, [adSlot, adSlotId, onBooked, state.success]);
 
   function handleSubmit(): void {
+    trackEvent(GA_EVENTS.PLACEMENT_REQUEST_SUBMIT, {
+      ...adSlotEventParams(adSlot),
+      conversion_type: 'macro',
+    });
     trackEvent(GA_EVENTS.PLACEMENT_REQUEST, { ad_slot_id: adSlotId });
   }
 
