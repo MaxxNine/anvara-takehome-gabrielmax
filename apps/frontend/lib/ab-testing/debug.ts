@@ -13,6 +13,10 @@ type SearchParamsLike = {
   get(name: string): string | null;
 };
 
+type SearchParamsRecord = Record<string, string | string[] | undefined>;
+
+type DebugSearchParams = SearchParamsLike | SearchParamsRecord | null | undefined;
+
 function parseOverrideEntry(entry: string): [string, string] | null {
   const separatorIndex = entry.indexOf(':');
 
@@ -35,9 +39,9 @@ function canUseDebugRuntime(): boolean {
 }
 
 export function parseDebugOverrides(
-  searchParams: SearchParamsLike | null | undefined
+  searchParams: DebugSearchParams
 ): Partial<Record<ABTestName, string>> {
-  const rawOverrides = searchParams?.get(AB_FORCE_QUERY_PARAM);
+  const rawOverrides = getRawOverrideValue(searchParams);
 
   if (!rawOverrides) {
     return {};
@@ -66,7 +70,7 @@ export function parseDebugOverrides(
 
 export function getForcedABTestVariant(
   testName: ABTestName,
-  searchParams: SearchParamsLike | null | undefined
+  searchParams: DebugSearchParams
 ): string | null {
   return parseDebugOverrides(searchParams)[testName] ?? null;
 }
@@ -94,4 +98,22 @@ export function logABTestAssignment(
 
   // eslint-disable-next-line no-console
   console.log(`[ab-test] ${testName} -> ${variant} (${source})`);
+}
+
+function getRawOverrideValue(searchParams: DebugSearchParams): string | null {
+  if (!searchParams) {
+    return null;
+  }
+
+  if (typeof (searchParams as SearchParamsLike).get === 'function') {
+    return (searchParams as SearchParamsLike).get(AB_FORCE_QUERY_PARAM);
+  }
+
+  const rawValue = (searchParams as SearchParamsRecord)[AB_FORCE_QUERY_PARAM];
+
+  if (Array.isArray(rawValue)) {
+    return rawValue[0] ?? null;
+  }
+
+  return rawValue ?? null;
 }

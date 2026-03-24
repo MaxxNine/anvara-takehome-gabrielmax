@@ -57,3 +57,10 @@ export function getDefaultABTestVariant(testName: ABTestName): string {
 export function isValidABTestVariant(testName: ABTestName, variantId: string): boolean {
   return AB_TESTS[testName].variants.some((variant) => variant.id === variantId);
 }
+
+export function getABTestVariantLabel(
+  testName: ABTestName,
+  variantId: string
+): string | null {
+  return AB_TESTS[testName].variants.find((variant) => variant.id === variantId)?.label ?? null;
+}

@@ -17,6 +17,7 @@ export {
   getABTest,
   getActiveABTests,
   getDefaultABTestVariant,
+  getABTestVariantLabel,
   isABTestName,
   isValidABTestVariant,
   type ABTestConfig,

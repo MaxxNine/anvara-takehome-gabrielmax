@@ -71,15 +71,19 @@ export type AnalyticsEventMap = {
   };
   placement_request: {
     ad_slot_id: string;
+    cta_variant?: string;
   };
   placement_request_submit: AdSlotAnalyticsParams & {
     conversion_type: 'macro';
+    cta_variant?: string;
   };
   placement_request_success: AdSlotAnalyticsParams & {
     conversion_type: 'macro';
+    cta_variant?: string;
   };
   placement_success: {
     ad_slot_id: string;
+    cta_variant?: string;
   };
   signup_complete: {
     method?: string;

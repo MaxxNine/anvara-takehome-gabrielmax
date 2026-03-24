@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef } from 'react';
 
 import { ActionErrorNotice } from '@/app/components/action-error-notice';
 import { SubmitButton } from '@/app/components/submit-button';
+import { getABTestVariantLabel, useABTest } from '@/lib/ab-testing';
 import { initialActionState } from '@/lib/action-types';
 import { adSlotEventParams, GA_EVENTS, trackEvent } from '@/lib/analytics';
 import type { AdSlot } from '@/lib/types';
@@ -12,13 +13,21 @@ import { bookPlacementAction } from '../actions/book-placement';
 type PlacementRequestFormProps = {
   adSlot: AdSlot;
   companyName: string;
+  initialCtaVariant: string;
   onBooked: () => void;
 };
 
-export function PlacementRequestForm({ adSlot, companyName, onBooked }: PlacementRequestFormProps) {
+export function PlacementRequestForm({
+  adSlot,
+  companyName,
+  initialCtaVariant,
+  onBooked,
+}: PlacementRequestFormProps) {
   const [state, formAction] = useActionState(bookPlacementAction, initialActionState);
   const handledSuccessRef = useRef(false);
   const adSlotId = adSlot.id;
+  const ctaVariant = useABTest('cta-button-text', initialCtaVariant);
+  const ctaLabel = getABTestVariantLabel('cta-button-text', ctaVariant) ?? 'Book This Placement';
 
   useEffect(() => {
     if (state.success && !handledSuccessRef.current) {
@@ -26,8 +35,12 @@ export function PlacementRequestForm({ adSlot, companyName, onBooked }: Placemen
       trackEvent(GA_EVENTS.PLACEMENT_REQUEST_SUCCESS, {
         ...adSlotEventParams(adSlot),
         conversion_type: 'macro',
+        cta_variant: ctaVariant,
       });
-      trackEvent(GA_EVENTS.PLACEMENT_SUCCESS, { ad_slot_id: adSlotId });
+      trackEvent(GA_EVENTS.PLACEMENT_SUCCESS, {
+        ad_slot_id: adSlotId,
+        cta_variant: ctaVariant,
+      });
       onBooked();
       return;
     }
@@ -35,14 +48,18 @@ export function PlacementRequestForm({ adSlot, companyName, onBooked }: Placemen
     if (!state.success) {
       handledSuccessRef.current = false;
     }
-  }, [adSlot, adSlotId, onBooked, state.success]);
+  }, [adSlot, adSlotId, ctaVariant, onBooked, state.success]);
 
   function handleSubmit(): void {
     trackEvent(GA_EVENTS.PLACEMENT_REQUEST_SUBMIT, {
       ...adSlotEventParams(adSlot),
       conversion_type: 'macro',
+      cta_variant: ctaVariant,
     });
-    trackEvent(GA_EVENTS.PLACEMENT_REQUEST, { ad_slot_id: adSlotId });
+    trackEvent(GA_EVENTS.PLACEMENT_REQUEST, {
+      ad_slot_id: adSlotId,
+      cta_variant: ctaVariant,
+    });
   }
 
   return (
@@ -75,7 +92,7 @@ export function PlacementRequestForm({ adSlot, companyName, onBooked }: Placemen
       </div>
 
       <SubmitButton className="w-full py-3" pendingText="Booking...">
-        Book This Placement
+        {ctaLabel}
       </SubmitButton>
     </form>
   );
