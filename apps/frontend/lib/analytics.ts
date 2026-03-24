@@ -1,14 +1,19 @@
-export type AnalyticsEventParams = Record<
-  string,
-  string | number | boolean | undefined
->;
+type AnalyticsEventValue = string | number | boolean | undefined;
+
+export type AnalyticsEventParams = Record<string, AnalyticsEventValue>;
+
+type GtagEventParams = Record<string, AnalyticsEventValue | (() => void)> & {
+  event_callback?: () => void;
+  event_timeout?: number;
+  transport_type?: 'beacon';
+};
 
 declare global {
   interface Window {
     gtag?: (
       command: 'event',
       eventName: string,
-      params?: AnalyticsEventParams
+      params?: GtagEventParams
     ) => void;
   }
 }
@@ -32,5 +37,42 @@ export function trackEvent(
     return;
   }
 
-  window.gtag('event', eventName, params);
+  window.gtag('event', eventName, {
+    ...params,
+    transport_type: 'beacon',
+  });
+}
+
+export async function trackEventAndWait(
+  eventName: string,
+  params?: AnalyticsEventParams,
+  timeout = 300
+): Promise<void> {
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function') {
+    return;
+  }
+
+  const gtag = window.gtag;
+
+  await new Promise<void>((resolve) => {
+    let settled = false;
+
+    const finish = () => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      resolve();
+    };
+
+    gtag('event', eventName, {
+      ...params,
+      event_callback: finish,
+      event_timeout: timeout,
+      transport_type: 'beacon',
+    });
+
+    window.setTimeout(finish, timeout);
+  });
 }
