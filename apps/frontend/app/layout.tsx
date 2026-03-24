@@ -4,21 +4,32 @@ import './globals.css';
 import { AnalyticsProvider } from './components/analytics-provider';
 import { Nav } from './components/nav';
 
-// TODO: Add ErrorBoundary wrapper for graceful error handling
-// TODO: Consider adding a loading.tsx for Suspense boundaries
-// TODO: Add Open Graph metadata for social media sharing
-// TODO: Add Twitter Card metadata
-// TODO: Consider adding favicon and app icons
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 export const metadata: Metadata = {
-  title: 'Anvara Marketplace',
+  title: {
+    default: 'Anvara Marketplace',
+    template: '%s | Anvara',
+  },
   description: 'Sponsorship marketplace connecting sponsors with publishers',
-  // Missing: openGraph, twitter, icons, viewport, etc.
+  icons: {
+    icon: '/icon.svg',
+  },
+  openGraph: {
+    title: 'Anvara Marketplace',
+    description: 'Sponsorship marketplace connecting sponsors with publishers',
+    url: siteUrl,
+    siteName: 'Anvara',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Anvara Marketplace',
+    description: 'Sponsorship marketplace connecting sponsors with publishers',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  // HINT: If using React Query, you would wrap children with QueryClientProvider here
-  // See: https://tanstack.com/query/latest/docs/framework/react/guides/advanced-ssr
   return (
     <html lang="en">
       <body className="min-h-screen antialiased">
