@@ -8,8 +8,8 @@
 - [x] Split marketplace list UI into smaller components if needed (`ad-slot-grid`, `ad-slot-card`, tracked link leaf).
 - [x] Move marketplace detail reads out of client `useEffect` and into `apps/frontend/app/marketplace/[id]/data.ts`.
 - [x] Update `apps/frontend/app/marketplace/[id]/page.tsx` to fetch slot, session, and role data on the server.
-- [ ] Split `apps/frontend/app/marketplace/[id]/components/ad-slot-detail.tsx` into smaller UI and interaction components.
-- [ ] Convert booking to a server action in `apps/frontend/app/marketplace/[id]/actions/`.
+- [x] Split `apps/frontend/app/marketplace/[id]/components/ad-slot-detail.tsx` into smaller UI and interaction components.
+- [x] Convert booking to a server action in `apps/frontend/app/marketplace/[id]/actions/`.
 - [ ] Convert unbooking/reset to a server action in `apps/frontend/app/marketplace/[id]/actions/`.
 - [ ] Keep analytics in small client boundaries only; avoid pushing GA runtime logic into server actions.
 - [ ] Tighten analytics typing with an event-to-params map.
