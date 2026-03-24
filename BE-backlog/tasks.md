@@ -85,39 +85,39 @@
 
 ### Phase 2: Sponsor Server Actions + Forms
 
-- [ ] **5.2.1** Create `dashboard/sponsor/actions/create-campaign.ts` — `'use server'`, POST `/api/campaigns`, `revalidatePath`
-- [ ] **5.2.2** Create `dashboard/sponsor/actions/update-campaign.ts` — PUT `/api/campaigns/:id`
-- [ ] **5.2.3** Create `dashboard/sponsor/actions/delete-campaign.ts` — DELETE `/api/campaigns/:id`
-- [ ] **5.2.4** Create `dashboard/sponsor/components/campaign-form.tsx` — `'use client'` form with `useActionState` (create + edit modes)
-- [ ] **5.2.5** Create `dashboard/sponsor/components/create-campaign-button.tsx` — button + modal
-- [ ] **5.2.6** Update `dashboard/sponsor/components/campaign-card.tsx` — add Edit/Delete buttons
-- [ ] **5.2.7** Update `dashboard/sponsor/page.tsx` — add `CreateCampaignButton` in header
+- [x] **5.2.1** Create `dashboard/sponsor/actions/create-campaign.ts` — `'use server'`, POST `/api/campaigns`, `revalidatePath`
+- [x] **5.2.2** Create `dashboard/sponsor/actions/update-campaign.ts` — PUT `/api/campaigns/:id`
+- [x] **5.2.3** Create `dashboard/sponsor/actions/delete-campaign.ts` — DELETE `/api/campaigns/:id`
+- [x] **5.2.4** Create `dashboard/sponsor/components/campaign-form.tsx` — `'use client'` form with `useActionState` (create + edit modes)
+- [x] **5.2.5** Create `dashboard/sponsor/components/create-campaign-button.tsx` — button + modal
+- [x] **5.2.6** Update `dashboard/sponsor/components/campaign-card.tsx` — add Edit/Delete buttons
+- [x] **5.2.7** Update `dashboard/sponsor/page.tsx` — add `CreateCampaignButton` in header
 
 ### Phase 3: Publisher Server Actions + Forms
 
-- [ ] **5.3.1** Create `dashboard/publisher/actions/create-ad-slot.ts` — `'use server'`, POST `/api/ad-slots`, `revalidatePath`
-- [ ] **5.3.2** Create `dashboard/publisher/actions/update-ad-slot.ts` — PUT `/api/ad-slots/:id`
-- [ ] **5.3.3** Create `dashboard/publisher/actions/delete-ad-slot.ts` — DELETE `/api/ad-slots/:id`
-- [ ] **5.3.4** Create `dashboard/publisher/components/ad-slot-form.tsx` — `'use client'` form with `useActionState` (create + edit modes)
-- [ ] **5.3.5** Create `dashboard/publisher/components/create-ad-slot-button.tsx` — button + modal
-- [ ] **5.3.6** Update `dashboard/publisher/components/ad-slot-card.tsx` — add Edit/Delete buttons
-- [ ] **5.3.7** Update `dashboard/publisher/page.tsx` — add `CreateAdSlotButton` in header
+- [x] **5.3.1** Create `dashboard/publisher/actions/create-ad-slot.ts` — `'use server'`, POST `/api/ad-slots`, `revalidatePath`
+- [x] **5.3.2** Create `dashboard/publisher/actions/update-ad-slot.ts` — PUT `/api/ad-slots/:id`
+- [x] **5.3.3** Create `dashboard/publisher/actions/delete-ad-slot.ts` — DELETE `/api/ad-slots/:id`
+- [x] **5.3.4** Create `dashboard/publisher/components/ad-slot-form.tsx` — `'use client'` form with `useActionState` (create + edit modes)
+- [x] **5.3.5** Create `dashboard/publisher/components/create-ad-slot-button.tsx` — button + modal
+- [x] **5.3.6** Update `dashboard/publisher/components/ad-slot-card.tsx` — add Edit/Delete buttons
+- [x] **5.3.7** Update `dashboard/publisher/page.tsx` — add `CreateAdSlotButton` in header
 
 ### Verification — Challenge 05
 
-- [ ] Sponsor: create campaign → appears in list
-- [ ] Sponsor: edit campaign → updated data shown
-- [ ] Sponsor: delete campaign → removed from list
-- [ ] Publisher: create ad slot → appears in list
-- [ ] Publisher: edit ad slot → updated data shown
-- [ ] Publisher: delete ad slot → removed from list
-- [ ] Empty form submission shows validation errors
-- [ ] Submit buttons show "Saving..." / "Deleting..." during operations
-- [ ] `revalidatePath` refreshes data (no manual reload needed)
-- [ ] Backend 400/403 errors display user-friendly messages
-- [ ] `pnpm --filter @anvara/frontend typecheck` passes
-- [ ] `pnpm --filter @anvara/frontend lint` passes
-- [ ] No console errors
-- [ ] Prisma Studio reflects all CRUD operations
+- [x] Sponsor: create campaign → appears in list
+- [x] Sponsor: edit campaign → updated data shown
+- [x] Sponsor: delete campaign → removed from list
+- [x] Publisher: create ad slot → appears in list
+- [x] Publisher: edit ad slot → updated data shown
+- [x] Publisher: delete ad slot → removed from list
+- [x] Empty form submission shows validation errors
+- [x] Submit buttons show "Saving..." / "Deleting..." during operations
+- [x] `revalidatePath` refreshes data (no manual reload needed)
+- [x] Backend 400/403 errors display user-friendly messages
+- [x] `pnpm --filter @anvara/frontend typecheck` passes
+- [x] `pnpm --filter @anvara/frontend lint` passes
+- [x] No console errors
+- [x] Prisma Studio reflects all CRUD operations
 
 All paths relative to `apps/frontend/`.

@@ -22,6 +22,17 @@ export async function updateCampaignAction(
   const cpcRate = formData.get('cpcRate') as string;
   const status = formData.get('status') as string;
 
+  const fieldValues = {
+    name: name ?? '',
+    description: description ?? '',
+    budget: budget ?? '',
+    startDate: startDate ?? '',
+    endDate: endDate ?? '',
+    cpmRate: cpmRate ?? '',
+    cpcRate: cpcRate ?? '',
+    status: status ?? '',
+  };
+
   const fieldErrors: Record<string, string[]> = {};
   if (!name?.trim()) fieldErrors.name = ['Name is required'];
   if (!budget || Number(budget) <= 0) fieldErrors.budget = ['Budget must be a positive number'];
@@ -34,7 +45,7 @@ export async function updateCampaignAction(
   if (cpcRate && Number(cpcRate) <= 0) fieldErrors.cpcRate = ['CPC rate must be positive'];
 
   if (Object.keys(fieldErrors).length > 0) {
-    return { success: false, fieldErrors };
+    return { success: false, fieldErrors, fieldValues };
   }
 
   const data: Record<string, unknown> = {
@@ -60,6 +71,7 @@ export async function updateCampaignAction(
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update campaign',
+      fieldValues,
     };
   }
 

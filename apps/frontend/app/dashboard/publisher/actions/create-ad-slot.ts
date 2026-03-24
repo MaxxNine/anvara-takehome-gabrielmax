@@ -20,6 +20,15 @@ export async function createAdSlotAction(
   const width = formData.get('width') as string;
   const height = formData.get('height') as string;
 
+  const fieldValues = {
+    name: name ?? '',
+    description: description ?? '',
+    type: type ?? '',
+    basePrice: basePrice ?? '',
+    width: width ?? '',
+    height: height ?? '',
+  };
+
   const fieldErrors: Record<string, string[]> = {};
   if (!name?.trim()) fieldErrors.name = ['Name is required'];
   if (!type || !VALID_AD_SLOT_TYPES.includes(type as AdSlotType)) {
@@ -36,7 +45,7 @@ export async function createAdSlotAction(
   }
 
   if (Object.keys(fieldErrors).length > 0) {
-    return { success: false, fieldErrors };
+    return { success: false, fieldErrors, fieldValues };
   }
 
   const data: Record<string, unknown> = {
@@ -60,6 +69,7 @@ export async function createAdSlotAction(
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to create ad slot',
+      fieldValues,
     };
   }
 

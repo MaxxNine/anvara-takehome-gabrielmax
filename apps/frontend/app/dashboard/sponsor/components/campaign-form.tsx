@@ -55,7 +55,7 @@ export function CampaignForm({ campaign, onClose }: CampaignFormProps) {
           name="name"
           type="text"
           required
-          defaultValue={campaign?.name ?? ''}
+          defaultValue={state.fieldValues?.name ?? campaign?.name ?? ''}
           className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
         />
         {state.fieldErrors?.name?.[0] && (
@@ -71,7 +71,7 @@ export function CampaignForm({ campaign, onClose }: CampaignFormProps) {
           id="description"
           name="description"
           rows={3}
-          defaultValue={campaign?.description ?? ''}
+          defaultValue={state.fieldValues?.description ?? campaign?.description ?? ''}
           className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
         />
       </div>
@@ -87,7 +87,7 @@ export function CampaignForm({ campaign, onClose }: CampaignFormProps) {
           required
           min="0.01"
           step="0.01"
-          defaultValue={campaign ? Number(campaign.budget) : ''}
+          defaultValue={state.fieldValues?.budget ?? (campaign ? Number(campaign.budget) : '')}
           className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
         />
         {state.fieldErrors?.budget?.[0] && (
@@ -105,7 +105,7 @@ export function CampaignForm({ campaign, onClose }: CampaignFormProps) {
             name="startDate"
             type="date"
             required
-            defaultValue={campaign ? toDateInputValue(campaign.startDate) : ''}
+            defaultValue={state.fieldValues?.startDate ?? (campaign ? toDateInputValue(campaign.startDate) : '')}
             className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
           />
           {state.fieldErrors?.startDate?.[0] && (
@@ -121,7 +121,7 @@ export function CampaignForm({ campaign, onClose }: CampaignFormProps) {
             name="endDate"
             type="date"
             required
-            defaultValue={campaign ? toDateInputValue(campaign.endDate) : ''}
+            defaultValue={state.fieldValues?.endDate ?? (campaign ? toDateInputValue(campaign.endDate) : '')}
             className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
           />
           {state.fieldErrors?.endDate?.[0] && (
@@ -142,7 +142,7 @@ export function CampaignForm({ campaign, onClose }: CampaignFormProps) {
             type="number"
             min="0.01"
             step="0.01"
-            defaultValue={campaign?.cpmRate != null ? Number(campaign.cpmRate) : ''}
+            defaultValue={state.fieldValues?.cpmRate ?? (campaign?.cpmRate != null ? Number(campaign.cpmRate) : '')}
             className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
           />
           {state.fieldErrors?.cpmRate?.[0] && (
@@ -160,7 +160,7 @@ export function CampaignForm({ campaign, onClose }: CampaignFormProps) {
             type="number"
             min="0.01"
             step="0.01"
-            defaultValue={campaign?.cpcRate != null ? Number(campaign.cpcRate) : ''}
+            defaultValue={state.fieldValues?.cpcRate ?? (campaign?.cpcRate != null ? Number(campaign.cpcRate) : '')}
             className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
           />
           {state.fieldErrors?.cpcRate?.[0] && (
@@ -177,7 +177,7 @@ export function CampaignForm({ campaign, onClose }: CampaignFormProps) {
           <select
             id="status"
             name="status"
-            defaultValue={campaign.status}
+            defaultValue={state.fieldValues?.status ?? campaign.status}
             className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
           >
             {CAMPAIGN_STATUSES.map((s) => (

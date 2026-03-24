@@ -49,7 +49,7 @@ export function AdSlotForm({ adSlot, onClose }: AdSlotFormProps) {
           name="name"
           type="text"
           required
-          defaultValue={adSlot?.name ?? ''}
+          defaultValue={state.fieldValues?.name ?? adSlot?.name ?? ''}
           className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
         />
         {state.fieldErrors?.name?.[0] && (
@@ -65,7 +65,7 @@ export function AdSlotForm({ adSlot, onClose }: AdSlotFormProps) {
           id="description"
           name="description"
           rows={3}
-          defaultValue={adSlot?.description ?? ''}
+          defaultValue={state.fieldValues?.description ?? adSlot?.description ?? ''}
           className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
         />
       </div>
@@ -79,7 +79,7 @@ export function AdSlotForm({ adSlot, onClose }: AdSlotFormProps) {
             id="type"
             name="type"
             required
-            defaultValue={adSlot?.type ?? ''}
+            defaultValue={state.fieldValues?.type ?? adSlot?.type ?? ''}
             className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
           >
             <option value="" disabled>
@@ -106,7 +106,7 @@ export function AdSlotForm({ adSlot, onClose }: AdSlotFormProps) {
             required
             min="0.01"
             step="0.01"
-            defaultValue={adSlot ? Number(adSlot.basePrice) : ''}
+            defaultValue={state.fieldValues?.basePrice ?? (adSlot ? Number(adSlot.basePrice) : '')}
             className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
           />
           {state.fieldErrors?.basePrice?.[0] && (
@@ -127,7 +127,7 @@ export function AdSlotForm({ adSlot, onClose }: AdSlotFormProps) {
             type="number"
             min="1"
             step="1"
-            defaultValue={adSlot?.width ?? ''}
+            defaultValue={state.fieldValues?.width ?? adSlot?.width ?? ''}
             className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
           />
           {state.fieldErrors?.width?.[0] && (
@@ -145,7 +145,7 @@ export function AdSlotForm({ adSlot, onClose }: AdSlotFormProps) {
             type="number"
             min="1"
             step="1"
-            defaultValue={adSlot?.height ?? ''}
+            defaultValue={state.fieldValues?.height ?? adSlot?.height ?? ''}
             className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
           />
           {state.fieldErrors?.height?.[0] && (
