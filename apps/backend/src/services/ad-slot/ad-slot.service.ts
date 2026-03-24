@@ -1,9 +1,19 @@
-import { AdSlotType, prisma } from '../db.js';
-import type { AdSlotListFilters, AdSlotTypeValue, CreateAdSlotInput } from '../types/index.js';
+import { prisma } from '../../db.js';
+import type {
+  AdSlotListFilters,
+  CreateAdSlotInput,
+  UpdateAdSlotInput,
+} from '../../types/index.js';
 
-export function isAdSlotType(value: unknown): value is AdSlotTypeValue {
-  return typeof value === 'string' && Object.values(AdSlotType).includes(value as AdSlotTypeValue);
-}
+export {
+  buildCreateAdSlotInput,
+  buildUpdateAdSlotInput,
+  isAdSlotType,
+} from './ad-slot.helpers.js';
+
+const adSlotSummaryInclude = {
+  publisher: { select: { id: true, name: true } },
+};
 
 export async function listAdSlots(filters: AdSlotListFilters) {
   return prisma.adSlot.findMany({
@@ -37,9 +47,21 @@ export async function getAdSlotById(id: string) {
 export async function createAdSlot(data: CreateAdSlotInput) {
   return prisma.adSlot.create({
     data,
-    include: {
-      publisher: { select: { id: true, name: true } },
-    },
+    include: adSlotSummaryInclude,
+  });
+}
+
+export async function updateAdSlot(id: string, data: UpdateAdSlotInput) {
+  return prisma.adSlot.update({
+    where: { id },
+    data,
+    include: adSlotSummaryInclude,
+  });
+}
+
+export async function deleteAdSlot(id: string) {
+  await prisma.adSlot.delete({
+    where: { id },
   });
 }
 
@@ -47,9 +69,7 @@ export async function bookAdSlot(id: string) {
   return prisma.adSlot.update({
     where: { id },
     data: { isAvailable: false },
-    include: {
-      publisher: { select: { id: true, name: true } },
-    },
+    include: adSlotSummaryInclude,
   });
 }
 
@@ -57,8 +77,6 @@ export async function unbookAdSlot(id: string) {
   return prisma.adSlot.update({
     where: { id },
     data: { isAvailable: true },
-    include: {
-      publisher: { select: { id: true, name: true } },
-    },
+    include: adSlotSummaryInclude,
   });
 }

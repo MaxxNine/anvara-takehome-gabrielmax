@@ -17,3 +17,12 @@ export interface CreateAdSlotInput {
   width?: number;
   height?: number;
 }
+
+export interface UpdateAdSlotInput {
+  name?: string;
+  description?: string | null;
+  type?: AdSlotTypeValue;
+  basePrice?: number;
+  width?: number | null;
+  height?: number | null;
+}
