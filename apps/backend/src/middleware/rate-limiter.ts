@@ -6,6 +6,8 @@ import rateLimit, {
 } from 'express-rate-limit';
 import Redis from 'ioredis';
 import { RedisStore, type RedisReply } from 'rate-limit-redis';
+import { resolveRequestSession } from './auth.js';
+import { resolveRateLimitKey } from './rate-limit-key.js';
 
 const WINDOW_MS = 15 * 60 * 1000;
 const RATE_LIMIT_RESPONSE = { error: 'Too many requests, please try again later' };
@@ -74,6 +76,7 @@ function createLimiter(limit: number, store: Store) {
   return rateLimit({
     windowMs: WINDOW_MS,
     limit,
+    keyGenerator: (request) => resolveRateLimitKey(request, resolveRequestSession),
     legacyHeaders: false,
     message: RATE_LIMIT_RESPONSE,
     passOnStoreError: true,
@@ -88,4 +91,4 @@ const globalStore = createStore(redisClient, 'anvara:rate-limit:global:');
 const authStore = createStore(redisClient, 'anvara:rate-limit:auth:');
 
 export const globalLimiter = createLimiter(100, globalStore);
-export const authLimiter = createLimiter(50, authStore);
+export const authLimiter = createLimiter(10, authStore);

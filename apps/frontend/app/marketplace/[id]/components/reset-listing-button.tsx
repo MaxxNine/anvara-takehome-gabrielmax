@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 
-import { initialActionState } from '@/lib/action-types';
+import { type ActionState, initialActionState } from '@/lib/action-types';
 import { resetListingAction } from '../actions/reset-listing';
 
 type ResetListingButtonProps = {
@@ -11,7 +11,7 @@ type ResetListingButtonProps = {
   className: string;
   label: string;
   pendingLabel: string;
-  onErrorChange: (message: string | null) => void;
+  onErrorChange: (state: ActionState | null) => void;
   onResetSuccess: () => void;
 };
 
@@ -56,9 +56,25 @@ export function ResetListingButton({
 
     if (!state.success) {
       handledSuccessRef.current = false;
-      onErrorChange(state.error ?? null);
+      onErrorChange(
+        state.error
+          ? {
+              success: false,
+              error: state.error,
+              errorKind: state.errorKind,
+              retryAfterSeconds: state.retryAfterSeconds,
+            }
+          : null
+      );
     }
-  }, [onErrorChange, onResetSuccess, state.error, state.success]);
+  }, [
+    onErrorChange,
+    onResetSuccess,
+    state.error,
+    state.errorKind,
+    state.retryAfterSeconds,
+    state.success,
+  ]);
 
   return (
     <form action={formAction} className="inline">

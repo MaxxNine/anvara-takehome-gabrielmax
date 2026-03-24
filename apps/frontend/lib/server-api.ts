@@ -11,7 +11,8 @@ const SERVER_API_URL =
 export class ApiError extends Error {
   constructor(
     message: string,
-    public readonly status: number
+    public readonly status: number,
+    public readonly retryAfterSeconds?: number
   ) {
     super(message);
     this.name = 'ApiError';
@@ -34,6 +35,8 @@ export class ApiError extends Error {
   }
 }
 
+const DIRECTLY_FORWARDED_HEADER_NAMES = ['cookie', 'authorization', 'x-real-ip'] as const;
+
 function buildServerApiHeaders(
   requestHeaders?: ForwardedRequestHeaders,
   extraHeaders?: HeadersInit
@@ -45,15 +48,21 @@ function buildServerApiHeaders(
   }
 
   const incomingHeaders = new Headers(requestHeaders);
-  const cookie = incomingHeaders.get('cookie');
-  const authorization = incomingHeaders.get('authorization');
+  for (const headerName of DIRECTLY_FORWARDED_HEADER_NAMES) {
+    const headerValue = incomingHeaders.get(headerName);
 
-  if (cookie && !headers.has('cookie')) {
-    headers.set('cookie', cookie);
+    if (headerValue && !headers.has(headerName)) {
+      headers.set(headerName, headerValue);
+    }
   }
 
-  if (authorization && !headers.has('authorization')) {
-    headers.set('authorization', authorization);
+  const forwardedFor = incomingHeaders.get('x-forwarded-for');
+  const realIp = incomingHeaders.get('x-real-ip');
+
+  if (forwardedFor && !headers.has('x-forwarded-for')) {
+    headers.set('x-forwarded-for', forwardedFor);
+  } else if (realIp && !headers.has('x-forwarded-for')) {
+    headers.set('x-forwarded-for', realIp);
   }
 
   return headers;
@@ -71,13 +80,16 @@ export async function serverApi<T>(
 
   if (!response.ok) {
     let message = `API request failed with status ${response.status}`;
+    const retryAfterHeader = response.headers.get('retry-after');
+    const retryAfterSeconds = retryAfterHeader ? Number(retryAfterHeader) : undefined;
+
     try {
       const body = await response.json();
       if (body.error) message = body.error;
     } catch {
       // Response body isn't JSON — use the default message
     }
-    throw new ApiError(message, response.status);
+    throw new ApiError(message, response.status, retryAfterSeconds);
   }
 
   if (response.status === 204) return undefined as T;

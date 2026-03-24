@@ -1,4 +1,5 @@
 import type { Request } from 'express';
+import type { auth } from '../auth.js';
 
 export type AuthUserRole = 'SPONSOR' | 'PUBLISHER';
 
@@ -34,6 +35,9 @@ export type AuthUser =
   | (BaseAuthUser & Omit<SponsorRoleAssignment, 'name'>)
   | (BaseAuthUser & Omit<PublisherRoleAssignment, 'name'>);
 
+export type AuthSession = Awaited<ReturnType<typeof auth.api.getSession>>;
+
 export interface AuthRequest extends Request {
+  authSession?: AuthSession | null;
   user?: AuthUser;
 }

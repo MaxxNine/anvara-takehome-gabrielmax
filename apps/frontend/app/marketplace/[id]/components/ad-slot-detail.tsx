@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { ActionErrorNotice } from '@/app/components/action-error-notice';
 import { GA_EVENTS, trackEvent } from '@/lib/analytics';
+import type { ActionState } from '@/lib/action-types';
 import type { AdSlot, RoleInfo, SessionUser } from '@/lib/types';
 import { AdSlotOverview } from './ad-slot-overview';
 import { AdSlotStatusBar } from './ad-slot-status-bar';
@@ -38,7 +40,7 @@ type AdSlotDetailProps = {
 export function AdSlotDetail({ adSlot, roleInfo, user }: AdSlotDetailProps) {
   const [currentAdSlot, setCurrentAdSlot] = useState(adSlot);
   const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [resetError, setResetError] = useState<string | null>(null);
+  const [resetError, setResetError] = useState<ActionState | null>(null);
 
   useEffect(() => {
     // Deduplicate the extra development-only remount from React Strict Mode.
@@ -94,7 +96,11 @@ export function AdSlotDetail({ adSlot, roleInfo, user }: AdSlotDetailProps) {
           }
         />
 
-        {resetError ? <p className="mt-3 text-sm text-red-600">{resetError}</p> : null}
+        {resetError ? (
+          <div className="mt-3">
+            <ActionErrorNotice state={resetError} />
+          </div>
+        ) : null}
 
         {currentAdSlot.isAvailable && !bookingSuccess ? (
           <div className="mt-6 border-t border-[--color-border] pt-6">

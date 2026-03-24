@@ -6,10 +6,16 @@ import { z } from 'zod';
 
 import type { ActionState } from '@/lib/action-types';
 import { handleActionError } from '@/lib/action-helpers';
+import { enforceActionRateLimit } from '@/lib/rate-limit/server-action-rate-limit';
 import { serverApi } from '@/lib/server-api';
 import { extractFieldValues, validationError } from '@/lib/schemas/utils';
 
 const FIELD_KEYS = ['adSlotId', 'message'];
+const BOOK_PLACEMENT_RATE_LIMIT = {
+  limit: 10,
+  scope: 'marketplace:book-placement',
+  windowMs: 15 * 60 * 1000,
+} as const;
 
 const bookPlacementSchema = z.object({
   adSlotId: z.string().min(1, 'Ad slot is required'),
@@ -36,6 +42,11 @@ export async function bookPlacementAction(
 
   try {
     const requestHeaders = await headers();
+    await enforceActionRateLimit({
+      ...BOOK_PLACEMENT_RATE_LIMIT,
+      requestHeaders,
+    });
+
     await serverApi(`/api/ad-slots/${adSlotId}/book`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

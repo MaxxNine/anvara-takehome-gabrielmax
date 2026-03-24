@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect } from 'react';
 
+import { ActionErrorNotice } from '@/app/components/action-error-notice';
 import type { Campaign, CampaignStatus } from '@/lib/types';
 import { initialActionState } from '@/lib/action-types';
 import { SubmitButton } from '@/app/components/submit-button';
@@ -38,11 +39,7 @@ export function CampaignForm({ campaign, onClose }: CampaignFormProps) {
 
   return (
     <form action={formAction} className="space-y-4">
-      {state.error && (
-        <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-600">
-          {state.error}
-        </div>
-      )}
+      <ActionErrorNotice state={state} />
 
       {isEdit && <input type="hidden" name="id" value={campaign.id} />}
 

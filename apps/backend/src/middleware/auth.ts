@@ -29,14 +29,26 @@ function buildAuthUser(
   return null;
 }
 
+export async function resolveRequestSession(
+  req: AuthRequest
+): Promise<AuthRequest['authSession']> {
+  if (req.authSession !== undefined) {
+    return req.authSession;
+  }
+
+  req.authSession = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  });
+
+  return req.authSession;
+}
+
 export async function requireAuth(
   req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  const session = await auth.api.getSession({
-    headers: fromNodeHeaders(req.headers),
-  });
+  const session = await resolveRequestSession(req);
 
   if (!session) {
     res.status(401).json({ error: 'Not authenticated' });
