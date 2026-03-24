@@ -2,6 +2,7 @@ import { generateVisitorId } from './assignment';
 
 export const AB_TEST_COOKIE_NAME = 'anvara_ab_tests';
 export const AB_TEST_COOKIE_MAX_AGE = 60 * 60 * 24 * 90;
+export const AB_TEST_REQUEST_HEADER = 'x-anvara-ab-tests';
 
 export type ABTestAssignments = Record<string, string>;
 

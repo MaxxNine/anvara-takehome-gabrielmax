@@ -28,16 +28,16 @@
 
 - [x] Integrate `cta-button-text` into `apps/frontend/app/marketplace/[id]/components/placement-request-form.tsx`.
 - [x] Integrate `home-hero-layout` into the home page through a thin server-first component split.
-- [ ] Keep existing conversion and GA flows working while the experiment layer is added.
+- [x] Keep existing conversion and GA flows working while the experiment layer is added.
 
 ## Phase 5 - Verification
 
-- [ ] Verify the `anvara_ab_tests` cookie is created with `visitorId` and assignments.
-- [ ] Verify variants persist across refreshes for the same visitor.
-- [ ] Verify a new incognito visitor can receive a different variant.
-- [ ] Verify `?ab_force=cta-button-text:B` overrides rendering for QA.
-- [ ] Verify `variant_assigned` is captured in the analytics debug flow.
-- [ ] Verify GA4 user properties include the active A/B assignments.
-- [ ] Verify existing `page_view`, placement, and form tracking still work after the A/B layer is added.
-- [ ] Run `pnpm --filter @anvara/frontend typecheck`.
-- [ ] Run `pnpm --filter @anvara/frontend lint`.
+- [x] Verify the `anvara_ab_tests` cookie is created with `visitorId` and assignments.
+- [x] Verify variants persist across refreshes for the same visitor.
+- [x] Verify a new incognito visitor can receive a different variant.
+- [x] Verify `?ab_force=cta-button-text:B` overrides rendering for QA.
+- [x] Verify `variant_assigned` is captured in the analytics debug flow.
+- [x] Verify GA4 user properties include the active A/B assignments.
+- [x] Verify existing `page_view`, placement, and form tracking still work after the A/B layer is added.
+- [x] Run `pnpm --filter @anvara/frontend typecheck`.
+- [x] Run `pnpm --filter @anvara/frontend lint`.

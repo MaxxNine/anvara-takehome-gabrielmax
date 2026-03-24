@@ -27,6 +27,7 @@ export {
 export {
   AB_TEST_COOKIE_MAX_AGE,
   AB_TEST_COOKIE_NAME,
+  AB_TEST_REQUEST_HEADER,
   createABTestCookieData,
   getOrCreateABTestData,
   parseABTestCookieValue,
@@ -39,4 +40,3 @@ export {
   type ABTestCookieData,
 } from './cookies';
 export { useABTest } from './hooks';
-export { getServerABTestData, getServerABVariant } from './server';

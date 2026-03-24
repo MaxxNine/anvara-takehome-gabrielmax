@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 
 import {
   AB_TEST_COOKIE_NAME,
+  AB_TEST_REQUEST_HEADER,
   type ABTestCookieData,
   assignConfiguredVariant,
   createABTestCookieData,
@@ -15,6 +16,20 @@ import {
 
 function getABTestCookieValue(request: NextRequest): string | undefined {
   return request.cookies.get(AB_TEST_COOKIE_NAME)?.value;
+}
+
+function shouldPersistABTestCookie(request: NextRequest): boolean {
+  const isRscRequest = request.headers.get('rsc') === '1';
+  const isPrefetchRequest =
+    request.headers.has('next-router-prefetch') ||
+    request.headers.get('purpose') === 'prefetch';
+  const fetchDestination = request.headers.get('sec-fetch-dest');
+
+  if (isRscRequest || isPrefetchRequest) {
+    return false;
+  }
+
+  return fetchDestination === null || fetchDestination === 'document';
 }
 
 function upsertRequestCookieHeader(
@@ -34,7 +49,7 @@ function upsertRequestCookieHeader(
 
 type UpdatedABTestCookie = {
   data: ABTestCookieData;
-  setCookieHeader: string;
+  setCookieHeader: string | null;
 };
 
 function getUpdatedABTestCookie(request: NextRequest): UpdatedABTestCookie | null {
@@ -53,15 +68,13 @@ function getUpdatedABTestCookie(request: NextRequest): UpdatedABTestCookie | nul
     hasChanges = true;
   }
 
-  if (!hasChanges) {
-    return null;
-  }
-
   return {
     data: abTestData,
-    setCookieHeader: serializeABTestCookie(abTestData, {
-      secure: request.nextUrl.protocol === 'https:',
-    }),
+    setCookieHeader: hasChanges
+      ? serializeABTestCookie(abTestData, {
+          secure: request.nextUrl.protocol === 'https:',
+        })
+      : null,
   };
 }
 
@@ -70,6 +83,10 @@ export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
 
   if (updatedCookie) {
+    requestHeaders.set(
+      AB_TEST_REQUEST_HEADER,
+      serializeABTestCookieValue(updatedCookie.data)
+    );
     requestHeaders.set(
       'cookie',
       upsertRequestCookieHeader(
@@ -86,7 +103,7 @@ export function middleware(request: NextRequest) {
     },
   });
 
-  if (updatedCookie) {
+  if (updatedCookie?.setCookieHeader && shouldPersistABTestCookie(request)) {
     response.headers.append('Set-Cookie', updatedCookie.setCookieHeader);
   }
 

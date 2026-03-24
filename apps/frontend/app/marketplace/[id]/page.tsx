@@ -1,7 +1,8 @@
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 
-import { getForcedABTestVariant, getServerABVariant } from '@/lib/ab-testing';
+import { getForcedABTestVariant } from '@/lib/ab-testing';
+import { getServerABVariant } from '@/lib/ab-testing/server';
 import { AdSlotDetail } from './components/ad-slot-detail';
 import { getMarketplaceAdSlot, getMarketplaceViewer } from './data';
 

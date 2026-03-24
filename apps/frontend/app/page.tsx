@@ -3,7 +3,8 @@
 // TODO: Add hero section, features, testimonials, etc.
 // HINT: Check out the bonus challenge for marketing landing page!
 
-import { getForcedABTestVariant, getServerABVariant } from '@/lib/ab-testing';
+import { getForcedABTestVariant } from '@/lib/ab-testing';
+import { getServerABVariant } from '@/lib/ab-testing/server';
 import { HomeHero } from './components/home-hero';
 
 type HomePageProps = {
