@@ -18,3 +18,15 @@
 - [x] Re-run browser verification for `cta_click`, `nav_click`, `logout`, `login_success`, `ad_slot_click`, `ad_slot_view`, `placement_request`, and `placement_success` after the refactor.
 - [x] Re-run `pnpm --filter @anvara/frontend typecheck`.
 - [x] Re-run `pnpm --filter @anvara/frontend lint`.
+
+## Rate Limiting Hardening
+
+- [x] Audit all Next server actions and route handlers, and classify which ones require dedicated rate limiting versus relying on the backend API limiter.
+- [x] Preserve the real client identity across `server action -> backend API` calls by forwarding trusted IP headers from `apps/frontend/lib/server-api.ts`.
+- [x] Update the backend rate limiter to use a trusted client key strategy (`userId` when authenticated, forwarded client IP otherwise) instead of only the immediate caller IP.
+- [x] Confirm backend proxy settings and trust boundaries before honoring forwarded IP headers.
+- [x] Add a shared server-only rate limit helper for sensitive Next server actions, with Redis-backed storage and a graceful fallback policy.
+- [x] Apply action-level rate limiting only to sensitive or expensive server actions first (`bookPlacementAction`, `resetListingAction`, and future auth/recovery/email/payment actions as they are introduced).
+- [ ] Normalize `429` handling so server actions and UI surfaces present rate-limit failures consistently.
+- [ ] Add targeted tests or verification scripts for backend limiter behavior and server-action limiter behavior.
+- [ ] Document the rate-limit policy, keys, limits, and fallback behavior for both backend APIs and Next server actions.

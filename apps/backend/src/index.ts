@@ -1,5 +1,6 @@
 import express, { type Application } from 'express';
 import cors from 'cors';
+import { getTrustProxySetting } from './config/trust-proxy.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { authLimiter, globalLimiter } from './middleware/rate-limiter.js';
 import routes from './routes/index.js';
@@ -8,6 +9,7 @@ const app: Application = express();
 const PORT = process.env.BACKEND_PORT || 4291;
 
 // Middleware
+app.set('trust proxy', getTrustProxySetting());
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3847',
