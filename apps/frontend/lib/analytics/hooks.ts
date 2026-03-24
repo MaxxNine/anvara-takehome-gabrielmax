@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import type { FormEventHandler } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 import type { ActionState } from '../action-types';
-import { trackEvent } from './core';
+import { isAnalyticsEnabled, trackEvent, trackEventAndWait } from './core';
 import { GA_EVENTS, type AnalyticsEventMap, type AnalyticsEventName } from './events';
 
 type TrackOnMountOptions = {
@@ -93,9 +94,30 @@ function hasFieldErrors(fieldErrors: ActionState['fieldErrors']): boolean {
   return Boolean(fieldErrors && Object.keys(fieldErrors).length > 0);
 }
 
-export function useTrackActionFormEvents(form: string, state: ActionState): () => void {
+function getSubmitter(nativeEvent: Event): HTMLButtonElement | HTMLInputElement | null {
+  if (typeof SubmitEvent === 'undefined' || !(nativeEvent instanceof SubmitEvent)) {
+    return null;
+  }
+
+  if (nativeEvent.submitter instanceof HTMLButtonElement) {
+    return nativeEvent.submitter;
+  }
+
+  if (nativeEvent.submitter instanceof HTMLInputElement) {
+    return nativeEvent.submitter;
+  }
+
+  return null;
+}
+
+export function useTrackActionFormEvents(
+  form: string,
+  state: ActionState
+): FormEventHandler<HTMLFormElement> {
   const submissionCountRef = useRef(0);
   const handledErrorSubmissionRef = useRef(0);
+  const replayingSubmitRef = useRef(false);
+  const pendingReplayRef = useRef(false);
 
   useEffect(() => {
     if (submissionCountRef.current === 0) {
@@ -121,8 +143,39 @@ export function useTrackActionFormEvents(form: string, state: ActionState): () =
     });
   }, [form, state.error, state.fieldErrors, state.success]);
 
-  return () => {
+  return useCallback<FormEventHandler<HTMLFormElement>>((event) => {
+    if (replayingSubmitRef.current) {
+      replayingSubmitRef.current = false;
+      return;
+    }
+
+    if (pendingReplayRef.current) {
+      event.preventDefault();
+      return;
+    }
+
     submissionCountRef.current += 1;
-    trackEvent(GA_EVENTS.FORM_SUBMIT, { form });
-  };
+
+    if (!isAnalyticsEnabled()) {
+      return;
+    }
+
+    const formElement = event.currentTarget;
+    const submitter = getSubmitter(event.nativeEvent);
+
+    event.preventDefault();
+    pendingReplayRef.current = true;
+
+    void trackEventAndWait(GA_EVENTS.FORM_SUBMIT, { form }).finally(() => {
+      pendingReplayRef.current = false;
+      replayingSubmitRef.current = true;
+
+      if (submitter) {
+        formElement.requestSubmit(submitter);
+        return;
+      }
+
+      formElement.requestSubmit();
+    });
+  }, [form]);
 }
