@@ -5,57 +5,33 @@ import { revalidatePath } from 'next/cache';
 
 import { serverApi } from '@/lib/server-api';
 import type { ActionState } from '@/lib/action-types';
+import { updateCampaignSchema } from '@/lib/schemas/campaign';
+import { extractFieldValues, validationError } from '@/lib/schemas/utils';
+
+const FIELD_KEYS = ['name', 'description', 'budget', 'startDate', 'endDate', 'cpmRate', 'cpcRate', 'status'];
 
 export async function updateCampaignAction(
   _prevState: ActionState,
   formData: FormData
 ): Promise<ActionState> {
-  const id = formData.get('id') as string;
-  if (!id) return { success: false, error: 'Campaign ID is required' };
+  const fieldValues = extractFieldValues(formData, FIELD_KEYS);
+  const raw = Object.fromEntries(formData);
+  const result = updateCampaignSchema.safeParse(raw);
 
-  const name = formData.get('name') as string;
-  const description = formData.get('description') as string;
-  const budget = formData.get('budget') as string;
-  const startDate = formData.get('startDate') as string;
-  const endDate = formData.get('endDate') as string;
-  const cpmRate = formData.get('cpmRate') as string;
-  const cpcRate = formData.get('cpcRate') as string;
-  const status = formData.get('status') as string;
-
-  const fieldValues = {
-    name: name ?? '',
-    description: description ?? '',
-    budget: budget ?? '',
-    startDate: startDate ?? '',
-    endDate: endDate ?? '',
-    cpmRate: cpmRate ?? '',
-    cpcRate: cpcRate ?? '',
-    status: status ?? '',
-  };
-
-  const fieldErrors: Record<string, string[]> = {};
-  if (!name?.trim()) fieldErrors.name = ['Name is required'];
-  if (!budget || Number(budget) <= 0) fieldErrors.budget = ['Budget must be a positive number'];
-  if (!startDate) fieldErrors.startDate = ['Start date is required'];
-  if (!endDate) fieldErrors.endDate = ['End date is required'];
-  if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
-    fieldErrors.endDate = ['End date must be on or after start date'];
+  if (!result.success) {
+    return validationError(result.error.flatten().fieldErrors, fieldValues);
   }
-  if (cpmRate && Number(cpmRate) <= 0) fieldErrors.cpmRate = ['CPM rate must be positive'];
-  if (cpcRate && Number(cpcRate) <= 0) fieldErrors.cpcRate = ['CPC rate must be positive'];
 
-  if (Object.keys(fieldErrors).length > 0) {
-    return { success: false, fieldErrors, fieldValues };
-  }
+  const { id, name, description, budget, startDate, endDate, cpmRate, cpcRate, status } = result.data;
 
   const data: Record<string, unknown> = {
-    name: name.trim(),
-    description: description?.trim() || null,
-    budget: Number(budget),
+    name,
+    description: description || null,
+    budget,
     startDate,
     endDate,
-    cpmRate: cpmRate ? Number(cpmRate) : null,
-    cpcRate: cpcRate ? Number(cpcRate) : null,
+    cpmRate: typeof cpmRate === 'number' ? cpmRate : null,
+    cpcRate: typeof cpcRate === 'number' ? cpcRate : null,
   };
   if (status) data.status = status;
 

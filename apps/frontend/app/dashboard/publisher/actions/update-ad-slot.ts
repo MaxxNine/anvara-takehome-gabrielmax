@@ -5,59 +5,32 @@ import { revalidatePath } from 'next/cache';
 
 import { serverApi } from '@/lib/server-api';
 import type { ActionState } from '@/lib/action-types';
-import type { AdSlotType } from '@/lib/types';
+import { updateAdSlotSchema } from '@/lib/schemas/ad-slot';
+import { extractFieldValues, validationError } from '@/lib/schemas/utils';
 
-const VALID_AD_SLOT_TYPES: AdSlotType[] = ['DISPLAY', 'VIDEO', 'NATIVE', 'NEWSLETTER', 'PODCAST'];
+const FIELD_KEYS = ['name', 'description', 'type', 'basePrice', 'width', 'height'];
 
 export async function updateAdSlotAction(
   _prevState: ActionState,
   formData: FormData
 ): Promise<ActionState> {
-  const id = formData.get('id') as string;
-  if (!id) return { success: false, error: 'Ad slot ID is required' };
+  const fieldValues = extractFieldValues(formData, FIELD_KEYS);
+  const raw = Object.fromEntries(formData);
+  const result = updateAdSlotSchema.safeParse(raw);
 
-  const name = formData.get('name') as string;
-  const description = formData.get('description') as string;
-  const type = formData.get('type') as string;
-  const basePrice = formData.get('basePrice') as string;
-  const width = formData.get('width') as string;
-  const height = formData.get('height') as string;
-
-  const fieldValues = {
-    name: name ?? '',
-    description: description ?? '',
-    type: type ?? '',
-    basePrice: basePrice ?? '',
-    width: width ?? '',
-    height: height ?? '',
-  };
-
-  const fieldErrors: Record<string, string[]> = {};
-  if (!name?.trim()) fieldErrors.name = ['Name is required'];
-  if (!type || !VALID_AD_SLOT_TYPES.includes(type as AdSlotType)) {
-    fieldErrors.type = ['Please select a valid ad slot type'];
-  }
-  if (!basePrice || Number(basePrice) <= 0) {
-    fieldErrors.basePrice = ['Base price must be a positive number'];
-  }
-  if (width && (!Number.isInteger(Number(width)) || Number(width) <= 0)) {
-    fieldErrors.width = ['Width must be a positive integer'];
-  }
-  if (height && (!Number.isInteger(Number(height)) || Number(height) <= 0)) {
-    fieldErrors.height = ['Height must be a positive integer'];
+  if (!result.success) {
+    return validationError(result.error.flatten().fieldErrors, fieldValues);
   }
 
-  if (Object.keys(fieldErrors).length > 0) {
-    return { success: false, fieldErrors, fieldValues };
-  }
+  const { id, name, description, type, basePrice, width, height } = result.data;
 
   const data: Record<string, unknown> = {
-    name: name.trim(),
-    description: description?.trim() || null,
+    name,
+    description: description || null,
     type,
-    basePrice: Number(basePrice),
-    width: width ? Number(width) : null,
-    height: height ? Number(height) : null,
+    basePrice,
+    width: typeof width === 'number' ? width : null,
+    height: typeof height === 'number' ? height : null,
   };
 
   try {
