@@ -1,24 +1,11 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import type { MouseEvent } from 'react';
-import { GA_EVENTS, trackEventAndWait } from '@/lib/analytics';
 import type { AdSlot } from '@/lib/types';
-
-const typeColors: Record<string, string> = {
-  DISPLAY: 'bg-blue-100 text-blue-700',
-  VIDEO: 'bg-red-100 text-red-700',
-  NEWSLETTER: 'bg-purple-100 text-purple-700',
-  PODCAST: 'bg-orange-100 text-orange-700',
-};
+import { AdSlotCard } from './ad-slot-card';
 
 type AdSlotGridProps = {
   adSlots: AdSlot[];
 };
 
 export function AdSlotGrid({ adSlots }: AdSlotGridProps) {
-  const router = useRouter();
-
   if (adSlots.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-[--color-border] p-12 text-center text-[--color-muted]">
@@ -27,93 +14,11 @@ export function AdSlotGrid({ adSlots }: AdSlotGridProps) {
     );
   }
 
-  async function handleAdSlotNavigation(slot: AdSlot): Promise<void> {
-    await trackEventAndWait(
-      GA_EVENTS.AD_SLOT_CLICK,
-      {
-        ad_slot_id: slot.id,
-        ad_slot_type: slot.type,
-        ad_slot_name: slot.name,
-      },
-      500
-    );
-
-    router.push(`/marketplace/${slot.id}`);
-  }
-
-  function prefetchAdSlot(slotId: string): void {
-    router.prefetch(`/marketplace/${slotId}`);
-  }
-
-  function shouldHandleClientNavigation(event: MouseEvent<HTMLAnchorElement>): boolean {
-    return (
-      event.button === 0 &&
-      !event.defaultPrevented &&
-      !event.metaKey &&
-      !event.ctrlKey &&
-      !event.shiftKey &&
-      !event.altKey
-    );
-  }
-
-  async function handleAdSlotClick(
-    event: MouseEvent<HTMLAnchorElement>,
-    slot: AdSlot
-  ): Promise<void> {
-    if (!shouldHandleClientNavigation(event)) {
-      return;
-    }
-
-    event.preventDefault();
-    await handleAdSlotNavigation(slot);
-  }
-
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {adSlots.map((slot) => {
-        const href = `/marketplace/${slot.id}`;
-
-        return (
-          <a
-            key={slot.id}
-            href={href}
-            onClick={(event) => void handleAdSlotClick(event, slot)}
-            onMouseEnter={() => prefetchAdSlot(slot.id)}
-            onFocus={() => prefetchAdSlot(slot.id)}
-            className="block rounded-lg border border-[--color-border] p-4 transition-shadow hover:shadow-md"
-          >
-            <div className="mb-2 flex items-start justify-between">
-              <h3 className="font-semibold">{slot.name}</h3>
-              <span
-                className={`rounded px-2 py-0.5 text-xs ${typeColors[slot.type] || 'bg-gray-100'}`}
-              >
-                {slot.type}
-              </span>
-            </div>
-
-            {slot.publisher && (
-              <p className="mb-2 text-sm text-[--color-muted]">by {slot.publisher.name}</p>
-            )}
-
-            {slot.description && (
-              <p className="mb-3 text-sm text-[--color-muted] line-clamp-2">
-                {slot.description}
-              </p>
-            )}
-
-            <div className="flex items-center justify-between">
-              <span
-                className={`text-sm ${slot.isAvailable ? 'text-green-600' : 'text-[--color-muted]'}`}
-              >
-                {slot.isAvailable ? 'Available' : 'Booked'}
-              </span>
-              <span className="font-semibold text-[--color-primary]">
-                ${Number(slot.basePrice).toLocaleString()}/mo
-              </span>
-            </div>
-          </a>
-        );
-      })}
+      {adSlots.map((slot) => (
+        <AdSlotCard key={slot.id} slot={slot} />
+      ))}
     </div>
   );
 }
