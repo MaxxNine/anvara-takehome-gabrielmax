@@ -3,35 +3,19 @@
 // TODO: Add hero section, features, testimonials, etc.
 // HINT: Check out the bonus challenge for marketing landing page!
 
-import { HomeCtaLink } from './components/home-cta-link';
+import { getForcedABTestVariant } from '@/lib/ab-testing';
+import { getServerABVariant } from '@/lib/ab-testing/server';
+import { HomeHero } from './components/home-hero';
 
-export default function Home() {
-  return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-      <h1 className="mb-4 text-4xl font-bold">Welcome to Anvara</h1>
-      <p className="mb-8 max-w-md text-[--color-muted]">
-        The sponsorship marketplace connecting sponsors with publishers.
-      </p>
+type HomePageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
 
-      <div className="flex gap-4">
-        <HomeCtaLink />
-      </div>
+export default async function Home({ searchParams }: HomePageProps) {
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const heroVariant = await getServerABVariant('home-hero-layout', {
+    forcedVariant: getForcedABTestVariant('home-hero-layout', resolvedSearchParams),
+  });
 
-      <div className="mt-16 grid gap-8 text-left sm:grid-cols-2">
-        <div className="rounded-lg border border-[--color-border] p-6">
-          <h2 className="mb-2 text-lg font-semibold text-[--color-primary]">For Sponsors</h2>
-          <p className="text-sm text-[--color-muted]">
-            Create campaigns, set budgets, and reach your target audience through premium
-            publishers.
-          </p>
-        </div>
-        <div className="rounded-lg border border-[--color-border] p-6">
-          <h2 className="mb-2 text-lg font-semibold text-[--color-secondary]">For Publishers</h2>
-          <p className="text-sm text-[--color-muted]">
-            List your ad slots, set your rates, and connect with sponsors looking for your audience.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+  return <HomeHero variant={heroVariant} />;
 }

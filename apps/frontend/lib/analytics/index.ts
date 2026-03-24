@@ -1,6 +1,7 @@
 export {
   ANALYTICS_DEBUG_EVENT_NAME,
   isAnalyticsEnabled,
+  setAnalyticsUserProperties,
   trackEvent,
   trackEventAndRun,
   trackEventAndWait,

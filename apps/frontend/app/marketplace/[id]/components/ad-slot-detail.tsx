@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { ActionErrorNotice } from '@/app/components/action-error-notice';
+import { getABTestVariantLabel } from '@/lib/ab-testing';
 import { adSlotEventParams, GA_EVENTS, trackEvent } from '@/lib/analytics';
 import type { ActionState } from '@/lib/action-types';
 import type { AdSlot, RoleInfo, SessionUser } from '@/lib/types';
@@ -33,11 +34,12 @@ function shouldTrackAdSlotView(slotId: string): boolean {
 
 type AdSlotDetailProps = {
   adSlot: AdSlot;
+  ctaVariant: string;
   roleInfo: RoleInfo | null;
   user: SessionUser | null;
 };
 
-export function AdSlotDetail({ adSlot, roleInfo, user }: AdSlotDetailProps) {
+export function AdSlotDetail({ adSlot, ctaVariant, roleInfo, user }: AdSlotDetailProps) {
   const [currentAdSlot, setCurrentAdSlot] = useState(adSlot);
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [resetError, setResetError] = useState<ActionState | null>(null);
@@ -68,6 +70,7 @@ export function AdSlotDetail({ adSlot, roleInfo, user }: AdSlotDetailProps) {
   const canRequestPlacement = roleInfo?.role === 'sponsor' && Boolean(roleInfo.sponsorId);
   const canResetListing =
     roleInfo?.role === 'publisher' && roleInfo.publisherId === currentAdSlot.publisherId;
+  const ctaLabel = getABTestVariantLabel('cta-button-text', ctaVariant) ?? 'Book This Placement';
 
   return (
     <div className="space-y-6">
@@ -109,6 +112,7 @@ export function AdSlotDetail({ adSlot, roleInfo, user }: AdSlotDetailProps) {
               <PlacementRequestForm
                 adSlot={currentAdSlot}
                 companyName={companyName}
+                initialCtaVariant={ctaVariant}
                 onBooked={handleBooked}
               />
             ) : (
@@ -118,7 +122,7 @@ export function AdSlotDetail({ adSlot, roleInfo, user }: AdSlotDetailProps) {
                   disabled
                   className="w-full cursor-not-allowed rounded-lg bg-gray-300 px-4 py-3 font-semibold text-gray-500"
                 >
-                  Request This Placement
+                  {ctaLabel}
                 </button>
                 <p className="mt-2 text-center text-sm text-[--color-muted]">
                   {user

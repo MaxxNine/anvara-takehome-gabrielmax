@@ -1,6 +1,7 @@
 import type { AnalyticsEventMap, AnalyticsEventName } from './events';
 
 type AnalyticsEventValue = string | number | boolean | undefined;
+type AnalyticsUserProperties = Record<string, string>;
 
 type AnyAnalyticsEventParams = AnalyticsEventMap[AnalyticsEventName];
 type AnalyticsDebugMode = 'fire_and_forget' | 'wait';
@@ -36,14 +37,16 @@ type GtagEventParams = Record<string, AnalyticsEventValue | (() => void)> & {
   transport_type?: 'beacon';
 };
 
+type GtagFunction = {
+  (command: 'event', eventName: string, params?: GtagEventParams): void;
+  (command: 'set', target: 'user_properties', properties: AnalyticsUserProperties): void;
+};
+
 declare global {
   interface Window {
     __analyticsDebugEvents?: AnalyticsDebugEvent[];
-    gtag?: (
-      command: 'event',
-      eventName: string,
-      params?: GtagEventParams
-    ) => void;
+    __analyticsUserProperties?: AnalyticsUserProperties;
+    gtag?: GtagFunction;
   }
 }
 
@@ -92,6 +95,20 @@ function getGtag() {
 
 export function isAnalyticsEnabled(): boolean {
   return getGtag() !== null;
+}
+
+export function setAnalyticsUserProperties(properties: AnalyticsUserProperties): void {
+  if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+    window.__analyticsUserProperties = { ...properties };
+  }
+
+  const gtag = getGtag();
+
+  if (!gtag) {
+    return;
+  }
+
+  gtag('set', 'user_properties', properties);
 }
 
 function sendEvent(
