@@ -3,9 +3,10 @@
 import { useActionState, useEffect } from 'react';
 
 import { ActionErrorNotice } from '@/app/components/action-error-notice';
-import type { Campaign, CampaignStatus } from '@/lib/types';
+import { useTrackActionFormEvents } from '@/lib/analytics';
 import { initialActionState } from '@/lib/action-types';
 import { SubmitButton } from '@/app/components/submit-button';
+import type { Campaign, CampaignStatus } from '@/lib/types';
 import { createCampaignAction } from '../actions/create-campaign';
 import { updateCampaignAction } from '../actions/update-campaign';
 
@@ -32,13 +33,17 @@ export function CampaignForm({ campaign, onClose }: CampaignFormProps) {
   const isEdit = !!campaign;
   const action = isEdit ? updateCampaignAction : createCampaignAction;
   const [state, formAction] = useActionState(action, initialActionState);
+  const trackSubmit = useTrackActionFormEvents(
+    isEdit ? 'sponsor_campaign_edit' : 'sponsor_campaign_create',
+    state
+  );
 
   useEffect(() => {
     if (state.success) onClose();
   }, [state.success, onClose]);
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} onSubmit={trackSubmit} className="space-y-4">
       <ActionErrorNotice state={state} />
 
       {isEdit && <input type="hidden" name="id" value={campaign.id} />}

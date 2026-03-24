@@ -3,9 +3,10 @@
 import { useActionState, useEffect } from 'react';
 
 import { ActionErrorNotice } from '@/app/components/action-error-notice';
-import type { AdSlot, AdSlotType } from '@/lib/types';
+import { useTrackActionFormEvents } from '@/lib/analytics';
 import { initialActionState } from '@/lib/action-types';
 import { SubmitButton } from '@/app/components/submit-button';
+import type { AdSlot, AdSlotType } from '@/lib/types';
 import { createAdSlotAction } from '../actions/create-ad-slot';
 import { updateAdSlotAction } from '../actions/update-ad-slot';
 
@@ -26,13 +27,17 @@ export function AdSlotForm({ adSlot, onClose }: AdSlotFormProps) {
   const isEdit = !!adSlot;
   const action = isEdit ? updateAdSlotAction : createAdSlotAction;
   const [state, formAction] = useActionState(action, initialActionState);
+  const trackSubmit = useTrackActionFormEvents(
+    isEdit ? 'publisher_ad_slot_edit' : 'publisher_ad_slot_create',
+    state
+  );
 
   useEffect(() => {
     if (state.success) onClose();
   }, [state.success, onClose]);
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} onSubmit={trackSubmit} className="space-y-4">
       <ActionErrorNotice state={state} />
 
       {isEdit && <input type="hidden" name="id" value={adSlot.id} />}

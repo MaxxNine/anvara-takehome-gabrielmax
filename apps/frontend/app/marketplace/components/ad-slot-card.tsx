@@ -1,3 +1,4 @@
+import { adSlotEventParams } from '@/lib/analytics';
 import type { AdSlot } from '@/lib/types';
 import { AdSlotCardLink } from './ad-slot-card-link';
 
@@ -15,9 +16,8 @@ type AdSlotCardProps = {
 export function AdSlotCard({ slot }: AdSlotCardProps) {
   return (
     <AdSlotCardLink
+      eventParams={adSlotEventParams(slot)}
       slotId={slot.id}
-      slotName={slot.name}
-      slotType={slot.type}
       className="block rounded-lg border border-[--color-border] p-4 transition-shadow hover:shadow-md"
     >
       <div className="mb-2 flex items-start justify-between">

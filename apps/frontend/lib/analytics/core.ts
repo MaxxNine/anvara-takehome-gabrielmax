@@ -1,38 +1,7 @@
-import type { AdSlotType } from './types';
+import type { AnalyticsEventMap, AnalyticsEventName } from './events';
 
 type AnalyticsEventValue = string | number | boolean | undefined;
 
-export type AnalyticsEventMap = {
-  ad_slot_click: {
-    ad_slot_id: string;
-    ad_slot_name: string;
-    ad_slot_type: AdSlotType;
-  };
-  ad_slot_view: {
-    ad_slot_id: string;
-    ad_slot_type: AdSlotType;
-    price: number;
-  };
-  cta_click: {
-    label: string;
-    location: string;
-  };
-  login_success: {
-    method: string;
-  };
-  logout: undefined;
-  nav_click: {
-    destination: string;
-  };
-  placement_request: {
-    ad_slot_id: string;
-  };
-  placement_success: {
-    ad_slot_id: string;
-  };
-};
-
-export type AnalyticsEventName = keyof AnalyticsEventMap;
 type AnyAnalyticsEventParams = AnalyticsEventMap[AnalyticsEventName];
 
 type TrackEventArgs<K extends AnalyticsEventName> =
@@ -66,23 +35,16 @@ declare global {
   }
 }
 
-export const GA_EVENTS = {
-  CTA_CLICK: 'cta_click',
-  NAV_CLICK: 'nav_click',
-  LOGIN_SUCCESS: 'login_success',
-  LOGOUT: 'logout',
-  AD_SLOT_CLICK: 'ad_slot_click',
-  AD_SLOT_VIEW: 'ad_slot_view',
-  PLACEMENT_REQUEST: 'placement_request',
-  PLACEMENT_SUCCESS: 'placement_success',
-} as const satisfies Record<string, AnalyticsEventName>;
-
 function getGtag() {
   if (typeof window === 'undefined' || typeof window.gtag !== 'function') {
     return null;
   }
 
   return window.gtag;
+}
+
+export function isAnalyticsEnabled(): boolean {
+  return getGtag() !== null;
 }
 
 function sendEvent(
@@ -162,6 +124,5 @@ export async function trackEventAndRun<K extends AnalyticsEventName>(
   const timeout = args[2] ?? 300;
 
   await sendEventAndWait(eventName, params as AnyAnalyticsEventParams, timeout);
-
   await run();
 }
