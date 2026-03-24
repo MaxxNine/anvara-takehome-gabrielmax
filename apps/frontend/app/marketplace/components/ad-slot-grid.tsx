@@ -1,9 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { MouseEvent } from 'react';
-import { getAdSlots } from '@/lib/api';
 import { GA_EVENTS, trackEventAndWait } from '@/lib/analytics';
 import type { AdSlot } from '@/lib/types';
 
@@ -14,26 +12,12 @@ const typeColors: Record<string, string> = {
   PODCAST: 'bg-orange-100 text-orange-700',
 };
 
-export function AdSlotGrid() {
+type AdSlotGridProps = {
+  adSlots: AdSlot[];
+};
+
+export function AdSlotGrid({ adSlots }: AdSlotGridProps) {
   const router = useRouter();
-  const [adSlots, setAdSlots] = useState<AdSlot[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    getAdSlots()
-      .then(setAdSlots)
-      .catch(() => setError('Failed to load ad slots'))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
-    return <div className="py-12 text-center text-[--color-muted]">Loading marketplace...</div>;
-  }
-
-  if (error) {
-    return <div className="rounded border border-red-200 bg-red-50 p-4 text-red-600">{error}</div>;
-  }
 
   if (adSlots.length === 0) {
     return (
