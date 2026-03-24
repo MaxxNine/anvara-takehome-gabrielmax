@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getAdSlot } from '@/lib/api';
 import { authClient } from '@/auth-client';
+import { GA_EVENTS, trackEvent } from '@/lib/analytics';
 import type { AdSlot, RoleInfo, SessionUser } from '@/lib/types';
 
 const typeColors: Record<string, string> = {
@@ -32,7 +33,14 @@ export function AdSlotDetail({ id }: Props) {
   useEffect(() => {
     // Fetch ad slot
     getAdSlot(id)
-      .then(setAdSlot)
+      .then((slot) => {
+        setAdSlot(slot);
+        trackEvent(GA_EVENTS.AD_SLOT_VIEW, {
+          ad_slot_id: slot.id,
+          ad_slot_type: slot.type,
+          price: Number(slot.basePrice),
+        });
+      })
       .catch(() => setError('Failed to load ad slot details'))
       .finally(() => setLoading(false));
 
@@ -63,6 +71,7 @@ export function AdSlotDetail({ id }: Props) {
   const handleBooking = async () => {
     if (!roleInfo?.sponsorId || !adSlot) return;
 
+    trackEvent(GA_EVENTS.PLACEMENT_REQUEST, { ad_slot_id: adSlot.id });
     setBooking(true);
     setBookingError(null);
 
@@ -84,6 +93,7 @@ export function AdSlotDetail({ id }: Props) {
         throw new Error(data.error || 'Failed to book placement');
       }
 
+      trackEvent(GA_EVENTS.PLACEMENT_SUCCESS, { ad_slot_id: adSlot.id });
       setBookingSuccess(true);
       setAdSlot({ ...adSlot, isAvailable: false });
     } catch (err) {

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { authClient } from '@/auth-client';
+import { GA_EVENTS, trackEvent } from '@/lib/analytics';
 import type { RoleInfo } from '@/lib/types';
 
 type UserRole = 'sponsor' | 'publisher' | null;
@@ -13,6 +14,10 @@ export function Nav() {
   const user = session?.user;
   const [resolvedRole, setResolvedRole] = useState<ResolvedRole>(null);
   const role = user?.id && resolvedRole?.userId === user.id ? resolvedRole.role : null;
+
+  function trackNavClick(destination: string): void {
+    trackEvent(GA_EVENTS.NAV_CLICK, { destination });
+  }
 
   // TODO: Convert to server component and fetch role server-side
   // Fetch user role from backend when user is logged in
@@ -47,13 +52,14 @@ export function Nav() {
   return (
     <header className="border-b border-[--color-border]">
       <nav className="mx-auto flex max-w-6xl items-center justify-between p-4">
-        <Link href="/" className="text-xl font-bold text-[--color-primary]">
+        <Link href="/" onClick={() => trackNavClick('/')} className="text-xl font-bold text-[--color-primary]">
           Anvara
         </Link>
 
         <div className="flex items-center gap-6">
           <Link
             href="/marketplace"
+            onClick={() => trackNavClick('/marketplace')}
             className="text-[--color-muted] hover:text-[--color-foreground]"
           >
             Marketplace
@@ -62,6 +68,7 @@ export function Nav() {
           {user && role === 'sponsor' && (
             <Link
               href="/dashboard/sponsor"
+              onClick={() => trackNavClick('/dashboard/sponsor')}
               className="text-[--color-muted] hover:text-[--color-foreground]"
             >
               My Campaigns
@@ -70,6 +77,7 @@ export function Nav() {
           {user && role === 'publisher' && (
             <Link
               href="/dashboard/publisher"
+              onClick={() => trackNavClick('/dashboard/publisher')}
               className="text-[--color-muted] hover:text-[--color-foreground]"
             >
               My Ad Slots
@@ -85,6 +93,7 @@ export function Nav() {
               </span>
               <button
                 onClick={async () => {
+                  trackEvent(GA_EVENTS.LOGOUT);
                   await authClient.signOut({
                     fetchOptions: {
                       onSuccess: () => {
@@ -101,6 +110,7 @@ export function Nav() {
           ) : (
             <Link
               href="/login"
+              onClick={() => trackNavClick('/login')}
               className="rounded bg-[--color-primary] px-4 py-2 text-sm text-white hover:bg-[--color-primary-hover]"
             >
               Login

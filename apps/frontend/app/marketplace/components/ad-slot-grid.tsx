@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getAdSlots } from '@/lib/api';
+import { GA_EVENTS, trackEvent } from '@/lib/analytics';
 import type { AdSlot } from '@/lib/types';
 
 const typeColors: Record<string, string> = {
@@ -46,6 +47,13 @@ export function AdSlotGrid() {
         <Link
           key={slot.id}
           href={`/marketplace/${slot.id}`}
+          onClick={() =>
+            trackEvent(GA_EVENTS.AD_SLOT_CLICK, {
+              ad_slot_id: slot.id,
+              ad_slot_type: slot.type,
+              ad_slot_name: slot.name,
+            })
+          }
           className="block rounded-lg border border-[--color-border] p-4 transition-shadow hover:shadow-md"
         >
           <div className="mb-2 flex items-start justify-between">
