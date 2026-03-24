@@ -67,12 +67,57 @@
 
 ---
 
-## Challenge 05 — Server Actions (Future)
+## Challenge 05 — Server Actions
 
-- [ ] **5.1** Create `apps/frontend/app/dashboard/sponsor/actions.ts` — campaign mutations
-- [ ] **5.2** Create `apps/frontend/app/dashboard/publisher/actions.ts` — ad-slot mutations
-- [ ] **5.3** Update `server-api.ts` to handle 204 (no body) responses
-- [ ] **5.4** Add update/delete input types (co-locate with their consumers or split by domain, not into a single types file)
-- [ ] **5.5** Build sponsor dashboard forms (create, edit, delete campaigns)
-- [ ] **5.6** Build publisher dashboard forms (create, edit, delete ad-slots)
-- [ ] **5.7** Add `useActionState` + `useFormStatus` for loading/error states
+### Phase 0: Infrastructure
+
+- [x] **5.0.1** Create `lib/action-types.ts` — `ActionState` interface + `initialActionState` constant
+- [x] **5.0.2** Create `app/components/submit-button.tsx` — shared `'use client'` button using `useFormStatus()`
+- [x] **5.0.3** Create `app/components/form-modal.tsx` — `'use client'` dialog wrapper (native `<dialog>`, no deps)
+
+### Phase 1: Publisher Dashboard Migration
+
+- [ ] **5.1.1** Create `dashboard/publisher/data.ts` — server-side fetch with `serverApi` (mirror sponsor `data.ts`)
+- [ ] **5.1.2** Create `dashboard/publisher/loading.tsx` — skeleton UI (mirror sponsor `loading.tsx`)
+- [ ] **5.1.3** Rewrite `dashboard/publisher/components/ad-slot-list.tsx` — remove `'use client'`, useEffect, useState; accept `adSlots` as prop
+- [ ] **5.1.4** Update `dashboard/publisher/page.tsx` — call `data.ts`, pass props to `AdSlotList`
+- [ ] **5.1.5** Remove `'use client'` from `ad-slot-card.tsx`
+
+### Phase 2: Sponsor Server Actions + Forms
+
+- [ ] **5.2.1** Create `dashboard/sponsor/actions/create-campaign.ts` — `'use server'`, POST `/api/campaigns`, `revalidatePath`
+- [ ] **5.2.2** Create `dashboard/sponsor/actions/update-campaign.ts` — PUT `/api/campaigns/:id`
+- [ ] **5.2.3** Create `dashboard/sponsor/actions/delete-campaign.ts` — DELETE `/api/campaigns/:id`
+- [ ] **5.2.4** Create `dashboard/sponsor/components/campaign-form.tsx` — `'use client'` form with `useActionState` (create + edit modes)
+- [ ] **5.2.5** Create `dashboard/sponsor/components/create-campaign-button.tsx` — button + modal
+- [ ] **5.2.6** Update `dashboard/sponsor/components/campaign-card.tsx` — add Edit/Delete buttons
+- [ ] **5.2.7** Update `dashboard/sponsor/page.tsx` — add `CreateCampaignButton` in header
+
+### Phase 3: Publisher Server Actions + Forms
+
+- [ ] **5.3.1** Create `dashboard/publisher/actions/create-ad-slot.ts` — `'use server'`, POST `/api/ad-slots`, `revalidatePath`
+- [ ] **5.3.2** Create `dashboard/publisher/actions/update-ad-slot.ts` — PUT `/api/ad-slots/:id`
+- [ ] **5.3.3** Create `dashboard/publisher/actions/delete-ad-slot.ts` — DELETE `/api/ad-slots/:id`
+- [ ] **5.3.4** Create `dashboard/publisher/components/ad-slot-form.tsx` — `'use client'` form with `useActionState` (create + edit modes)
+- [ ] **5.3.5** Create `dashboard/publisher/components/create-ad-slot-button.tsx` — button + modal
+- [ ] **5.3.6** Update `dashboard/publisher/components/ad-slot-card.tsx` — add Edit/Delete buttons
+- [ ] **5.3.7** Update `dashboard/publisher/page.tsx` — add `CreateAdSlotButton` in header
+
+### Verification — Challenge 05
+
+- [ ] Sponsor: create campaign → appears in list
+- [ ] Sponsor: edit campaign → updated data shown
+- [ ] Sponsor: delete campaign → removed from list
+- [ ] Publisher: create ad slot → appears in list
+- [ ] Publisher: edit ad slot → updated data shown
+- [ ] Publisher: delete ad slot → removed from list
+- [ ] Empty form submission shows validation errors
+- [ ] Submit buttons show "Saving..." / "Deleting..." during operations
+- [ ] `revalidatePath` refreshes data (no manual reload needed)
+- [ ] Backend 400/403 errors display user-friendly messages
+- [ ] `pnpm --filter @anvara/frontend typecheck` passes
+- [ ] `pnpm --filter @anvara/frontend lint` passes
+- [ ] No console errors
+- [ ] Prisma Studio reflects all CRUD operations
+
+All paths relative to `apps/frontend/`.
