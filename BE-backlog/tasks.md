@@ -54,16 +54,16 @@
 
 ### Verification — Challenge 04
 
-- [ ] PUT campaigns updates and returns 200
-- [ ] DELETE campaigns returns 204
-- [ ] PUT ad-slots updates and returns 200
-- [ ] DELETE ad-slots returns 204
-- [ ] POST ad-slots validates basePrice > 0
-- [ ] POST ad-slots uses authenticated publisherId (not body)
-- [ ] Ownership violations return 403
-- [ ] Non-existent resources return 404
-- [ ] Invalid input returns 400
-- [ ] Changes visible in Prisma Studio
+- [x] PUT campaigns updates and returns 200
+- [x] DELETE campaigns returns 204
+- [x] PUT ad-slots updates and returns 200
+- [x] DELETE ad-slots returns 204
+- [x] POST ad-slots validates basePrice > 0
+- [x] POST ad-slots uses authenticated publisherId (not body)
+- [x] Ownership violations return 403
+- [x] Non-existent resources return 404
+- [x] Invalid input returns 400
+- [x] Changes visible in Prisma Studio (verified via direct PostgreSQL persistence in terminal environment)
 
 ---
 
