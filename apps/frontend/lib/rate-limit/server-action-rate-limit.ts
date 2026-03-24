@@ -2,17 +2,11 @@ import 'server-only';
 
 import { auth } from '@/auth';
 import type { ForwardedRequestHeaders } from '@/lib/server-api';
+import { ActionRateLimitError } from './errors';
 import { getRateLimitRedisClient } from './redis';
 
 const DEFAULT_RATE_LIMIT_PREFIX = 'anvara:rate-limit:server-action:';
 const fallbackCounters = new Map<string, { count: number; resetAt: number }>();
-
-export class ActionRateLimitError extends Error {
-  constructor(public readonly retryAfterSeconds: number) {
-    super('Too many requests, please try again later');
-    this.name = 'ActionRateLimitError';
-  }
-}
 
 type EnforceActionRateLimitOptions = {
   limit: number;

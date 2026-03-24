@@ -1,14 +1,13 @@
 import type { Request } from 'express';
 import rateLimit, {
   MemoryStore,
-  ipKeyGenerator,
   type RateLimitExceededEventHandler,
   type Store,
 } from 'express-rate-limit';
 import Redis from 'ioredis';
 import { RedisStore, type RedisReply } from 'rate-limit-redis';
-import type { AuthRequest } from '../types/index.js';
 import { resolveRequestSession } from './auth.js';
+import { resolveRateLimitKey } from './rate-limit-key.js';
 
 const WINDOW_MS = 15 * 60 * 1000;
 const RATE_LIMIT_RESPONSE = { error: 'Too many requests, please try again later' };
@@ -73,40 +72,11 @@ const rateLimitHandler: RateLimitExceededEventHandler = (req, res, _next, option
   res.status(options.statusCode).json(RATE_LIMIT_RESPONSE);
 };
 
-function hasAuthIdentityHint(request: Request): boolean {
-  return Boolean(request.headers.cookie || request.headers.authorization);
-}
-
-function getClientIpKey(request: Request): string {
-  const clientIp = request.ip || request.socket.remoteAddress || 'unknown';
-  return `ip:${ipKeyGenerator(clientIp)}`;
-}
-
-async function resolveRateLimitKey(request: Request): Promise<string> {
-  const authRequest = request as AuthRequest;
-
-  if (authRequest.user?.id) {
-    return `user:${authRequest.user.id}`;
-  }
-
-  if (!hasAuthIdentityHint(request)) {
-    return getClientIpKey(request);
-  }
-
-  const session = await resolveRequestSession(authRequest);
-
-  if (session?.user?.id) {
-    return `user:${session.user.id}`;
-  }
-
-  return getClientIpKey(request);
-}
-
 function createLimiter(limit: number, store: Store) {
   return rateLimit({
     windowMs: WINDOW_MS,
     limit,
-    keyGenerator: resolveRateLimitKey,
+    keyGenerator: (request) => resolveRateLimitKey(request, resolveRequestSession),
     legacyHeaders: false,
     message: RATE_LIMIT_RESPONSE,
     passOnStoreError: true,

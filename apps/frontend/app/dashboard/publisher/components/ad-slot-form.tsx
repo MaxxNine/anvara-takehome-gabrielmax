@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect } from 'react';
 
+import { ActionErrorNotice } from '@/app/components/action-error-notice';
 import type { AdSlot, AdSlotType } from '@/lib/types';
 import { initialActionState } from '@/lib/action-types';
 import { SubmitButton } from '@/app/components/submit-button';
@@ -32,11 +33,7 @@ export function AdSlotForm({ adSlot, onClose }: AdSlotFormProps) {
 
   return (
     <form action={formAction} className="space-y-4">
-      {state.error && (
-        <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-600">
-          {state.error}
-        </div>
-      )}
+      <ActionErrorNotice state={state} />
 
       {isEdit && <input type="hidden" name="id" value={adSlot.id} />}
 

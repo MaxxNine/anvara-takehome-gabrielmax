@@ -11,7 +11,8 @@ const SERVER_API_URL =
 export class ApiError extends Error {
   constructor(
     message: string,
-    public readonly status: number
+    public readonly status: number,
+    public readonly retryAfterSeconds?: number
   ) {
     super(message);
     this.name = 'ApiError';
@@ -79,13 +80,16 @@ export async function serverApi<T>(
 
   if (!response.ok) {
     let message = `API request failed with status ${response.status}`;
+    const retryAfterHeader = response.headers.get('retry-after');
+    const retryAfterSeconds = retryAfterHeader ? Number(retryAfterHeader) : undefined;
+
     try {
       const body = await response.json();
       if (body.error) message = body.error;
     } catch {
       // Response body isn't JSON — use the default message
     }
-    throw new ApiError(message, response.status);
+    throw new ApiError(message, response.status, retryAfterSeconds);
   }
 
   if (response.status === 204) return undefined as T;

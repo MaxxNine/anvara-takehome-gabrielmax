@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef } from 'react';
 
+import { ActionErrorNotice } from '@/app/components/action-error-notice';
 import { SubmitButton } from '@/app/components/submit-button';
 import { initialActionState } from '@/lib/action-types';
 import { GA_EVENTS, trackEvent } from '@/lib/analytics';
@@ -42,11 +43,7 @@ export function PlacementRequestForm({
     <form action={formAction} onSubmit={handleSubmit} className="space-y-4">
       <input type="hidden" name="adSlotId" value={adSlotId} />
 
-      {state.error ? (
-        <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-600">
-          {state.error}
-        </div>
-      ) : null}
+      <ActionErrorNotice state={state} />
 
       <div>
         <label className="mb-1 block text-sm font-medium text-[--color-muted]">Your Company</label>
