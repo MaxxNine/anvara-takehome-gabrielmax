@@ -45,25 +45,25 @@
 
 - [x] **3.1** Create `src/services/campaign.service.ts` — list, getById, create (done); update, delete (pending)
 - [x] **3.2** Create `src/services/ad-slot.service.ts` — list, getById, create, book, unbook (done); update, delete (pending)
-- [ ] **3.3** Add `PUT /api/campaigns/:id` — ownership check + validation + 200
-- [ ] **3.4** Add `DELETE /api/campaigns/:id` — ownership check + 204
-- [ ] **3.5** Add `PUT /api/ad-slots/:id` — ownership check + validation + 200
-- [ ] **3.6** Add `DELETE /api/ad-slots/:id` — ownership check + 204
-- [ ] **3.7** Fix `POST /api/ad-slots` — basePrice > 0, use `req.user.publisherId`
+- [x] **3.3** Add `PUT /api/campaigns/:id` — ownership check + validation + 200
+- [x] **3.4** Add `DELETE /api/campaigns/:id` — ownership check + 204
+- [x] **3.5** Add `PUT /api/ad-slots/:id` — ownership check + validation + 200
+- [x] **3.6** Add `DELETE /api/ad-slots/:id` — ownership check + 204
+- [x] **3.7** Fix `POST /api/ad-slots` — basePrice > 0, use `req.user.publisherId`
 - [x] **3.8** Refactor existing GET/POST handlers to use service layer (done during Challenge 03)
 
 ### Verification — Challenge 04
 
-- [ ] PUT campaigns updates and returns 200
-- [ ] DELETE campaigns returns 204
-- [ ] PUT ad-slots updates and returns 200
-- [ ] DELETE ad-slots returns 204
-- [ ] POST ad-slots validates basePrice > 0
-- [ ] POST ad-slots uses authenticated publisherId (not body)
-- [ ] Ownership violations return 403
-- [ ] Non-existent resources return 404
-- [ ] Invalid input returns 400
-- [ ] Changes visible in Prisma Studio
+- [x] PUT campaigns updates and returns 200
+- [x] DELETE campaigns returns 204
+- [x] PUT ad-slots updates and returns 200
+- [x] DELETE ad-slots returns 204
+- [x] POST ad-slots validates basePrice > 0
+- [x] POST ad-slots uses authenticated publisherId (not body)
+- [x] Ownership violations return 403
+- [x] Non-existent resources return 404
+- [x] Invalid input returns 400
+- [x] Changes visible in Prisma Studio (verified via direct PostgreSQL persistence in terminal environment)
 
 ---
 
