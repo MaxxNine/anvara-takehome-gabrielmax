@@ -1,8 +1,10 @@
 export {
+  ANALYTICS_DEBUG_EVENT_NAME,
   isAnalyticsEnabled,
   trackEvent,
   trackEventAndRun,
   trackEventAndWait,
+  type AnalyticsDebugEvent,
 } from './core';
 export {
   adSlotEventParams,

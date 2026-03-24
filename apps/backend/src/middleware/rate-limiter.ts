@@ -15,6 +15,21 @@ const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
 let hasLoggedRedisError = false;
 
+function isLocalRuntime(): boolean {
+  return process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test';
+}
+
+function resolveLimit(envKey: string, productionDefault: number, localDefault: number): number {
+  const envValue = process.env[envKey];
+  const parsedValue = envValue ? Number.parseInt(envValue, 10) : Number.NaN;
+
+  if (Number.isFinite(parsedValue) && parsedValue > 0) {
+    return parsedValue;
+  }
+
+  return isLocalRuntime() ? localDefault : productionDefault;
+}
+
 function logRedisWarning(): void {
   if (hasLoggedRedisError) {
     return;
@@ -90,5 +105,8 @@ const redisClient = await connectRedis();
 const globalStore = createStore(redisClient, 'anvara:rate-limit:global:');
 const authStore = createStore(redisClient, 'anvara:rate-limit:auth:');
 
-export const globalLimiter = createLimiter(100, globalStore);
-export const authLimiter = createLimiter(10, authStore);
+const GLOBAL_LIMIT = resolveLimit('BACKEND_GLOBAL_RATE_LIMIT', 100, 1_000);
+const AUTH_LIMIT = resolveLimit('BACKEND_AUTH_RATE_LIMIT', 10, 50);
+
+export const globalLimiter = createLimiter(GLOBAL_LIMIT, globalStore);
+export const authLimiter = createLimiter(AUTH_LIMIT, authStore);

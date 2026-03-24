@@ -3,6 +3,17 @@ import type { AnalyticsEventMap, AnalyticsEventName } from './events';
 type AnalyticsEventValue = string | number | boolean | undefined;
 
 type AnyAnalyticsEventParams = AnalyticsEventMap[AnalyticsEventName];
+type AnalyticsDebugMode = 'fire_and_forget' | 'wait';
+
+export type AnalyticsDebugEvent = {
+  eventName: AnalyticsEventName;
+  mode: AnalyticsDebugMode;
+  params?: AnyAnalyticsEventParams;
+  timestamp: number;
+};
+
+export const ANALYTICS_DEBUG_EVENT_NAME = 'anvara:analytics-debug';
+const MAX_DEBUG_EVENTS = 200;
 
 type TrackEventArgs<K extends AnalyticsEventName> =
   undefined extends AnalyticsEventMap[K]
@@ -27,12 +38,48 @@ type GtagEventParams = Record<string, AnalyticsEventValue | (() => void)> & {
 
 declare global {
   interface Window {
+    __analyticsDebugEvents?: AnalyticsDebugEvent[];
     gtag?: (
       command: 'event',
       eventName: string,
       params?: GtagEventParams
     ) => void;
   }
+}
+
+function isAnalyticsDebugEnabled(): boolean {
+  return typeof window !== 'undefined' && process.env.NODE_ENV !== 'production';
+}
+
+function recordDebugEvent(
+  eventName: AnalyticsEventName,
+  mode: AnalyticsDebugMode,
+  params?: AnyAnalyticsEventParams
+): void {
+  if (!isAnalyticsDebugEnabled()) {
+    return;
+  }
+
+  const event: AnalyticsDebugEvent = {
+    eventName,
+    mode,
+    params,
+    timestamp: Date.now(),
+  };
+
+  const events = window.__analyticsDebugEvents ?? [];
+
+  if (!window.__analyticsDebugEvents) {
+    window.__analyticsDebugEvents = events;
+  }
+
+  events.push(event);
+
+  if (events.length > MAX_DEBUG_EVENTS) {
+    events.splice(0, events.length - MAX_DEBUG_EVENTS);
+  }
+
+  window.dispatchEvent(new CustomEvent(ANALYTICS_DEBUG_EVENT_NAME, { detail: event }));
 }
 
 function getGtag() {
@@ -51,6 +98,8 @@ function sendEvent(
   eventName: AnalyticsEventName,
   params?: AnyAnalyticsEventParams
 ): void {
+  recordDebugEvent(eventName, 'fire_and_forget', params);
+
   const gtag = getGtag();
 
   if (!gtag) {
@@ -68,6 +117,8 @@ async function sendEventAndWait(
   params?: AnyAnalyticsEventParams,
   timeout = 300
 ): Promise<void> {
+  recordDebugEvent(eventName, 'wait', params);
+
   const gtag = getGtag();
 
   if (!gtag) {

@@ -14,8 +14,8 @@
 - [x] Track `placement_request_submit` and `placement_request_success` with `conversion_type: 'macro'`.
 - [x] Track `form_submit` and `form_error` in sponsor campaign form.
 - [x] Track `form_submit` and `form_error` in publisher ad slot form.
-- [ ] Verify `page_view` fires on client-side route changes.
-- [ ] Verify `marketplace_view`, `ad_slot_click`, `ad_slot_view`, `placement_request_submit`, and `placement_request_success`.
-- [ ] Verify `form_submit` and `form_error`.
+- [x] Verify `page_view` fires on client-side route changes.
+- [x] Verify `marketplace_view`, `ad_slot_click`, `ad_slot_view`, `placement_request_submit`, and `placement_request_success`.
+- [x] Verify `form_submit` and `form_error`.
 - [x] Run `pnpm --filter @anvara/frontend typecheck`.
 - [x] Run `pnpm --filter @anvara/frontend lint`.
