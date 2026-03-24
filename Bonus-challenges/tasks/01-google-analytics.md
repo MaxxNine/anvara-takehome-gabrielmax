@@ -1,0 +1,23 @@
+# Challenge 01 - Google Analytics Setup
+
+- [x] Install `@next/third-parties` in `@anvara/frontend`.
+- [x] Add `NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX` to `.env.example` with a note that it is optional for local development.
+- [x] Create `apps/frontend/lib/analytics.ts`.
+- [x] Add a global `window.gtag` type augmentation in the analytics module.
+- [x] Export `AnalyticsEventParams = Record<string, string | number | boolean | undefined>`.
+- [x] Export `GA_EVENTS` with `CTA_CLICK`, `NAV_CLICK`, `LOGIN_SUCCESS`, `LOGOUT`, `AD_SLOT_CLICK`, `AD_SLOT_VIEW`, `PLACEMENT_REQUEST`, and `PLACEMENT_SUCCESS`.
+- [x] Implement `trackEvent(eventName, params?)` as a fire-and-forget wrapper around `window.gtag('event', ...)`.
+- [x] Guard `trackEvent` for SSR and missing GA config by returning when `typeof window === 'undefined'` or `!window.gtag`.
+- [x] Update `apps/frontend/app/layout.tsx` to render `<GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />` only when the env var exists.
+- [x] Track `cta_click` from the home page "Get Started" CTA, using a thin client boundary if needed.
+- [x] Track `nav_click` for nav links in `apps/frontend/app/components/nav.tsx`.
+- [x] Track `logout` in the existing nav logout flow.
+- [x] Track `login_success` in `apps/frontend/app/login/page.tsx` on successful login.
+- [x] Track `ad_slot_click` from each marketplace grid card in `apps/frontend/app/marketplace/components/ad-slot-grid.tsx`.
+- [x] Track `ad_slot_view` on marketplace detail page load in `apps/frontend/app/marketplace/[id]/components/ad-slot-detail.tsx`.
+- [x] Track `placement_request` at the start of the booking flow in the ad slot detail component.
+- [x] Track `placement_success` after a successful booking request in the ad slot detail component.
+- [x] Verify the GA script loads when `NEXT_PUBLIC_GA_MEASUREMENT_ID` is set.
+- [x] Verify `cta_click`, `nav_click`, `logout`, `login_success`, `ad_slot_click`, `ad_slot_view`, `placement_request`, and `placement_success` fire in the browser.
+- [x] Run `pnpm --filter @anvara/frontend typecheck`.
+- [x] Run `pnpm --filter @anvara/frontend lint`.

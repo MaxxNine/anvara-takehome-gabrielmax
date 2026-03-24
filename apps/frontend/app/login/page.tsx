@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { authClient } from '@/auth-client';
+import { GA_EVENTS, trackEvent } from '@/lib/analytics';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 
@@ -33,6 +34,8 @@ export default function LoginPage() {
           setLoading(true);
         },
         onSuccess: async (ctx) => {
+          trackEvent(GA_EVENTS.LOGIN_SUCCESS, { method: 'email' });
+
           // Fetch user role to determine redirect
           try {
             const userId = ctx.data?.user?.id;

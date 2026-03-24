@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { authClient } from '@/auth-client';
+import { GA_EVENTS, trackEvent, trackEventAndWait } from '@/lib/analytics';
 import type { RoleInfo } from '@/lib/types';
 
 type UserRole = 'sponsor' | 'publisher' | null;
@@ -14,8 +15,6 @@ export function Nav() {
   const [resolvedRole, setResolvedRole] = useState<ResolvedRole>(null);
   const role = user?.id && resolvedRole?.userId === user.id ? resolvedRole.role : null;
 
-  // TODO: Convert to server component and fetch role server-side
-  // Fetch user role from backend when user is logged in
   useEffect(() => {
     if (!user?.id) return;
 
@@ -41,19 +40,33 @@ export function Nav() {
     };
   }, [user?.id]);
 
-  // TODO: Add active link styling using usePathname() from next/navigation
-  // The current page's link should be highlighted differently
+  async function handleLogout() {
+    await trackEventAndWait(GA_EVENTS.LOGOUT, undefined, 800);
+
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          window.location.href = '/';
+        },
+      },
+    });
+  }
 
   return (
     <header className="border-b border-[--color-border]">
       <nav className="mx-auto flex max-w-6xl items-center justify-between p-4">
-        <Link href="/" className="text-xl font-bold text-[--color-primary]">
+        <Link
+          href="/"
+          onClick={() => trackEvent(GA_EVENTS.NAV_CLICK, { destination: '/' })}
+          className="text-xl font-bold text-[--color-primary]"
+        >
           Anvara
         </Link>
 
         <div className="flex items-center gap-6">
           <Link
             href="/marketplace"
+            onClick={() => trackEvent(GA_EVENTS.NAV_CLICK, { destination: '/marketplace' })}
             className="text-[--color-muted] hover:text-[--color-foreground]"
           >
             Marketplace
@@ -62,6 +75,7 @@ export function Nav() {
           {user && role === 'sponsor' && (
             <Link
               href="/dashboard/sponsor"
+              onClick={() => trackEvent(GA_EVENTS.NAV_CLICK, { destination: '/dashboard/sponsor' })}
               className="text-[--color-muted] hover:text-[--color-foreground]"
             >
               My Campaigns
@@ -70,6 +84,9 @@ export function Nav() {
           {user && role === 'publisher' && (
             <Link
               href="/dashboard/publisher"
+              onClick={() =>
+                trackEvent(GA_EVENTS.NAV_CLICK, { destination: '/dashboard/publisher' })
+              }
               className="text-[--color-muted] hover:text-[--color-foreground]"
             >
               My Ad Slots
@@ -84,15 +101,7 @@ export function Nav() {
                 {user.name} {role && `(${role})`}
               </span>
               <button
-                onClick={async () => {
-                  await authClient.signOut({
-                    fetchOptions: {
-                      onSuccess: () => {
-                        window.location.href = '/';
-                      },
-                    },
-                  });
-                }}
+                onClick={() => void handleLogout()}
                 className="rounded bg-gray-600 px-3 py-1.5 text-sm text-white hover:bg-gray-500"
               >
                 Logout
@@ -101,6 +110,7 @@ export function Nav() {
           ) : (
             <Link
               href="/login"
+              onClick={() => trackEvent(GA_EVENTS.NAV_CLICK, { destination: '/login' })}
               className="rounded bg-[--color-primary] px-4 py-2 text-sm text-white hover:bg-[--color-primary-hover]"
             >
               Login
