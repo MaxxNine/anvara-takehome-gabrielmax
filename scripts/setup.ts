@@ -7,7 +7,7 @@
  * 1. Checks prerequisites (Node.js, pnpm, Docker)
  * 2. Creates .env with unique database credentials
  * 3. Installs all dependencies
- * 4. Starts Docker containers (PostgreSQL)
+ * 4. Starts Docker containers (PostgreSQL + Redis)
  * 5. Creates database with unique credentials
  * 6. Runs Prisma migrations and seeds the database
  * 7. Verifies the setup
@@ -150,6 +150,42 @@ async function waitForPostgres(maxAttempts = 30): Promise<boolean> {
   return false;
 }
 
+async function waitForRedis(maxAttempts = 30): Promise<boolean> {
+  logStep('5c', 'Waiting for Redis to be ready...');
+
+  for (let i = 0; i < maxAttempts; i += 1) {
+    try {
+      const result = run('docker exec anvara_redis redis-cli ping', {
+        silent: true,
+        ignoreError: true,
+      });
+      if (result && result.includes('PONG')) {
+        logSuccess('Redis is ready');
+        return true;
+      }
+    } catch {
+      // Ignore errors while waiting for the container to become healthy.
+    }
+    process.stdout.write('.');
+    await sleep(1000);
+  }
+
+  console.log('');
+  logError('Redis failed to start within the timeout period');
+  return false;
+}
+
+function ensureEnvValue(envContent: string, key: string, value: string): string {
+  const linePattern = new RegExp(`^${key}=.*$`, 'm');
+
+  if (linePattern.test(envContent)) {
+    return envContent.replace(linePattern, `${key}=${value}`);
+  }
+
+  const trimmed = envContent.trimEnd();
+  return `${trimmed}\n${key}=${value}\n`;
+}
+
 async function main(): Promise<void> {
   console.log(`
 ${colors.cyan}╔══════════════════════════════════════════════════════════╗
@@ -244,6 +280,7 @@ ${colors.cyan}╔═════════════════════
       /BETTER_AUTH_SECRET=.*/,
       `BETTER_AUTH_SECRET=${betterAuthSecret}`
     );
+    envContent = ensureEnvValue(envContent, 'REDIS_URL', 'redis://localhost:6379');
     writeFileSync(envPath, envContent);
     logSuccess('Created .env with unique credentials');
     logSuccess('Authentication is ready - use demo accounts to login');
@@ -271,6 +308,13 @@ ${colors.cyan}╔═════════════════════
     logSuccess('.env file already exists');
   }
 
+  const currentEnvContent = readFileSync(envPath, 'utf-8');
+  const updatedEnvContent = ensureEnvValue(currentEnvContent, 'REDIS_URL', 'redis://localhost:6379');
+  if (updatedEnvContent !== currentEnvContent) {
+    writeFileSync(envPath, updatedEnvContent);
+    logSuccess('Added missing REDIS_URL to .env');
+  }
+
   ensureSafeDbName(dbName);
   loadEnv();
 
@@ -291,8 +335,13 @@ ${colors.cyan}╔═════════════════════
     process.exit(1);
   }
 
-  // Step 5c: Create database
-  logStep('5c', 'Creating application database...');
+  const redisReady = await waitForRedis();
+  if (!redisReady) {
+    process.exit(1);
+  }
+
+  // Step 5d: Create database
+  logStep('5d', 'Creating application database...');
 
   // Create database (ignore error if it already exists)
   const createDatabaseCommand = `docker exec anvara_postgres psql -U postgres -c "CREATE DATABASE ${dbName};"`;
@@ -383,6 +432,7 @@ ${colors.cyan}Services:${colors.reset}
   Frontend:  ${colors.green}http://localhost:3847${colors.reset}
   Backend:   ${colors.green}http://localhost:4291${colors.reset}
   Database:  ${colors.green}postgresql://localhost:5498${colors.reset}
+  Redis:     ${colors.green}redis://localhost:6379${colors.reset}
 
 ${colors.cyan}Useful Commands:${colors.reset}
   ${colors.dim}$${colors.reset} pnpm dev         ${colors.dim}# Run all services${colors.reset}

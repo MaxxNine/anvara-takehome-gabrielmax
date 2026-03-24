@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
-import { getUserRole } from '@/lib/auth-helpers';
+import { getCurrentUserProfile } from '@/lib/auth-helpers';
 import { CampaignList } from './components/campaign-list';
 import { getSponsorCampaigns } from './data';
 
@@ -16,12 +16,12 @@ export default async function SponsorDashboard() {
   }
 
   // Verify user has 'sponsor' role
-  const roleData = await getUserRole(session.user.id, requestHeaders);
+  const roleData = await getCurrentUserProfile(requestHeaders);
   if (roleData.role !== 'sponsor' || !roleData.sponsorId) {
     redirect('/');
   }
 
-  const campaigns = await getSponsorCampaigns(roleData.sponsorId, requestHeaders);
+  const campaigns = await getSponsorCampaigns(requestHeaders);
 
   return (
     <div className="space-y-6">

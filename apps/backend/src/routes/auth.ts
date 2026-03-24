@@ -1,5 +1,9 @@
-import { Router, type Request, type Response, type IRouter } from 'express';
-import { prisma } from '../db.js';
+import { Router, type Request, type Response, type NextFunction, type IRouter } from 'express';
+
+import { requireAuth } from '../middleware/auth.js';
+import { getAuthProfile } from '../services/auth/index.js';
+import type { AuthRequest } from '../types/auth.js';
+import { ForbiddenError, ValidationError } from '../types/errors.js';
 import { getParam } from '../utils/helpers.js';
 
 const router: IRouter = Router();
@@ -16,50 +20,45 @@ router.post('/login', async (_req: Request, res: Response) => {
 });
 
 // GET /api/auth/me - Get current user (for API clients)
-router.get('/me', async (req: Request, res: Response) => {
-  // TODO: Challenge 3 - Implement auth middleware to validate session
-  // For now, return unauthorized
-  res.status(401).json({ error: 'Not authenticated' });
+router.get('/me', requireAuth, async (req: AuthRequest, res: Response) => {
+  res.json(req.user);
 });
 
-// GET /api/auth/role/:userId - Get user role based on Sponsor/Publisher records
-router.get('/role/:userId', async (req: Request, res: Response) => {
-  try {
-    const userId = getParam(req.params.userId);
-
-    if (!userId) {
-      res.status(400).json({ error: 'userId is required' });
-      return;
+// GET /api/auth/profile - Frontend identity bootstrap payload
+router.get(
+  '/profile',
+  requireAuth,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      res.json(await getAuthProfile(req.user!.id));
+    } catch (error) {
+      next(error);
     }
-
-    // Check if user is a sponsor
-    const sponsor = await prisma.sponsor.findUnique({
-      where: { userId },
-      select: { id: true, name: true },
-    });
-
-    if (sponsor) {
-      res.json({ role: 'sponsor', sponsorId: sponsor.id, name: sponsor.name });
-      return;
-    }
-
-    // Check if user is a publisher
-    const publisher = await prisma.publisher.findUnique({
-      where: { userId },
-      select: { id: true, name: true },
-    });
-
-    if (publisher) {
-      res.json({ role: 'publisher', publisherId: publisher.id, name: publisher.name });
-      return;
-    }
-
-    // User has no role assigned
-    res.json({ role: null });
-  } catch (error) {
-    console.error('Error fetching user role:', error);
-    res.status(500).json({ error: 'Failed to fetch user role' });
   }
-});
+);
+
+// GET /api/auth/role/:userId - Deprecated compatibility endpoint. Use /api/auth/profile.
+router.get(
+  '/role/:userId',
+  requireAuth,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const userId = getParam(req.params.userId);
+
+      if (!userId) {
+        throw new ValidationError('userId is required');
+      }
+
+      if (!req.user || req.user.id !== userId) {
+        throw new ForbiddenError();
+      }
+
+      res.setHeader('Deprecation', 'true');
+      res.json(await getAuthProfile(userId));
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export default router;

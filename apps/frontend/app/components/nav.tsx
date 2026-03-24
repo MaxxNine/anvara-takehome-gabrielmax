@@ -20,18 +20,19 @@ export function Nav() {
     if (!user?.id) return;
 
     let cancelled = false;
-    const userId = user.id;
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/auth/role/${userId}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/auth/profile`, {
+      credentials: 'include',
+    })
       .then((res) => res.json())
       .then((data) => {
         if (!cancelled) {
-          setResolvedRole({ userId, role: (data as RoleInfo).role });
+          setResolvedRole({ userId: user.id, role: (data as RoleInfo).role });
         }
       })
       .catch(() => {
         if (!cancelled) {
-          setResolvedRole({ userId, role: null });
+          setResolvedRole({ userId: user.id, role: null });
         }
       });
 

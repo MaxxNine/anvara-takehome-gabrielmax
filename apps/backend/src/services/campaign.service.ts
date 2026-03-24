@@ -1,0 +1,48 @@
+import { CampaignStatus, prisma } from '../db.js';
+import type { CampaignListFilters, CampaignStatusValue, CreateCampaignInput } from '../types/index.js';
+
+export function isCampaignStatus(value: unknown): value is CampaignStatusValue {
+  return (
+    typeof value === 'string' &&
+    Object.values(CampaignStatus).includes(value as CampaignStatusValue)
+  );
+}
+
+export async function listCampaigns(filters: CampaignListFilters) {
+  return prisma.campaign.findMany({
+    where: {
+      ...(filters.status && { status: filters.status }),
+      ...(filters.sponsorId && { sponsorId: filters.sponsorId }),
+    },
+    include: {
+      sponsor: { select: { id: true, name: true, logo: true } },
+      _count: { select: { creatives: true, placements: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
+export async function getCampaignById(id: string) {
+  return prisma.campaign.findUnique({
+    where: { id },
+    include: {
+      sponsor: true,
+      creatives: true,
+      placements: {
+        include: {
+          adSlot: true,
+          publisher: { select: { id: true, name: true, category: true } },
+        },
+      },
+    },
+  });
+}
+
+export async function createCampaign(data: CreateCampaignInput) {
+  return prisma.campaign.create({
+    data,
+    include: {
+      sponsor: { select: { id: true, name: true } },
+    },
+  });
+}

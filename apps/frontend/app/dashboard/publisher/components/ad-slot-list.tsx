@@ -3,10 +3,8 @@
 import { useEffect, useState } from 'react';
 import { getAdSlots } from '@/lib/api';
 import { authClient } from '@/auth-client';
-import type { AdSlot, RoleInfo } from '@/lib/types';
+import type { AdSlot } from '@/lib/types';
 import { AdSlotCard } from './ad-slot-card';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 
 export function AdSlotList() {
   const [adSlots, setAdSlots] = useState<AdSlot[]>([]);
@@ -19,16 +17,8 @@ export function AdSlotList() {
       if (!session?.user?.id) return;
 
       try {
-        // Get the user's publisherId from the backend
-        const roleRes = await fetch(`${API_URL}/api/auth/role/${session.user.id}`);
-        const roleData = (await roleRes.json()) as RoleInfo;
-
-        if (roleData.publisherId) {
-          const data = await getAdSlots(roleData.publisherId);
-          setAdSlots(data);
-        } else {
-          setAdSlots([]);
-        }
+        const data = await getAdSlots();
+        setAdSlots(data);
       } catch {
         setError('Failed to load ad slots');
       } finally {

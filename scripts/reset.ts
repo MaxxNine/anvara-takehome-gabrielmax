@@ -7,7 +7,7 @@
  * - node_modules and pnpm cache
  * - Build outputs (.next, dist, build)
  * - Setup fingerprint
- * - Optionally: environment and database
+ * - Optionally: environment and Docker-backed infrastructure state
  */
 
 import { execSync } from 'child_process';
@@ -112,7 +112,7 @@ This will clean the project and remove build artifacts.
   }
 
   // Optional: Docker cleanup
-  log('\nCleaning Docker containers and volumes...');
+  log('\nCleaning Docker containers and volumes (PostgreSQL + Redis)...');
   try {
     // Use stdio: 'ignore' instead of shell redirection for cross-platform compatibility
     execSync('docker compose down -v', {

@@ -1,88 +1,84 @@
-import { Router, type Request, type Response, type IRouter } from 'express';
-import { prisma } from '../db.js';
+import { Router, type Response, type NextFunction, type IRouter } from 'express';
+import { requireAuth, roleMiddleware } from '../middleware/auth.js';
+import {
+  createCampaign,
+  getCampaignById,
+  isCampaignStatus,
+  listCampaigns,
+} from '../services/campaign.service.js';
+import {
+  ForbiddenError,
+  NotFoundError,
+  ValidationError,
+  type AuthRequest,
+} from '../types/index.js';
 import { getParam } from '../utils/helpers.js';
 
 const router: IRouter = Router();
+router.use(requireAuth);
 
 // GET /api/campaigns - List all campaigns
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { status, sponsorId } = req.query;
-
-    const campaigns = await prisma.campaign.findMany({
-      where: {
-        ...(status && { status: status as string as 'ACTIVE' | 'PAUSED' | 'COMPLETED' }),
-        ...(sponsorId && { sponsorId: getParam(sponsorId) }),
-      },
-      include: {
-        sponsor: { select: { id: true, name: true, logo: true } },
-        _count: { select: { creatives: true, placements: true } },
-      },
-      orderBy: { createdAt: 'desc' },
+    const { status } = req.query;
+    const campaigns = await listCampaigns({
+      ...(isCampaignStatus(status) && { status }),
+      ...(req.user?.role === 'SPONSOR' && { sponsorId: req.user.sponsorId }),
     });
 
     res.json(campaigns);
   } catch (error) {
-    console.error('Error fetching campaigns:', error);
-    res.status(500).json({ error: 'Failed to fetch campaigns' });
+    next(error);
   }
 });
 
 // GET /api/campaigns/:id - Get single campaign with details
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = getParam(req.params.id);
-    const campaign = await prisma.campaign.findUnique({
-      where: { id },
-      include: {
-        sponsor: true,
-        creatives: true,
-        placements: {
-          include: {
-            adSlot: true,
-            publisher: { select: { id: true, name: true, category: true } },
-          },
-        },
-      },
-    });
+    const campaign = await getCampaignById(id);
 
     if (!campaign) {
-      res.status(404).json({ error: 'Campaign not found' });
-      return;
+      throw new NotFoundError('Campaign not found');
+    }
+
+    if (req.user?.role === 'SPONSOR' && campaign.sponsorId !== req.user.sponsorId) {
+      throw new NotFoundError('Campaign not found');
     }
 
     res.json(campaign);
   } catch (error) {
-    console.error('Error fetching campaign:', error);
-    res.status(500).json({ error: 'Failed to fetch campaign' });
+    next(error);
   }
 });
 
 // POST /api/campaigns - Create new campaign
-router.post('/', async (req: Request, res: Response) => {
-  try {
-    const {
-      name,
-      description,
-      budget,
-      cpmRate,
-      cpcRate,
-      startDate,
-      endDate,
-      targetCategories,
-      targetRegions,
-      sponsorId,
-    } = req.body;
+router.post(
+  '/',
+  roleMiddleware(['SPONSOR']),
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const {
+        name,
+        description,
+        budget,
+        cpmRate,
+        cpcRate,
+        startDate,
+        endDate,
+        targetCategories,
+        targetRegions,
+      } = req.body;
 
-    if (!name || !budget || !startDate || !endDate || !sponsorId) {
-      res.status(400).json({
-        error: 'Name, budget, startDate, endDate, and sponsorId are required',
-      });
-      return;
-    }
+      if (!name || budget === undefined || !startDate || !endDate) {
+        throw new ValidationError('Name, budget, startDate, and endDate are required');
+      }
 
-    const campaign = await prisma.campaign.create({
-      data: {
+      if (!req.user || req.user.role !== 'SPONSOR') {
+        throw new ForbiddenError();
+      }
+
+      const campaign = await createCampaign({
         name,
         description,
         budget,
@@ -92,19 +88,15 @@ router.post('/', async (req: Request, res: Response) => {
         endDate: new Date(endDate),
         targetCategories: targetCategories || [],
         targetRegions: targetRegions || [],
-        sponsorId,
-      },
-      include: {
-        sponsor: { select: { id: true, name: true } },
-      },
-    });
+        sponsorId: req.user.sponsorId,
+      });
 
-    res.status(201).json(campaign);
-  } catch (error) {
-    console.error('Error creating campaign:', error);
-    res.status(500).json({ error: 'Failed to create campaign' });
+      res.status(201).json(campaign);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 // TODO: Add PUT /api/campaigns/:id endpoint
 // Update campaign details (name, budget, dates, status, etc.)
