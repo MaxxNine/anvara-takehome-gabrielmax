@@ -18,6 +18,6 @@
 - [x] Track `placement_request` at the start of the booking flow in the ad slot detail component.
 - [x] Track `placement_success` after a successful booking request in the ad slot detail component.
 - [x] Verify the GA script loads when `NEXT_PUBLIC_GA_MEASUREMENT_ID` is set.
-- [ ] Verify `cta_click`, `nav_click`, `logout`, `login_success`, `ad_slot_click`, `ad_slot_view`, `placement_request`, and `placement_success` fire in the browser.
+- [x] Verify `cta_click`, `nav_click`, `logout`, `login_success`, `ad_slot_click`, `ad_slot_view`, `placement_request`, and `placement_success` fire in the browser.
 - [x] Run `pnpm --filter @anvara/frontend typecheck`.
 - [x] Run `pnpm --filter @anvara/frontend lint`.

@@ -14,6 +14,24 @@ const typeColors: Record<string, string> = {
   PODCAST: 'bg-orange-100 text-orange-700',
 };
 
+const RECENT_AD_SLOT_VIEW_WINDOW_MS = 1000;
+const recentAdSlotViews = new Map<string, number>();
+
+function shouldTrackAdSlotView(slotId: string): boolean {
+  const now = Date.now();
+  const lastTrackedAt = recentAdSlotViews.get(slotId);
+
+  recentAdSlotViews.set(slotId, now);
+
+  for (const [trackedSlotId, trackedAt] of recentAdSlotViews) {
+    if (now - trackedAt > RECENT_AD_SLOT_VIEW_WINDOW_MS) {
+      recentAdSlotViews.delete(trackedSlotId);
+    }
+  }
+
+  return lastTrackedAt === undefined || now - lastTrackedAt > RECENT_AD_SLOT_VIEW_WINDOW_MS;
+}
+
 interface Props {
   id: string;
 }
@@ -35,11 +53,15 @@ export function AdSlotDetail({ id }: Props) {
     getAdSlot(id)
       .then((slot) => {
         setAdSlot(slot);
-        trackEvent(GA_EVENTS.AD_SLOT_VIEW, {
-          ad_slot_id: slot.id,
-          ad_slot_type: slot.type,
-          price: Number(slot.basePrice),
-        });
+
+        // Deduplicate the extra development-only remount from React Strict Mode.
+        if (shouldTrackAdSlotView(slot.id)) {
+          trackEvent(GA_EVENTS.AD_SLOT_VIEW, {
+            ad_slot_id: slot.id,
+            ad_slot_type: slot.type,
+            price: Number(slot.basePrice),
+          });
+        }
       })
       .catch(() => setError('Failed to load ad slot details'))
       .finally(() => setLoading(false));
