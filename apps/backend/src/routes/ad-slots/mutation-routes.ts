@@ -60,15 +60,10 @@ export function registerAdSlotMutationRoutes(router: IRouter): void {
     }
   });
 
-  router.post('/:id/unbook', async (req: AuthRequest, res: Response, next: NextFunction) => {
+  router.post('/:id/unbook', roleMiddleware(['PUBLISHER']), async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const id = getParam(req.params.id);
-      const adSlot = await getAdSlotById(id);
-
-      if (!adSlot) throw new NotFoundError('Ad slot not found');
-      if (req.user?.role === 'PUBLISHER' && adSlot.publisherId !== req.user.publisherId) {
-        throw new NotFoundError('Ad slot not found');
-      }
+      await getOwnedAdSlot(id, getPublisherId(req));
 
       res.json({
         success: true,
