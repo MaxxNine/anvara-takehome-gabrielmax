@@ -5,10 +5,10 @@ import { useFormStatus } from 'react-dom';
 
 import { cn } from '@/lib/utils';
 
-interface SubmitButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
+type SubmitButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
   children: ReactNode;
   pendingText?: string;
-}
+};
 
 export function SubmitButton({
   children,

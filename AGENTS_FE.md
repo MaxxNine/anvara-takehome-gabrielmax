@@ -89,7 +89,7 @@ apps/frontend/
 │   ├── server-api.ts         # Server-side API (cookie forwarding)
 │   ├── auth-helpers.ts       # Server-only auth utilities
 │   ├── types.ts              # Shared TypeScript types
-│   ├── action-types.ts       # ActionState interface for server actions
+│   ├── action-types.ts       # ActionState type for server actions
 │   └── utils.ts              # Generic utility functions
 ├── auth.ts                   # Better Auth server config
 └── auth-client.ts            # Better Auth client instance
@@ -123,7 +123,7 @@ apps/frontend/
 | Components | `PascalCase` function | `CampaignCard`, `SubmitButton` |
 | Hooks | `useCamelCase` | `useFormReset`, `useModalState` |
 | Server Actions | `camelCaseAction` | `createCampaignAction`, `deleteCampaignAction` |
-| Types/Interfaces | `PascalCase` | `Campaign`, `ActionState`, `CampaignCardProps` |
+| Types | `PascalCase` | `Campaign`, `ActionState`, `CampaignCardProps` |
 | Constants | `camelCase` or `UPPER_SNAKE_CASE` | `statusColors`, `AD_SLOT_TYPES` |
 | Data functions | `getCamelCase` | `getSponsorCampaigns`, `getPublisherAdSlots` |
 | Action files | `verb-noun.ts` | `create-campaign.ts`, `delete-ad-slot.ts` |
@@ -164,9 +164,9 @@ Always use **named function declarations** with **named exports**:
 
 ```ts
 // Good
-interface CampaignCardProps {
+type CampaignCardProps = {
   campaign: Campaign;
-}
+};
 
 export function CampaignCard({ campaign }: CampaignCardProps) {
   return <div>...</div>;
@@ -184,17 +184,17 @@ export default function CampaignCard() { ... }
 ### Props Typing
 
 ```ts
-// Good — interface with Props suffix
-interface CampaignFormProps {
+// Good — type alias with Props suffix
+type CampaignFormProps = {
   campaign?: Campaign;
   onClose: () => void;
-}
+};
 
 // Bad — inline type
 export function CampaignForm({ campaign, onClose }: { campaign?: Campaign; onClose: () => void }) { ... }
 
 // Bad — generic 'Props' name (ambiguous in multi-component files)
-interface Props { ... }
+type Props = { ... }
 ```
 
 ### Composability Over Configuration
@@ -328,11 +328,11 @@ export async function createCampaignAction(
 
 ```ts
 // lib/action-types.ts
-export interface ActionState {
+export type ActionState = {
   success: boolean;
   error?: string;
-  fieldErrors?: Record<string, string>;
-}
+  fieldErrors?: Record<string, string[]>;
+};
 
 export const initialActionState: ActionState = { success: false };
 ```
@@ -386,11 +386,11 @@ export function CampaignForm({ onClose }: { onClose: () => void }) {
 
 import { useFormStatus } from 'react-dom';
 
-interface SubmitButtonProps {
+type SubmitButtonProps = {
   label: string;
   pendingLabel: string;
   variant?: 'primary' | 'danger';
-}
+};
 
 export function SubmitButton({ label, pendingLabel, variant = 'primary' }: SubmitButtonProps) {
   const { pending } = useFormStatus();
@@ -604,9 +604,10 @@ All shared types live in `lib/types.ts`. This includes entities (`Campaign`, `Ad
 
 **Rules:**
 - If `lib/types.ts` exceeds ~150 lines, split by domain: `lib/types/campaign.ts`, `lib/types/ad-slot.ts`, etc.
-- Types used by only one component can be co-located (interface in the same file)
-- Props interfaces always live in the component file, never in `lib/types.ts`
-- Use `type` for unions/aliases, `interface` for object shapes (consistency with existing code)
+- Prefer `type` aliases by default, including component props, action state, and shared object shapes
+- Use `interface` only when you explicitly need open extension or declaration merging
+- Types used by only one component can be co-located in the same file
+- Props types always live in the component file, never in `lib/types.ts`
 - Import with `import type` when only the type is needed
 
 ### Decimal Handling
@@ -650,7 +651,7 @@ const budget = Number(campaign.budget);
 - **Do** co-locate components, actions, and data files with their feature
 - **Do** split files proactively when approaching 300 lines
 - **Do** use `htmlFor` on `<label>` elements and `id` on inputs for accessibility
-- **Do** type all props with interfaces — never use `any` or untyped props
+- **Do** type all props explicitly with named `type` aliases — never use `any` or untyped props
 - **Do** handle empty states in list components ("No items yet. Create your first...")
 - **Do** use `key` prop on all mapped elements — prefer stable IDs over array indices
 
@@ -666,7 +667,7 @@ const budget = Number(campaign.budget);
 | `lib/api.ts` | Client-side API client (legacy — prefer server-side) |
 | `lib/auth-helpers.ts` | `getCurrentUserProfile()` for role checks |
 | `lib/types.ts` | Shared TypeScript types (Campaign, AdSlot, etc.) |
-| `lib/action-types.ts` | `ActionState` interface for server actions |
+| `lib/action-types.ts` | `ActionState` type for server actions |
 | `app/components/nav.tsx` | Shared navigation component |
 | `app/components/submit-button.tsx` | Shared form submit button with `useFormStatus` |
 | `app/components/form-modal.tsx` | Shared modal dialog wrapper |

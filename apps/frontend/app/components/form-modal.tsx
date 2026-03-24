@@ -5,14 +5,14 @@ import { useEffect, useId, useRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
-interface FormModalProps {
+type FormModalProps = {
   children: ReactNode;
   className?: string;
   description?: string;
   onClose: () => void;
   open: boolean;
   title: string;
-}
+};
 
 export function FormModal({
   children,
