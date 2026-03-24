@@ -28,14 +28,14 @@
 
 ### Verification — Challenge 03
 
-- [ ] Unauthenticated requests return 401
-- [ ] Authenticated sponsor sees only their campaigns
-- [ ] Authenticated publisher sees only their ad-slots
-- [ ] Cross-role browsing works (sponsor can see ad-slots, publisher can see campaigns)
-- [ ] `/auth/me` returns user info when authenticated
-- [ ] Frontend login → dashboard flow still works end-to-end
-- [ ] Rate limiter returns 429 when limit exceeded
-- [ ] Redis container is running and rate limit state persists across server restarts
+- [x] Unauthenticated requests return 401
+- [x] Authenticated sponsor sees only their campaigns
+- [x] Authenticated publisher sees only their ad-slots
+- [x] Cross-role browsing works (sponsor can see ad-slots, publisher can see campaigns)
+- [x] `/auth/me` returns user info when authenticated
+- [x] Frontend login → dashboard flow still works end-to-end
+- [x] Rate limiter returns 429 when limit exceeded
+- [x] Redis container is running and rate limit state persists across server restarts
 
 ---
 

@@ -251,7 +251,8 @@ Before adding code to an existing file, ask:
 
 | File | Purpose |
 |------|---------|
-| `src/auth.ts` | Better Auth instance, `requireAuth`, `roleMiddleware` |
+| `src/auth.ts` | Better Auth instance (config singleton, like `db.ts`) |
+| `src/middleware/auth.ts` | `requireAuth`, `roleMiddleware` |
 | `src/db.ts` | Prisma client singleton, re-exports types/enums |
 | `src/types/` | Split by domain: `auth.ts`, `errors.ts`, `campaign.ts`, `ad-slot.ts`. Barrel `index.ts` re-exports. |
 | `src/services/auth.service.ts` | `resolveUserRole()` |
