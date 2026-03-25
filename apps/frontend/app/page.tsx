@@ -1,21 +1,39 @@
-// TODO: This should be a marketing landing page, not just a simple welcome screen
-// TODO: Add proper metadata for SEO (title, description, Open Graph)
-// TODO: Add hero section, features, testimonials, etc.
-// HINT: Check out the bonus challenge for marketing landing page!
+import type { Metadata } from 'next';
 
 import { getForcedABTestVariant } from '@/lib/ab-testing';
 import { getServerABVariant } from '@/lib/ab-testing/server';
 import { HomeHero } from './components/home-hero';
+import { HomeBPage } from './home-b/components/home-b-page';
+import { getHomepageMetadata } from './homepage-metadata';
 
 type HomePageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function Home({ searchParams }: HomePageProps) {
+async function getHomePageVariant(
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
+): Promise<string> {
   const resolvedSearchParams = (await searchParams) ?? {};
-  const heroVariant = await getServerABVariant('home-hero-layout', {
+
+  return getServerABVariant('home-hero-layout', {
     forcedVariant: getForcedABTestVariant('home-hero-layout', resolvedSearchParams),
   });
+}
 
-  return <HomeHero variant={heroVariant} />;
+export async function generateMetadata(): Promise<Metadata> {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
+  return getHomepageMetadata({ siteUrl });
+}
+
+export default async function Home({ searchParams }: HomePageProps) {
+  const heroVariant = await getHomePageVariant(searchParams);
+
+  if (heroVariant === 'B') {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
+    return <HomeBPage siteUrl={siteUrl} />;
+  }
+
+  return <HomeHero variant="A" />;
 }

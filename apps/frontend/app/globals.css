@@ -32,6 +32,32 @@
   --spacing-container: 1rem;
 }
 
+.theme-home-b {
+  --color-primary: #3e6bff;
+  --color-primary-hover: #2e57d8;
+  --color-secondary: #9bb7ff;
+  --color-background: #f7f8fc;
+  --color-foreground: #151821;
+  --color-muted: #667085;
+  --color-border: #e7ebf3;
+  --color-home-surface-alt: #eef4ff;
+  --color-home-highlight: #dce7ff;
+  --color-home-data: #d9ff3f;
+  --color-home-ink: #111827;
+}
+
+body:has(.theme-home-b) {
+  --color-primary: #3e6bff;
+  --color-primary-hover: #2e57d8;
+  --color-secondary: #9bb7ff;
+  --color-background: #f7f8fc;
+  --color-foreground: #151821;
+  --color-muted: #667085;
+  --color-border: #e7ebf3;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
 /* Dark mode support - TODO: Implement dark mode toggle */
 @media (prefers-color-scheme: dark) {
   :root {
