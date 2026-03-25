@@ -13,13 +13,9 @@ type AdSlotCardProps = {
   slot: AdSlot;
 };
 
-export function AdSlotCard({ slot }: AdSlotCardProps) {
+function AdSlotCardContent({ slot }: AdSlotCardProps) {
   return (
-    <AdSlotCardLink
-      eventParams={adSlotEventParams(slot)}
-      slotId={slot.id}
-      className="block rounded-lg border border-[--color-border] p-4 transition-shadow hover:shadow-md"
-    >
+    <>
       <div className="mb-2 flex items-start justify-between">
         <h3 className="font-semibold">{slot.name}</h3>
         <span className={`rounded px-2 py-0.5 text-xs ${typeColors[slot.type] || 'bg-gray-100'}`}>
@@ -45,6 +41,26 @@ export function AdSlotCard({ slot }: AdSlotCardProps) {
           ${Number(slot.basePrice).toLocaleString()}/mo
         </span>
       </div>
+    </>
+  );
+}
+
+export function AdSlotCard({ slot }: AdSlotCardProps) {
+  if (!slot.isAvailable) {
+    return (
+      <div className="rounded-lg border border-[--color-border] p-4 opacity-60">
+        <AdSlotCardContent slot={slot} />
+      </div>
+    );
+  }
+
+  return (
+    <AdSlotCardLink
+      eventParams={adSlotEventParams(slot)}
+      slotId={slot.id}
+      className="block rounded-lg border border-[--color-border] p-4 transition-shadow hover:shadow-md"
+    >
+      <AdSlotCardContent slot={slot} />
     </AdSlotCardLink>
   );
 }

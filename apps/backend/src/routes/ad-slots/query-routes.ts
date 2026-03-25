@@ -10,7 +10,7 @@ export function registerAdSlotQueryRoutes(router: IRouter): void {
       const adSlots = await listAdSlots({
         ...(isAdSlotType(type) && { type }),
         ...(req.user?.role === 'PUBLISHER' && { publisherId: req.user.publisherId }),
-        availableOnly: req.user?.role === 'SPONSOR' || available === 'true',
+        availableOnly: available === 'true',
       });
 
       res.json(adSlots);

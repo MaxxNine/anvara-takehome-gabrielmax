@@ -13,7 +13,7 @@ export function AdSlotGrid({ adSlots }: AdSlotGridProps) {
 
       {adSlots.length === 0 ? (
         <div className="rounded-lg border border-dashed border-[--color-border] p-12 text-center text-[--color-muted]">
-          No ad slots available at the moment.
+          No ad slots listed yet. Check back soon!
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
