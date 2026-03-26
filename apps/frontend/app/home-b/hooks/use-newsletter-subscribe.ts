@@ -1,14 +1,13 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
+import { useMutation } from '@tanstack/react-query';
 
-import { api } from '@/lib/api';
-
-type NewsletterResponse = {
-  error?: string;
-  message?: string;
-  success?: boolean;
-};
+import {
+  ApiError,
+  type NewsletterSubscribeResponse,
+  newsletterSubscribeMutationOptions,
+} from '@/lib/api';
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
@@ -20,42 +19,54 @@ type UseNewsletterSubscribeReturn = {
 };
 
 export function useNewsletterSubscribe(): UseNewsletterSubscribeReturn {
-  const [status, setStatus] = useState<Status>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
+  const mutation = useMutation(newsletterSubscribeMutationOptions());
 
-  const subscribe = useCallback(async (email: string): Promise<boolean> => {
-    if (!email) return false;
-
-    setStatus('loading');
-    setErrorMessage('');
-
-    try {
-      const data = await api<NewsletterResponse>('/api/newsletter/subscribe', {
-        method: 'POST',
-        body: JSON.stringify({ email }),
-      });
-
-      if (data.success) {
-        setStatus('success');
-        return true;
+  const subscribe = useCallback(
+    async (email: string): Promise<boolean> => {
+      if (!email) {
+        return false;
       }
 
-      setStatus('error');
-      setErrorMessage(data.error ?? 'Something went wrong. Please try again.');
-      return false;
-    } catch {
-      setStatus('error');
-      setErrorMessage('Something went wrong. Please try again.');
-      return false;
-    }
-  }, []);
+      try {
+        const data = await mutation.mutateAsync(email);
+
+        if (data.success) {
+          return true;
+        }
+
+        throw new ApiError(
+          data.error ?? data.message ?? 'Something went wrong. Please try again.',
+          400,
+          data satisfies NewsletterSubscribeResponse
+        );
+      } catch {
+        return false;
+      }
+    },
+    [mutation]
+  );
 
   const resetError = useCallback(() => {
-    if (status === 'error') {
-      setStatus('idle');
-      setErrorMessage('');
+    if (mutation.status === 'error') {
+      mutation.reset();
     }
-  }, [status]);
+  }, [mutation]);
+
+  const status: Status =
+    mutation.status === 'pending'
+      ? 'loading'
+      : mutation.status === 'success'
+        ? 'success'
+        : mutation.status === 'error'
+          ? 'error'
+          : 'idle';
+
+  const errorMessage =
+    mutation.error instanceof ApiError
+      ? mutation.error.message
+      : mutation.status === 'error'
+        ? 'Something went wrong. Please try again.'
+        : '';
 
   return { errorMessage, resetError, status, subscribe };
 }
