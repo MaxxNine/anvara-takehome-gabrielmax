@@ -1,6 +1,6 @@
 'use client';
 
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 
 import { api } from '@/lib/api';
 
@@ -62,14 +62,20 @@ export function useMarketplaceSectionQuery({
         }
       : undefined,
     initialPageParam: null as string | null,
+    placeholderData: keepPreviousData,
     queryFn: ({ pageParam }) => fetchMarketplaceSection(filters, segment, pageParam),
     queryKey,
   });
 
-  const firstPage = query.data?.pages[0] ?? (enabled ? initialConnection : null);
+  const firstPage = query.data?.pages[0] ?? (shouldUseInitialData ? initialConnection : null);
   const items = query.data?.pages.flatMap((page) => page.items) ?? firstPage?.items ?? [];
   const catalog: MarketplaceCatalogMeta | null = firstPage?.meta.catalog ?? null;
   const totalCount = firstPage?.pageInfo.totalCount ?? 0;
+  const isRefreshing =
+    enabled &&
+    query.fetchStatus === 'fetching' &&
+    query.status === 'success' &&
+    !query.isFetchingNextPage;
 
   return {
     catalog,
@@ -80,6 +86,7 @@ export function useMarketplaceSectionQuery({
     isFetchingNextPage: query.isFetchingNextPage,
     isInitialError: query.status === 'error' && items.length === 0,
     isInitialLoading: query.isPending && items.length === 0,
+    isRefreshing,
     items,
     missingEstimatedCpmCount: firstPage?.meta.missingEstimatedCpmCount ?? 0,
     refetch: query.refetch,

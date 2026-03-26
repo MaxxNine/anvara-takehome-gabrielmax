@@ -1,6 +1,6 @@
 'use client';
 
-import { useDeferredValue, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { AdSlotType } from '@/lib/types';
 
@@ -13,6 +13,7 @@ import type {
   NumericRange,
 } from './types';
 import {
+  areMarketplaceFiltersEqual,
   clampMarketplaceFilters,
   getActiveAdvancedFilterCount,
   hasActiveMarketplaceFilters,
@@ -44,6 +45,7 @@ export type UseMarketplaceFiltersResult = {
   requestFilters: MarketplaceFilters;
   ui: {
     advancedFiltersOpen: boolean;
+    isApplyingFilters: boolean;
   };
 };
 
@@ -52,13 +54,16 @@ export function useMarketplaceFilters({
   initialFilters,
 }: UseMarketplaceFiltersOptions): UseMarketplaceFiltersResult {
   const [filters, setFilters] = useState(() => clampMarketplaceFilters(initialFilters, bounds));
+  const [requestFilters, setRequestFilters] = useState(() =>
+    clampMarketplaceFilters(initialFilters, bounds)
+  );
   const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(
     () => getActiveAdvancedFilterCount(initialFilters) > 0
   );
-  const deferredQuery = useDeferredValue(filters.query);
 
   useEffect(() => {
     setFilters((current) => clampMarketplaceFilters(current, bounds));
+    setRequestFilters((current) => clampMarketplaceFilters(current, bounds));
   }, [bounds]);
 
   useEffect(() => {
@@ -77,16 +82,17 @@ export function useMarketplaceFilters({
     return () => window.clearTimeout(timeoutId);
   }, [filters]);
 
-  const requestFilters = useMemo(
-    () =>
-      clampMarketplaceFilters(
-        {
-          ...filters,
-          query: deferredQuery,
-        },
-        bounds
-      ),
-    [bounds, deferredQuery, filters]
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setRequestFilters(clampMarketplaceFilters(filters, bounds));
+    }, 220);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [bounds, filters]);
+
+  const isApplyingFilters = useMemo(
+    () => !areMarketplaceFiltersEqual(filters, requestFilters),
+    [filters, requestFilters]
   );
 
   const actions: MarketplaceFilterActions = {
@@ -153,6 +159,7 @@ export function useMarketplaceFilters({
     requestFilters,
     ui: {
       advancedFiltersOpen,
+      isApplyingFilters,
     },
   };
 }

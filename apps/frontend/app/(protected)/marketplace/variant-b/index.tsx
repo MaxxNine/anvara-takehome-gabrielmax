@@ -37,6 +37,7 @@ export function MarketplaceGridB({
     initialFilters,
     initialSections,
   });
+  const isUpdatingResults = ui.isApplyingFilters || results.isRefreshing;
 
   return (
     <div className="theme-home-b min-h-screen pb-16 pt-24 sm:pt-28">
@@ -73,6 +74,7 @@ export function MarketplaceGridB({
               bounds={bounds}
               filters={filters}
               hasActiveFilters={hasActiveFilters}
+              isUpdatingResults={isUpdatingResults}
               missingEstimatedCpmCount={results.missingEstimatedCpmCount}
               resultCount={results.resultCount}
             />
@@ -82,6 +84,7 @@ export function MarketplaceGridB({
         <MarketplaceResultsB
           available={results.available}
           booked={results.booked}
+          isUpdatingResults={isUpdatingResults}
           showBooked={results.showBooked}
         />
       </div>

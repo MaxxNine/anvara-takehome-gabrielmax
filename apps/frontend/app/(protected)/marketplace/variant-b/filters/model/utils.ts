@@ -175,6 +175,25 @@ export function hasActiveMarketplaceFilters(filters: MarketplaceFilters): boolea
   );
 }
 
+function rangesMatch(left: NumericRange, right: NumericRange): boolean {
+  return left.min === right.min && left.max === right.max;
+}
+
+export function areMarketplaceFiltersEqual(
+  left: MarketplaceFilters,
+  right: MarketplaceFilters
+): boolean {
+  return (
+    left.availability === right.availability &&
+    left.query === right.query &&
+    left.sort === right.sort &&
+    left.type === right.type &&
+    left.verifiedOnly === right.verifiedOnly &&
+    rangesMatch(left.price, right.price) &&
+    rangesMatch(left.estimatedCpm, right.estimatedCpm)
+  );
+}
+
 export function applyMarketplaceFilters(
   slots: NormalizedMarketplaceSlot[],
   filters: MarketplaceFilters

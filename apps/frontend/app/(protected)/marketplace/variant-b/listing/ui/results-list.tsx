@@ -2,7 +2,9 @@
 
 import { useLayoutEffect, useRef, useState } from 'react';
 
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
 
 import { AdSlotCardB } from '../../cards/ad-slot-card';
 import { useMarketplaceGridColumns } from '../model/use-grid-columns';
@@ -15,6 +17,7 @@ import { MarketplaceResultsErrorState } from './results-error-state';
 type MarketplaceResultsBProps = {
   available: MarketplaceSectionQueryState;
   booked: MarketplaceSectionQueryState;
+  isUpdatingResults: boolean;
   showBooked: boolean;
 };
 
@@ -174,6 +177,7 @@ function MarketplaceResultSection({
 export function MarketplaceResultsB({
   available,
   booked,
+  isUpdatingResults,
   showBooked,
 }: MarketplaceResultsBProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -182,31 +186,51 @@ export function MarketplaceResultsB({
     showBooked && (booked.isInitialLoading || booked.isInitialError || booked.totalCount > 0);
 
   return (
-    <div ref={containerRef} className="space-y-6">
-      <MarketplaceResultSection
-        columns={columns}
-        title="Available placements"
-        initialErrorMessage="Unable to load the available placements right now."
-        incrementalErrorMessage="We couldn’t load the next batch of available placements."
-        emptyMessage={
-          showBookedSection
-            ? 'No available placements match your filters. Matching booked placements are shown below.'
-            : 'No placements match your filters. Try adjusting your search.'
-        }
-        section={available}
-      />
+    <div ref={containerRef} className="space-y-4">
+      {isUpdatingResults ? (
+        <div
+          aria-live="polite"
+          className="flex items-center gap-2 rounded-[1rem] border border-blue-100 bg-blue-50/70 px-4 py-3 text-sm text-[#1b64f2]"
+        >
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span className="font-medium">Refreshing placements...</span>
+          <span className="text-[#1b64f2]/80">
+            Current results stay visible until the new filter set is ready.
+          </span>
+        </div>
+      ) : null}
 
-      {showBookedSection ? (
+      <div
+        className={cn(
+          'space-y-6 transition-opacity duration-200',
+          isUpdatingResults ? 'opacity-70' : 'opacity-100'
+        )}
+      >
         <MarketplaceResultSection
           columns={columns}
-          title="Currently booked"
-          initialErrorMessage="Unable to load booked placements right now."
-          incrementalErrorMessage="We couldn’t load the next batch of booked placements."
-          sectionClassName="space-y-4 rounded-[1.75rem] border border-slate-200/80 bg-white/80 p-6 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.22)]"
-          section={booked}
-          emptyMessage="No booked placements match your filters."
+          title="Available placements"
+          initialErrorMessage="Unable to load the available placements right now."
+          incrementalErrorMessage="We couldn’t load the next batch of available placements."
+          emptyMessage={
+            showBookedSection
+              ? 'No available placements match your filters. Matching booked placements are shown below.'
+              : 'No placements match your filters. Try adjusting your search.'
+          }
+          section={available}
         />
-      ) : null}
+
+        {showBookedSection ? (
+          <MarketplaceResultSection
+            columns={columns}
+            title="Currently booked"
+            initialErrorMessage="Unable to load booked placements right now."
+            incrementalErrorMessage="We couldn’t load the next batch of booked placements."
+            sectionClassName="space-y-4 rounded-[1.75rem] border border-slate-200/80 bg-white/80 p-6 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.22)]"
+            section={booked}
+            emptyMessage="No booked placements match your filters."
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

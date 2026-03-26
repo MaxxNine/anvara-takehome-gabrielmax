@@ -10,6 +10,7 @@ import {
   ChevronUp,
   DollarSign,
   Gauge,
+  Loader2,
   RotateCcw,
   Search,
   SlidersHorizontal,
@@ -40,6 +41,7 @@ type MarketplaceFiltersPanelProps = {
   bounds: MarketplaceFilterBounds;
   filters: MarketplaceFilters;
   hasActiveFilters: boolean;
+  isUpdatingResults: boolean;
   missingEstimatedCpmCount: number;
   resultCount: number;
 };
@@ -78,6 +80,7 @@ export function MarketplaceFiltersPanel({
   bounds,
   filters,
   hasActiveFilters,
+  isUpdatingResults,
   missingEstimatedCpmCount,
   resultCount,
 }: MarketplaceFiltersPanelProps) {
@@ -100,8 +103,11 @@ export function MarketplaceFiltersPanel({
               value={filters.query}
               onChange={(event) => actions.setQuery(event.target.value)}
               placeholder="Search placements, publishers, or formats..."
-              className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-11 pr-4 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#1b64f2] focus:outline-none focus:ring-2 focus:ring-[#1b64f2]/15"
+              className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-11 pr-11 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#1b64f2] focus:outline-none focus:ring-2 focus:ring-[#1b64f2]/15"
             />
+            {isUpdatingResults ? (
+              <Loader2 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[#1b64f2]" />
+            ) : null}
           </div>
 
           <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:flex lg:items-center">
@@ -149,11 +155,27 @@ export function MarketplaceFiltersPanel({
               </button>
             ) : null}
 
-            <span className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-blue-100 bg-blue-50 px-3.5 py-2 text-sm font-semibold text-[#1b64f2]">
-              {resultCount} result{resultCount !== 1 ? 's' : ''}
+            <span className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full border border-blue-100 bg-blue-50 px-3.5 py-2 text-sm font-semibold text-[#1b64f2]">
+              {isUpdatingResults ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              <span>
+                {resultCount} result{resultCount !== 1 ? 's' : ''}
+              </span>
             </span>
           </div>
         </div>
+
+        {isUpdatingResults ? (
+          <div
+            aria-live="polite"
+            className="flex flex-wrap items-center gap-2 rounded-xl border border-blue-100 bg-blue-50/70 px-3.5 py-2 text-sm text-[#1b64f2]"
+          >
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span className="font-medium">Updating results...</span>
+            <span className="text-[#1b64f2]/80">
+              Current matches remain visible until the refreshed list is ready.
+            </span>
+          </div>
+        ) : null}
 
         <AnimatePresence initial={false}>
           {advancedFiltersOpen ? (
@@ -179,7 +201,7 @@ export function MarketplaceFiltersPanel({
                     ? { duration: 0 }
                     : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
                 }
-                className="grid gap-5 border-t border-slate-200/80 pt-4 md:grid-cols-2 xl:grid-cols-4"
+                className="grid gap-5 border-t border-slate-200/80 pt-4 md:grid-cols-2 2xl:grid-cols-4"
               >
                 <FilterGroup icon={<Tag className="h-4 w-4" />} label="Categories">
                   <MarketplaceChipGroup<AdSlotType | 'ALL'>
