@@ -1,5 +1,0 @@
-# Business Context
-
-Anvara is a two-sided sponsorship marketplace that connects **sponsors** (brands looking to advertise) with **publishers** (content creators who have ad inventory to sell). Publishers list ad slots — placements like website banners, podcast pre-rolls, newsletter features, and video integrations — each with a type, description, and monthly base price. Sponsors browse the marketplace to discover available inventory, view publisher details, and book slots for their campaigns.
-
-The platform manages the full lifecycle: publishers create and manage their ad slot inventory, sponsors create advertising campaigns with budgets and date ranges, and bookings tie campaigns to specific slots via placements. Authentication determines what each role sees — sponsors access their own campaigns and the full marketplace catalog, while publishers manage their own inventory and can browse active campaigns to understand demand. Revenue flows through agreed placement pricing, with support for CPM, CPC, CPA, and flat-rate models.
