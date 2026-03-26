@@ -8,10 +8,10 @@ type PublisherInventoryItemCardProps = {
 
 export function PublisherInventoryItemCard({ item }: PublisherInventoryItemCardProps) {
   return (
-    <div className="flex flex-col gap-3 rounded-2xl bg-slate-50 px-4 py-4 ring-1 ring-slate-200 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-3 sm:gap-4">
+    <div className="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 px-4 py-3.5 ring-1 ring-slate-200 sm:gap-4 sm:px-4 sm:py-4">
+      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
         <div
-          className={`flex h-10 w-10 items-center justify-center rounded-2xl sm:h-11 sm:w-11 ${
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl sm:h-11 sm:w-11 ${
             item.type === 'display'
               ? 'bg-blue-100 text-[#1b64f2]'
               : item.type === 'podcast'
@@ -28,13 +28,15 @@ export function PublisherInventoryItemCard({ item }: PublisherInventoryItemCardP
           )}
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-900 sm:text-[15px]">{item.title}</p>
-          <p className="text-xs text-slate-500">{item.subtitle}</p>
+          <p className="truncate text-sm font-semibold text-slate-900 sm:text-[15px]">
+            {item.title}
+          </p>
+          <p className="truncate text-xs text-slate-500">{item.subtitle}</p>
         </div>
       </div>
 
       <span
-        className={`self-start text-xs font-bold sm:self-auto ${
+        className={`shrink-0 text-xs font-bold ${
           item.status === 'Live' ? 'text-emerald-600' : 'text-amber-600'
         }`}
       >

@@ -82,13 +82,13 @@ export function HomeBAudienceSplit() {
         className="bg-[linear-gradient(180deg,#f7faff_0%,#f2f7ff_100%)] px-6 py-20 sm:px-8 sm:py-24 lg:px-10 lg:py-28 xl:px-12"
       >
         <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <HomeBReveal className="order-2 lg:order-1" variant="left">
-            <PublisherInventoryShowcase />
-          </HomeBReveal>
-
           <div className="order-1 lg:order-2">
             <PublisherContent panel={publisherPanel} />
           </div>
+
+          <HomeBReveal variant="left" className="order-2 lg:order-1">
+            <PublisherInventoryShowcase />
+          </HomeBReveal>
         </div>
       </section>
     </>

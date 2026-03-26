@@ -61,11 +61,13 @@ export function SponsorShowcase() {
                 repeat: isVisible && !prefersReducedMotion ? Infinity : 0,
               }}
             />
-            <p className="text-sm font-semibold text-slate-600">{SPONSOR_WORKSPACE_LABEL}</p>
+            <p className="text-[13px] font-semibold text-slate-600 sm:text-sm">
+              {SPONSOR_WORKSPACE_LABEL}
+            </p>
           </div>
 
           <motion.div
-            className="rounded-full bg-white px-3 py-1 text-[11px] font-bold text-slate-500 shadow-sm"
+            className="self-start rounded-full bg-white px-3 py-1 text-[11px] font-bold text-slate-500 shadow-sm sm:self-auto"
             {...getRevealProps({
               delay: 0.35,
               duration: 0.5,
@@ -99,7 +101,7 @@ export function SponsorShowcase() {
               </div>
 
               <motion.div
-                className="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold text-emerald-700"
+                className="self-start rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold text-emerald-700 sm:self-auto"
                 {...getRevealProps({
                   delay: 0.7,
                   duration: 0.5,
@@ -115,7 +117,7 @@ export function SponsorShowcase() {
             <PlacementList isVisible={isVisible} prefersReducedMotion={prefersReducedMotion} />
           </motion.div>
 
-          <div className="grid gap-4">
+          <div className="grid gap-4 min-[430px]:grid-cols-2 xl:grid-cols-1">
             <LiveReachCard
               isInView={isInView}
               isVisible={isVisible}
