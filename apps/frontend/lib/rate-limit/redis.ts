@@ -2,7 +2,7 @@ import 'server-only';
 
 import Redis from 'ioredis';
 
-const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+const REDIS_URL = process.env.REDIS_URL;
 
 let hasLoggedRedisError = false;
 let redisClientPromise: Promise<Redis | null> | null = null;
@@ -19,6 +19,10 @@ function logRedisWarning(): void {
 }
 
 async function connectRedis(): Promise<Redis | null> {
+  if (!REDIS_URL) {
+    return null;
+  }
+
   const client = new Redis(REDIS_URL, {
     connectTimeout: 1_000,
     enableOfflineQueue: false,

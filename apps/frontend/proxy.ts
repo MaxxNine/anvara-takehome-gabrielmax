@@ -78,7 +78,7 @@ function getUpdatedABTestCookie(request: NextRequest): UpdatedABTestCookie | nul
   };
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const updatedCookie = getUpdatedABTestCookie(request);
   const requestHeaders = new Headers(request.headers);
 
