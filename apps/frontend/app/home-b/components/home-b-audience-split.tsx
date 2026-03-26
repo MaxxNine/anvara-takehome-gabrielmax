@@ -7,6 +7,7 @@ import {
   homeBSponsorFeatures,
 } from '../content';
 import { homeBDisplayFont } from '../fonts';
+import { SponsorShowcase } from './home-b-sponsor-showcase';
 
 const featureIconComponents = {
   chart: BarChart3,
@@ -21,94 +22,6 @@ function AudienceFeatureIcon({
 }) {
   const Icon = featureIconComponents[kind];
   return <Icon className="h-6 w-6" />;
-}
-
-function SponsorShowcase() {
-  return (
-    <div className="relative rounded-[2rem] border border-slate-200 bg-white p-3 shadow-[0_32px_80px_-40px_rgba(15,23,42,0.28)]">
-      <div className="rounded-[1.6rem] border border-slate-200 bg-slate-50 p-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#1b64f2]" />
-            <p className="text-sm font-semibold text-slate-600">Sponsor Workspace</p>
-          </div>
-          <div className="rounded-full bg-white px-3 py-1 text-[11px] font-bold text-slate-500 shadow-sm">
-            3 active briefs
-          </div>
-        </div>
-
-        <div className="mt-5 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-          <div className="rounded-[1.35rem] bg-white p-4 shadow-sm ring-1 ring-slate-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#1b64f2]">
-                  Campaign Fit
-                </p>
-                <h3 className="mt-2 text-lg font-semibold text-slate-950">
-                  New product launch
-                </h3>
-              </div>
-              <div className="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold text-emerald-700">
-                12 matches
-              </div>
-            </div>
-
-            <div className="mt-4 space-y-3">
-              {[
-                ['Podcast', 'Creator Circuit Midroll', 'High intent'],
-                ['Newsletter', 'Operator Brief Feature', 'Operators'],
-                ['Display', 'Growth Memo Display', 'Awareness'],
-              ].map(([type, title, note]) => (
-                <div
-                  key={title}
-                  className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
-                >
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                      {type}
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-slate-800">{title}</p>
-                  </div>
-                  <span className="rounded-full bg-blue-50 px-3 py-1 text-[11px] font-bold text-[#1b64f2]">
-                    {note}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid gap-4">
-            <div className="rounded-[1.35rem] bg-[#111827] p-5 text-white shadow-[0_24px_48px_-28px_rgba(17,24,39,0.8)]">
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-blue-200">
-                Live Reach
-              </p>
-              <p className="mt-3 text-4xl font-bold tracking-tight">84.2k</p>
-              <p className="mt-2 text-sm text-slate-300">Projected engagement across selected placements</p>
-            </div>
-
-            <div className="rounded-[1.35rem] bg-white p-5 shadow-sm ring-1 ring-slate-200">
-              <div className="flex items-end gap-3">
-                {[42, 58, 50, 67, 61, 78].map((height, index) => (
-                  <div key={index} className="flex-1">
-                    <div
-                      className={`rounded-t-2xl ${
-                        index % 2 === 0 ? 'bg-[#1b64f2]' : 'bg-cyan-400'
-                      }`}
-                      style={{ height: `${height}px` }}
-                    />
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 flex items-center justify-between text-xs font-medium text-slate-400">
-                <span>Reach</span>
-                <span>Conversion intent</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 function PublisherInventoryShowcase() {
