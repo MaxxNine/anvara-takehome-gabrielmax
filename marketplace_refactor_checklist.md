@@ -1,0 +1,22 @@
+# Marketplace Refactor Checklist
+
+- [ ] Confirm the current marketplace B route boundaries, data flow, and analytics behavior that must remain unchanged.
+- [ ] Extract a typed marketplace filter model and defaults.
+- [ ] Extract pure normalization, filtering, sorting, section splitting, and bounds utilities.
+- [ ] Add unit tests for the filter engine before changing the UI behavior.
+- [ ] Add URL/search-param parsing and serialization for marketplace filters.
+- [ ] Initialize client filter state from server-provided search params.
+- [ ] Keep filter state synchronized back to the URL without full page reloads.
+- [ ] Decompose the current filter bar into smaller components with narrower props.
+- [ ] Replace budget buckets with a numeric range filter UI.
+- [ ] Replace estimated CPM buckets with a numeric range filter UI.
+- [ ] Make open-ended max values explicit so high-end listings are never hidden by a fake cap.
+- [ ] Make CPM-missing behavior explicit and preserve predictable filtering semantics.
+- [ ] Add a responsive column-count hook for the marketplace result grid.
+- [ ] Add row virtualization for results using `@tanstack/react-virtual`.
+- [ ] Keep available/booked grouping intact inside the virtualized result stream.
+- [ ] Use a non-virtualized fallback for small datasets.
+- [ ] Preserve accessibility, keyboard interaction, and reduced-motion behavior.
+- [ ] Preserve marketplace tracking and card-link analytics behavior.
+- [ ] Run lint, typecheck, and targeted tests.
+- [ ] Update the proposal document with any implementation-driven adjustments.
