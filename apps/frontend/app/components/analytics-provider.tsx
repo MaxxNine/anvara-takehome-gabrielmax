@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import type { ReactNode } from 'react';
 
@@ -52,7 +52,7 @@ function buildABUserProperties(searchParams: ReturnType<typeof useSearchParams>)
   return userProperties;
 }
 
-export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
+function AnalyticsEffects() {
   useTrackPageView();
   const searchParams = useSearchParams();
 
@@ -66,5 +66,16 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
     setAnalyticsUserProperties(userProperties);
   }, [searchParams]);
 
-  return <>{children}</>;
+  return null;
+}
+
+export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
+  return (
+    <>
+      <Suspense fallback={null}>
+        <AnalyticsEffects />
+      </Suspense>
+      {children}
+    </>
+  );
 }
