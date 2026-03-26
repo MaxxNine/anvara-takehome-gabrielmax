@@ -4,10 +4,10 @@ import { homeBDisplayFont } from '@/app/home-b/fonts';
 import type { AdSlot } from '@/lib/types';
 
 import { MarketplaceViewTracker } from '../components/marketplace-view-tracker';
-import { MarketplaceFiltersPanel } from './marketplace-filters-panel';
-import type { MarketplaceFilters } from './marketplace-filter.types';
-import { MarketplaceResultsB } from './marketplace-results-b';
-import { useMarketplaceFilters } from './use-marketplace-filters';
+import { MarketplaceFiltersPanel } from './filters/marketplace-filters-panel';
+import type { MarketplaceFilters } from './filters/marketplace-filter.types';
+import { useMarketplaceFilters } from './filters/use-marketplace-filters';
+import { MarketplaceResultsB } from './results/marketplace-results-b';
 
 type MarketplaceGridBProps = {
   adSlots: AdSlot[];

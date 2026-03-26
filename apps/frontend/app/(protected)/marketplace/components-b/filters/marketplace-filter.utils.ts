@@ -1,6 +1,6 @@
 import type { AdSlot } from '@/lib/types';
 
-import { getAudienceSize, getEstimatedCpmValue } from './format-helpers';
+import { getAudienceSize, getEstimatedCpmValue } from '../format-helpers';
 import { defaultMarketplaceFilters } from './marketplace-filter.constants';
 import type {
   MarketplaceFilterBounds,

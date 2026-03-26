@@ -7,14 +7,14 @@ import { ArrowUpRight, BadgeCheck, Eye, Flame, Gauge } from 'lucide-react';
 
 import { adSlotEventParams } from '@/lib/analytics';
 import type { AdSlot } from '@/lib/types';
-import { AdSlotCardLink } from '../components/ad-slot-card-link';
+import { AdSlotCardLink } from '../../components/ad-slot-card-link';
 import {
   formatEstimatedCpm,
   formatReachLabel,
   getAudienceSize,
   getTypeAccentColor,
   getTypeBadgeColor,
-} from './format-helpers';
+} from '../format-helpers';
 
 type AdSlotCardBProps = {
   slot: AdSlot;

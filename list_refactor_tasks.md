@@ -369,3 +369,11 @@ The gold-standard path is:
 - `@tanstack/react-virtual` row virtualization over the full results stream
 
 That is the most maintainable path with the lowest long-term bug surface for this marketplace page.
+
+## Implementation Adjustments
+
+- Organize `components-b` into feature subfolders such as `filters/`, `results/`, and `cards/` instead of keeping a flat file list.
+- Keep the full filter model client-side for now, but initialize it from server `searchParams` and synchronize it back to the URL with `history.replaceState` so the page does not re-fetch on every local filter change.
+- Treat virtualization and infinite scroll as separate concerns.
+- The current virtualization layer should optimize rendering for already-loaded data.
+- True infinite loading should be a follow-up phase only after the backend exposes paginated marketplace queries and the UI can show a real loading row, end-of-list state, and error recovery.

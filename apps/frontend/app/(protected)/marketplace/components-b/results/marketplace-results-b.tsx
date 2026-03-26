@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 
 import type { AdSlot } from '@/lib/types';
 
-import { AdSlotCardB } from './ad-slot-card-b';
+import { AdSlotCardB } from '../cards/ad-slot-card-b';
 import { useMarketplaceGridColumns } from './use-marketplace-grid-columns';
 import { useMarketplaceVirtualRows } from './use-marketplace-virtual-rows';
 
