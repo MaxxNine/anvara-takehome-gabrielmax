@@ -32,7 +32,7 @@ export function UrgencySignalsB({ monthlyViews, placementCount }: UrgencySignals
       {signals.map((signal) => (
         <div
           key={signal.text}
-          className="flex items-center gap-2 rounded-lg bg-amber-500/5 px-3 py-2 text-xs font-medium text-amber-400"
+          className="flex items-center gap-2 rounded-xl border border-amber-100 bg-amber-50 px-3 py-2.5 text-xs font-semibold text-amber-700"
         >
           {signal.icon}
           <span>{signal.text}</span>

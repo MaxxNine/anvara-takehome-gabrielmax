@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { ActionErrorNotice } from '@/app/components/action-error-notice';
+import { homeBDisplayFont } from '@/app/home-b/fonts';
 import { getABTestVariantLabel } from '@/lib/ab-testing';
 import { adSlotEventParams, GA_EVENTS, trackEvent } from '@/lib/analytics';
 import type { ActionState } from '@/lib/action-types';
@@ -86,60 +87,72 @@ export function AdSlotDetailB({ adSlot, ctaVariant, relatedSlots, roleInfo, user
   ) : undefined;
 
   return (
-    <div className="space-y-6">
-      <Link href="/marketplace" className="inline-flex items-center gap-1 text-sm text-[--color-primary] hover:underline">
-        ← Back to Marketplace
-      </Link>
+    <div className="theme-home-b min-h-screen pb-16 pt-24 sm:pt-28">
+      <div className="space-y-8">
+        <Link
+          href="/marketplace"
+          className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-4 py-2 text-sm font-medium text-slate-600 shadow-[0_14px_34px_-28px_rgba(15,23,42,0.35)] transition hover:border-slate-300 hover:text-slate-950"
+        >
+          <span aria-hidden="true">←</span>
+          Back to Marketplace
+        </Link>
 
-      <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
-        {/* Left column — content */}
-        <div className="space-y-6">
+        <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
+          {/* Left column — content */}
+          <div className="space-y-6">
           {/* Publisher profile */}
           {publisher && (
-            <div className="rounded-xl border border-[--color-border] p-5">
+              <div className="rounded-[1.75rem] border border-white/80 bg-white/92 p-6 shadow-[0_26px_70px_-46px_rgba(15,23,42,0.32)]">
               <PublisherProfileB publisher={publisher} />
             </div>
           )}
 
           {/* Slot info */}
-          <div className="rounded-xl border border-[--color-border] p-6">
-            <div className="mb-4 flex items-start justify-between">
-              <h1 className="text-2xl font-bold text-[--color-foreground]">{currentAdSlot.name}</h1>
-              <span className={`flex-shrink-0 rounded-md px-3 py-1 text-sm font-bold ${getTypeBadgeColor(currentAdSlot.type)}`}>
-                {currentAdSlot.type}
-              </span>
-            </div>
-
-            {currentAdSlot.description && (
-              <p className="text-[--color-muted] leading-relaxed">{currentAdSlot.description}</p>
-            )}
-
-            {/* Dimensions if available */}
-            {(currentAdSlot.width || currentAdSlot.height) && (
-              <div className="mt-4 inline-flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-sm text-[--color-muted]">
-                <span>Dimensions:</span>
-                <span className="font-medium text-[--color-foreground]">
-                  {currentAdSlot.width}×{currentAdSlot.height}px
+            <div className="rounded-[1.75rem] border border-white/80 bg-white/92 p-6 shadow-[0_26px_70px_-46px_rgba(15,23,42,0.32)] sm:p-8">
+              <div className="mb-4 flex items-start justify-between gap-4">
+                <h1
+                  className={`${homeBDisplayFont.className} max-w-3xl text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl`}
+                >
+                  {currentAdSlot.name}
+                </h1>
+                <span
+                  className={`flex-shrink-0 rounded-full px-3 py-1 text-sm font-bold uppercase tracking-[0.18em] ${getTypeBadgeColor(
+                    currentAdSlot.type
+                  )}`}
+                >
+                  {currentAdSlot.type}
                 </span>
               </div>
-            )}
-          </div>
+
+              {currentAdSlot.description && (
+                <p className="max-w-3xl text-base leading-8 text-slate-600">{currentAdSlot.description}</p>
+              )}
+
+              {(currentAdSlot.width || currentAdSlot.height) && (
+                <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600">
+                  <span>Dimensions:</span>
+                  <span className="font-medium text-slate-950">
+                    {currentAdSlot.width}×{currentAdSlot.height}px
+                  </span>
+                </div>
+              )}
+            </div>
 
           {/* Publisher stats */}
           {publisher && (
-            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-3">
               <StatCard
-                icon={<Eye className="h-5 w-5 text-blue-400" />}
+                icon={<Eye className="h-5 w-5 text-[#1b64f2]" />}
                 label="Monthly Reach"
                 value={publisher.monthlyViews ? formatReach(publisher.monthlyViews) : '—'}
               />
               <StatCard
-                icon={<Users className="h-5 w-5 text-purple-400" />}
+                icon={<Users className="h-5 w-5 text-violet-600" />}
                 label="Subscribers"
                 value={publisher.subscriberCount ? formatReach(publisher.subscriberCount) : '—'}
               />
               <StatCard
-                icon={<BarChart3 className="h-5 w-5 text-emerald-400" />}
+                icon={<BarChart3 className="h-5 w-5 text-emerald-600" />}
                 label="Past Bookings"
                 value={String(placementCount)}
               />
@@ -148,11 +161,11 @@ export function AdSlotDetailB({ adSlot, ctaVariant, relatedSlots, roleInfo, user
 
           {/* Publisher bio */}
           {publisher?.bio && (
-            <div className="rounded-xl border border-[--color-border] p-5">
-              <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[--color-muted]">
+              <div className="rounded-[1.75rem] border border-white/80 bg-white/92 p-6 shadow-[0_26px_70px_-46px_rgba(15,23,42,0.32)]">
+                <h3 className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
                 About {publisher.name}
               </h3>
-              <p className="text-sm leading-relaxed text-[--color-muted]">{publisher.bio}</p>
+                <p className="text-sm leading-7 text-slate-600">{publisher.bio}</p>
             </div>
           )}
 
@@ -168,30 +181,31 @@ export function AdSlotDetailB({ adSlot, ctaVariant, relatedSlots, roleInfo, user
         </div>
 
         {/* Right column — booking sidebar (sticky) */}
-        <div className="lg:self-start lg:sticky lg:top-24">
-          <BookingSidebarB
-            adSlot={currentAdSlot}
-            canRequestPlacement={canRequestPlacement}
-            ctaLabel={ctaLabel}
-            disabledMessage={
-              user
-                ? 'Only sponsors can request placements'
-                : 'Log in as a sponsor to request this placement'
-            }
-            bookingForm={
-              <PlacementRequestForm
-                adSlot={currentAdSlot}
-                companyName={companyName}
-                initialCtaVariant={ctaVariant}
-                onBooked={handleBooked}
-              />
-            }
-            successNotice={
-              bookingSuccess ? (
-                <PlacementSuccessNotice resetControl={resetControl} />
-              ) : undefined
-            }
-          />
+          <div className="lg:self-start lg:sticky lg:top-24">
+            <BookingSidebarB
+              adSlot={currentAdSlot}
+              canRequestPlacement={canRequestPlacement}
+              ctaLabel={ctaLabel}
+              disabledMessage={
+                user
+                  ? 'Only sponsors can request placements'
+                  : 'Log in as a sponsor to request this placement'
+              }
+              bookingForm={
+                <PlacementRequestForm
+                  adSlot={currentAdSlot}
+                  companyName={companyName}
+                  initialCtaVariant={ctaVariant}
+                  onBooked={handleBooked}
+                />
+              }
+              successNotice={
+                bookingSuccess ? (
+                  <PlacementSuccessNotice resetControl={resetControl} />
+                ) : undefined
+              }
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -200,10 +214,10 @@ export function AdSlotDetailB({ adSlot, ctaVariant, relatedSlots, roleInfo, user
 
 function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-[--color-border] p-4">
-      <div className="mb-2">{icon}</div>
-      <p className="text-2xl font-bold text-[--color-foreground]">{value}</p>
-      <p className="text-xs text-[--color-muted]">{label}</p>
+    <div className="rounded-[1.5rem] border border-white/80 bg-white/92 p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.3)]">
+      <div className="mb-3">{icon}</div>
+      <p className="text-2xl font-bold tracking-tight text-slate-950">{value}</p>
+      <p className="mt-1 text-xs font-medium uppercase tracking-[0.16em] text-slate-500">{label}</p>
     </div>
   );
 }

@@ -19,11 +19,11 @@ export function formatReachLabel(type: AdSlotType, views: number): string {
 }
 
 const accentColors: Record<AdSlotType, string> = {
-  DISPLAY: 'border-l-blue-500',
-  VIDEO: 'border-l-red-500',
-  NATIVE: 'border-l-emerald-500',
-  NEWSLETTER: 'border-l-purple-500',
-  PODCAST: 'border-l-orange-500',
+  DISPLAY: 'border-l-blue-400',
+  VIDEO: 'border-l-rose-400',
+  NATIVE: 'border-l-emerald-400',
+  NEWSLETTER: 'border-l-violet-400',
+  PODCAST: 'border-l-amber-400',
 };
 
 export function getTypeAccentColor(type: AdSlotType): string {
@@ -31,11 +31,11 @@ export function getTypeAccentColor(type: AdSlotType): string {
 }
 
 const typeBadgeColors: Record<AdSlotType, string> = {
-  DISPLAY: 'bg-blue-500/10 text-blue-400',
-  VIDEO: 'bg-red-500/10 text-red-400',
-  NATIVE: 'bg-emerald-500/10 text-emerald-400',
-  NEWSLETTER: 'bg-purple-500/10 text-purple-400',
-  PODCAST: 'bg-orange-500/10 text-orange-400',
+  DISPLAY: 'bg-blue-50 text-blue-700',
+  VIDEO: 'bg-rose-50 text-rose-700',
+  NATIVE: 'bg-emerald-50 text-emerald-700',
+  NEWSLETTER: 'bg-violet-50 text-violet-700',
+  PODCAST: 'bg-amber-50 text-amber-700',
 };
 
 export function getTypeBadgeColor(type: AdSlotType): string {

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
+import { homeBDisplayFont } from '@/app/home-b/fonts';
 import type { AdSlot, AdSlotType } from '@/lib/types';
 import { MarketplaceViewTracker } from '../components/marketplace-view-tracker';
 import { AdSlotCardB } from './ad-slot-card-b';
@@ -65,54 +66,85 @@ export function MarketplaceGridB({ adSlots }: MarketplaceGridBProps) {
   const booked = filtered.filter((s) => !s.isAvailable);
 
   return (
-    <div className="space-y-6">
+    <div className="theme-home-b min-h-screen pb-16 pt-24 sm:pt-28">
       <MarketplaceViewTracker resultsCount={adSlots.length} />
 
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">Marketplace</h1>
-        <p className="mt-1 text-[--color-muted]">
-          Browse {adSlots.filter((s) => s.isAvailable).length} available placements from verified publishers
-        </p>
-      </div>
+      <div className="space-y-8 sm:space-y-10">
+        <section className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,250,255,0.96))] p-6 shadow-[0_30px_80px_-46px_rgba(15,23,42,0.24)] sm:p-8 lg:p-10">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top_right,rgba(27,100,242,0.12),rgba(255,255,255,0)_54%)]" />
 
-      {/* Filters */}
-      <MarketplaceFilterBar
-        search={search}
-        onSearchChange={setSearch}
-        typeFilter={typeFilter}
-        onTypeChange={setTypeFilter}
-        sort={sort}
-        onSortChange={setSort}
-        resultCount={available.length}
-      />
+          <div className="relative space-y-6">
+            <div className="max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#1b64f2]/70">
+                Verified sponsorship marketplace
+              </p>
+              <h1
+                className={`${homeBDisplayFont.className} mt-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl`}
+              >
+                Find placements that fit the campaign.
+              </h1>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
+                Compare verified display, video, podcast, newsletter, and native inventory with
+                transparent pricing, audience reach, and publisher context upfront.
+              </p>
+            </div>
 
-      {/* Available listings */}
-      {available.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[--color-border] p-12 text-center text-[--color-muted]">
-          No placements match your filters. Try adjusting your search.
-        </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {available.map((slot) => (
-            <AdSlotCardB key={slot.id} slot={slot} />
-          ))}
-        </div>
-      )}
-
-      {/* Booked listings */}
-      {booked.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-sm font-medium uppercase tracking-wide text-[--color-muted]">
-            Currently Booked ({booked.length})
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {booked.map((slot) => (
-              <AdSlotCardB key={slot.id} slot={slot} />
-            ))}
+            <MarketplaceFilterBar
+              search={search}
+              onSearchChange={setSearch}
+              typeFilter={typeFilter}
+              onTypeChange={setTypeFilter}
+              sort={sort}
+              onSortChange={setSort}
+              resultCount={available.length}
+            />
           </div>
-        </div>
-      )}
+        </section>
+
+        <section className="space-y-5">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 className="text-xl font-semibold tracking-tight text-slate-950 sm:text-2xl">
+                Available placements
+              </h2>
+              <p className="mt-1 text-sm text-slate-600 sm:text-base">
+                Browse {adSlots.filter((s) => s.isAvailable).length} placements from verified publishers.
+              </p>
+            </div>
+          </div>
+
+          {available.length === 0 ? (
+            <div className="rounded-[1.5rem] border border-dashed border-slate-300 bg-white/85 p-12 text-center text-slate-600">
+              No placements match your filters. Try adjusting your search.
+            </div>
+          ) : (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {available.map((slot) => (
+                <AdSlotCardB key={slot.id} slot={slot} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {booked.length > 0 && (
+          <section className="space-y-4 rounded-[1.75rem] border border-slate-200/80 bg-white/80 p-6 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.22)]">
+            <div>
+              <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
+                Currently booked
+              </h2>
+              <p className="mt-2 text-sm text-slate-600">
+                {booked.length} placement{booked.length !== 1 ? 's are' : ' is'} unavailable right now.
+              </p>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {booked.map((slot) => (
+                <AdSlotCardB key={slot.id} slot={slot} />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { Menu, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import type { UserRole } from '@/lib/types';
@@ -14,10 +15,12 @@ type NavVariantBProps = {
 };
 
 export function NavVariantB({ user, role }: NavVariantBProps) {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [contactToastOpen, setContactToastOpen] = useState(false);
   const contactToastTimeoutRef = useRef<number | null>(null);
+  const isHomeRoute = pathname === '/';
 
   useEffect(() => {
     function onScroll() {
@@ -38,7 +41,7 @@ export function NavVariantB({ user, role }: NavVariantBProps) {
     };
   }, []);
 
-  const hasBg = scrolled || menuOpen;
+  const hasBg = !isHomeRoute || scrolled || menuOpen;
 
   const linkClass = `text-sm font-medium transition-colors duration-300 cursor-pointer ${
     hasBg ? 'text-slate-600 hover:text-slate-950' : 'text-white/80 hover:text-white'
@@ -72,15 +75,15 @@ export function NavVariantB({ user, role }: NavVariantBProps) {
         }`}
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
-        <TrackedNavLink
-          href="/"
-          destination="/"
-          className={`text-xl font-bold tracking-tight transition-colors duration-300 ${
-            hasBg ? 'text-slate-950' : 'text-white'
-          }`}
-        >
-          Anvara
-        </TrackedNavLink>
+          <TrackedNavLink
+            href="/"
+            destination="/"
+            className={`text-xl font-bold tracking-tight transition-colors duration-300 ${
+              hasBg ? 'text-slate-950' : 'text-white'
+            }`}
+          >
+            Anvara
+          </TrackedNavLink>
 
         {/* Desktop links */}
         <div className="hidden items-center gap-6 md:flex">
@@ -162,59 +165,59 @@ export function NavVariantB({ user, role }: NavVariantBProps) {
         >
           <div className="border-t border-slate-200/50 px-4 pb-6 pt-4 sm:px-6">
             <div className="flex flex-col gap-4">
-            {user ? (
-              <TrackedNavLink
-                href="/marketplace"
-                destination="/marketplace"
-                className="text-sm font-medium text-slate-600 transition hover:text-slate-950"
-              >
-                <span onClick={closeMenu}>Marketplace</span>
-              </TrackedNavLink>
-            ) : (
-              <button
-                type="button"
-                onClick={openContactToast}
-                className="w-fit text-sm font-medium text-slate-600 transition hover:text-slate-950"
-              >
-                Contact us
-              </button>
-            )}
+              {user ? (
+                <TrackedNavLink
+                  href="/marketplace"
+                  destination="/marketplace"
+                  className="text-sm font-medium text-slate-600 transition hover:text-slate-950"
+                >
+                  <span onClick={closeMenu}>Marketplace</span>
+                </TrackedNavLink>
+              ) : (
+                <button
+                  type="button"
+                  onClick={openContactToast}
+                  className="w-fit text-sm font-medium text-slate-600 transition hover:text-slate-950"
+                >
+                  Contact us
+                </button>
+              )}
 
-            {user && role === 'sponsor' ? (
-              <TrackedNavLink
-                href="/dashboard/sponsor"
-                destination="/dashboard/sponsor"
-                className="text-sm font-medium text-slate-600 transition hover:text-slate-950"
-              >
-                <span onClick={closeMenu}>My Campaigns</span>
-              </TrackedNavLink>
-            ) : null}
-            {user && role === 'publisher' ? (
-              <TrackedNavLink
-                href="/dashboard/publisher"
-                destination="/dashboard/publisher"
-                className="text-sm font-medium text-slate-600 transition hover:text-slate-950"
-              >
-                <span onClick={closeMenu}>My Ad Slots</span>
-              </TrackedNavLink>
-            ) : null}
+              {user && role === 'sponsor' ? (
+                <TrackedNavLink
+                  href="/dashboard/sponsor"
+                  destination="/dashboard/sponsor"
+                  className="text-sm font-medium text-slate-600 transition hover:text-slate-950"
+                >
+                  <span onClick={closeMenu}>My Campaigns</span>
+                </TrackedNavLink>
+              ) : null}
+              {user && role === 'publisher' ? (
+                <TrackedNavLink
+                  href="/dashboard/publisher"
+                  destination="/dashboard/publisher"
+                  className="text-sm font-medium text-slate-600 transition hover:text-slate-950"
+                >
+                  <span onClick={closeMenu}>My Ad Slots</span>
+                </TrackedNavLink>
+              ) : null}
 
-            {user ? (
-              <div className="flex flex-col gap-3 border-t border-slate-200/50 pt-4">
-                <span className="text-sm text-slate-500">
-                  {user.name} {role ? `(${role})` : null}
-                </span>
-                <LogoutButton className="w-fit rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-70" />
-              </div>
-            ) : (
-              <TrackedNavLink
-                href="/login"
-                destination="/login"
-                className="w-fit rounded-full bg-[#1b64f2] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(27,100,242,0.8)] transition hover:bg-blue-600"
-              >
-                <span onClick={closeMenu}>Login</span>
-              </TrackedNavLink>
-            )}
+              {user ? (
+                <div className="flex flex-col gap-3 border-t border-slate-200/50 pt-4">
+                  <span className="text-sm text-slate-500">
+                    {user.name} {role ? `(${role})` : null}
+                  </span>
+                  <LogoutButton className="w-fit rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-70" />
+                </div>
+              ) : (
+                <TrackedNavLink
+                  href="/login"
+                  destination="/login"
+                  className="w-fit rounded-full bg-[#1b64f2] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(27,100,242,0.8)] transition hover:bg-blue-600"
+                >
+                  <span onClick={closeMenu}>Login</span>
+                </TrackedNavLink>
+              )}
             </div>
           </div>
         </div>
