@@ -2,15 +2,17 @@ import { headers } from 'next/headers';
 
 import { getForcedABTestVariant } from '@/lib/ab-testing';
 import { getServerABVariant } from '@/lib/ab-testing/server';
+
 import { MarketplaceGridB } from './components-b/marketplace-grid-b';
+import { parseMarketplaceFiltersFromSearchParams } from './components-b/marketplace-filter.query';
 import { AdSlotGrid } from './components/ad-slot-grid';
 import { getMarketplaceAdSlots } from './data';
 
-interface Props {
+type MarketplacePageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
-}
+};
 
-export default async function MarketplacePage({ searchParams }: Props) {
+export default async function MarketplacePage({ searchParams }: MarketplacePageProps) {
   const resolvedSearchParams = (await searchParams) ?? {};
   const requestHeaders = await headers();
   const [adSlots, marketplaceVariant] = await Promise.all([
@@ -21,7 +23,12 @@ export default async function MarketplacePage({ searchParams }: Props) {
   ]);
 
   if (marketplaceVariant === 'B') {
-    return <MarketplaceGridB adSlots={adSlots} />;
+    return (
+      <MarketplaceGridB
+        adSlots={adSlots}
+        initialFilters={parseMarketplaceFiltersFromSearchParams(resolvedSearchParams)}
+      />
+    );
   }
 
   return (

@@ -126,8 +126,8 @@ describe('marketplace filter utils', () => {
       verifiedOnly: true,
     });
 
-    expect(result.filtered.map((slot) => slot.id)).toEqual(['one', 'three']);
-    expect(result.available.map((slot) => slot.id)).toEqual(['three', 'one']);
+    expect(result.filtered.map((slot) => slot.id)).toEqual(['three']);
+    expect(result.available.map((slot) => slot.id)).toEqual(['three']);
     expect(result.booked).toEqual([]);
     expect(result.missingEstimatedCpmCount).toBe(1);
   });

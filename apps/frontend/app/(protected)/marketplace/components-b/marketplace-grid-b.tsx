@@ -1,140 +1,34 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-
 import { homeBDisplayFont } from '@/app/home-b/fonts';
-import type { AdSlot, AdSlotType } from '@/lib/types';
+import type { AdSlot } from '@/lib/types';
+
 import { MarketplaceViewTracker } from '../components/marketplace-view-tracker';
-import { AdSlotCardB } from './ad-slot-card-b';
-import {
-  type EstimatedCpmFilter,
-  MarketplaceFilterBar,
-  type BudgetFilter,
-  type SortOption,
-} from './marketplace-filter-bar';
-import { getAudienceSize, getEstimatedCpmValue } from './format-helpers';
+import { MarketplaceFiltersPanel } from './marketplace-filters-panel';
+import type { MarketplaceFilters } from './marketplace-filter.types';
+import { MarketplaceResultsB } from './marketplace-results-b';
+import { useMarketplaceFilters } from './use-marketplace-filters';
 
 type MarketplaceGridBProps = {
   adSlots: AdSlot[];
+  initialFilters: MarketplaceFilters;
 };
 
-function filterAndSort(
-  slots: AdSlot[],
-  search: string,
-  typeFilter: AdSlotType | 'ALL',
-  availabilityOnly: boolean,
-  budgetFilter: BudgetFilter,
-  estimatedCpmFilter: EstimatedCpmFilter,
-  verifiedOnly: boolean,
-  sort: SortOption,
-) {
-  let filtered = slots;
+export function MarketplaceGridB({ adSlots, initialFilters }: MarketplaceGridBProps) {
+  const {
+    actions,
+    activeAdvancedFilterCount,
+    bounds,
+    filters,
+    hasActiveFilters,
+    results,
+    ui,
+  } = useMarketplaceFilters({
+    adSlots,
+    initialFilters,
+  });
 
-  if (availabilityOnly) {
-    filtered = filtered.filter((s) => s.isAvailable);
-  }
-
-  if (typeFilter !== 'ALL') {
-    filtered = filtered.filter((s) => s.type === typeFilter);
-  }
-
-  if (verifiedOnly) {
-    filtered = filtered.filter((s) => Boolean(s.publisher?.isVerified));
-  }
-
-  if (budgetFilter !== 'ALL') {
-    filtered = filtered.filter((s) => {
-      const price = Number(s.basePrice);
-
-      switch (budgetFilter) {
-        case 'UNDER_2K':
-          return price < 2000;
-        case 'BETWEEN_2K_AND_5K':
-          return price >= 2000 && price <= 5000;
-        case 'OVER_5K':
-          return price > 5000;
-        default:
-          return true;
-      }
-    });
-  }
-
-  if (estimatedCpmFilter !== 'ALL') {
-    filtered = filtered.filter((slot) => {
-      const estimatedCpm = getEstimatedCpmValue(Number(slot.basePrice), getAudienceSize(slot));
-
-      if (estimatedCpm === null) {
-        return false;
-      }
-
-      switch (estimatedCpmFilter) {
-        case 'UNDER_10':
-          return estimatedCpm < 10;
-        case 'BETWEEN_10_AND_25':
-          return estimatedCpm >= 10 && estimatedCpm <= 25;
-        case 'OVER_25':
-          return estimatedCpm > 25;
-        default:
-          return true;
-      }
-    });
-  }
-
-  if (search.trim()) {
-    const q = search.toLowerCase().trim();
-    filtered = filtered.filter(
-      (s) =>
-        s.name.toLowerCase().includes(q) ||
-        s.description?.toLowerCase().includes(q) ||
-        s.publisher?.name.toLowerCase().includes(q),
-    );
-  }
-
-  const sorted = [...filtered];
-  switch (sort) {
-    case 'price-desc':
-      sorted.sort((a, b) => Number(b.basePrice) - Number(a.basePrice));
-      break;
-    case 'price-asc':
-      sorted.sort((a, b) => Number(a.basePrice) - Number(b.basePrice));
-      break;
-    case 'reach':
-      sorted.sort(
-        (a, b) => (b.publisher?.monthlyViews ?? 0) - (a.publisher?.monthlyViews ?? 0),
-      );
-      break;
-  }
-
-  return sorted;
-}
-
-export function MarketplaceGridB({ adSlots }: MarketplaceGridBProps) {
-  const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
-  const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState<AdSlotType | 'ALL'>('ALL');
-  const [availabilityOnly, setAvailabilityOnly] = useState(true);
-  const [budgetFilter, setBudgetFilter] = useState<BudgetFilter>('ALL');
-  const [estimatedCpmFilter, setEstimatedCpmFilter] = useState<EstimatedCpmFilter>('ALL');
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
-  const [sort, setSort] = useState<SortOption>('price-desc');
-
-  const filtered = useMemo(
-    () =>
-      filterAndSort(
-        adSlots,
-        search,
-        typeFilter,
-        availabilityOnly,
-        budgetFilter,
-        estimatedCpmFilter,
-        verifiedOnly,
-        sort
-      ),
-    [adSlots, availabilityOnly, budgetFilter, estimatedCpmFilter, search, typeFilter, verifiedOnly, sort],
-  );
-
-  const available = filtered.filter((s) => s.isAvailable);
-  const booked = filtered.filter((s) => !s.isAvailable);
+  const totalAvailableSlots = adSlots.filter((slot) => slot.isAvailable).length;
 
   return (
     <div className="theme-home-b min-h-screen pb-16 pt-24 sm:pt-28">
@@ -158,73 +52,25 @@ export function MarketplaceGridB({ adSlots }: MarketplaceGridBProps) {
                 Compare verified display, video, podcast, newsletter, and native inventory with
                 transparent pricing, audience reach, and publisher context upfront.
               </p>
+              <p className="mt-4 text-sm text-slate-500 sm:text-base">
+                {totalAvailableSlots} placements are currently available across the marketplace.
+              </p>
             </div>
 
-            <MarketplaceFilterBar
-              advancedFiltersOpen={advancedFiltersOpen}
-              onAdvancedFiltersToggle={() => setAdvancedFiltersOpen((current) => !current)}
-              search={search}
-              onSearchChange={setSearch}
-              typeFilter={typeFilter}
-              onTypeChange={setTypeFilter}
-              availabilityOnly={availabilityOnly}
-              onAvailabilityToggle={() => setAvailabilityOnly((current) => !current)}
-              budgetFilter={budgetFilter}
-              onBudgetFilterChange={setBudgetFilter}
-              estimatedCpmFilter={estimatedCpmFilter}
-              onEstimatedCpmFilterChange={setEstimatedCpmFilter}
-              verifiedOnly={verifiedOnly}
-              onVerifiedToggle={() => setVerifiedOnly((current) => !current)}
-              sort={sort}
-              onSortChange={setSort}
-              resultCount={filtered.length}
+            <MarketplaceFiltersPanel
+              actions={actions}
+              activeAdvancedFilterCount={activeAdvancedFilterCount}
+              advancedFiltersOpen={ui.advancedFiltersOpen}
+              bounds={bounds}
+              filters={filters}
+              hasActiveFilters={hasActiveFilters}
+              missingEstimatedCpmCount={results.missingEstimatedCpmCount}
+              resultCount={results.resultCount}
             />
           </div>
         </section>
 
-        <section className="space-y-5">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-xl font-semibold tracking-tight text-slate-950 sm:text-2xl">
-                Available placements
-              </h2>
-              <p className="mt-1 text-sm text-slate-600 sm:text-base">
-                Browse {adSlots.filter((s) => s.isAvailable).length} placements from verified publishers.
-              </p>
-            </div>
-          </div>
-
-          {available.length === 0 ? (
-            <div className="rounded-[1.5rem] border border-dashed border-slate-300 bg-white/85 p-12 text-center text-slate-600">
-              No placements match your filters. Try adjusting your search.
-            </div>
-          ) : (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {available.map((slot) => (
-                <AdSlotCardB key={slot.id} slot={slot} />
-              ))}
-            </div>
-          )}
-        </section>
-
-        {booked.length > 0 && (
-          <section className="space-y-4 rounded-[1.75rem] border border-slate-200/80 bg-white/80 p-6 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.22)]">
-            <div>
-              <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
-                Currently booked
-              </h2>
-              <p className="mt-2 text-sm text-slate-600">
-                {booked.length} placement{booked.length !== 1 ? 's are' : ' is'} unavailable right now.
-              </p>
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {booked.map((slot) => (
-                <AdSlotCardB key={slot.id} slot={slot} />
-              ))}
-            </div>
-          </section>
-        )}
+        <MarketplaceResultsB available={results.available} booked={results.booked} />
       </div>
     </div>
   );
