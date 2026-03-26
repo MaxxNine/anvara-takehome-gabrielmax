@@ -39,7 +39,7 @@ export function HomeBHero() {
             >
               Connect Your Brand to{' '}
               <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+              <span className="text-[#8faeff]">
                 Culture
               </span>{' '}
               at Scale

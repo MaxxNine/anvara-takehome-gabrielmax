@@ -4,6 +4,7 @@ import { auth } from '@/auth';
 import { getCurrentUserProfile } from '@/lib/auth-helpers';
 import { ApiError, serverApi, type ForwardedRequestHeaders } from '@/lib/server-api';
 import type { AdSlot, RoleInfo, SessionUser } from '@/lib/types';
+import { getMarketplaceAdSlots } from '../data';
 
 export type MarketplaceViewer = {
   roleInfo: RoleInfo | null;
@@ -58,4 +59,13 @@ export async function getMarketplaceViewer(
       roleInfo: null,
     };
   }
+}
+
+export async function getRelatedMarketplaceAdSlots(
+  currentSlotId: string,
+  requestHeaders?: ForwardedRequestHeaders
+): Promise<AdSlot[]> {
+  const adSlots = await getMarketplaceAdSlots(requestHeaders);
+
+  return adSlots.filter((slot) => slot.isAvailable && slot.id !== currentSlotId).slice(0, 3);
 }

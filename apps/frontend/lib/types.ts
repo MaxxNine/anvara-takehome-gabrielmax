@@ -27,6 +27,10 @@ export interface PublisherSummary {
   category?: string | null;
   website?: string | null;
   monthlyViews?: number;
+  subscriberCount?: number;
+  bio?: string | null;
+  avatar?: string | null;
+  isVerified?: boolean;
 }
 
 export interface Campaign {

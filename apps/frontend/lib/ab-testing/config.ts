@@ -27,6 +27,14 @@ export const AB_TESTS = {
     ],
     isActive: true,
   },
+  'marketplace-layout': {
+    name: 'Marketplace Layout',
+    variants: [
+      { id: 'A', label: 'Default', weight: 50 },
+      { id: 'B', label: 'Enhanced', weight: 50 },
+    ],
+    isActive: true,
+  },
 } as const satisfies Record<string, ABTestConfig>;
 
 export type ABTestName = keyof typeof AB_TESTS;

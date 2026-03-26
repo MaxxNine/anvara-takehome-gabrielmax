@@ -23,7 +23,7 @@ export async function listAdSlots(filters: AdSlotListFilters) {
       ...(filters.availableOnly && { isAvailable: true }),
     },
     include: {
-      publisher: { select: { id: true, name: true, category: true, monthlyViews: true } },
+      publisher: { select: { id: true, name: true, category: true, monthlyViews: true, subscriberCount: true, isVerified: true } },
       _count: { select: { placements: true } },
     },
     orderBy: { basePrice: 'desc' },
