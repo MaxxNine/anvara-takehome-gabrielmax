@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { getForcedABTestVariant } from '@/lib/ab-testing';
 import { getServerABVariant } from '@/lib/ab-testing/server';
 import { HomeHero } from './components/home-hero';
-import { HomeBPage } from './home-b/components/home-b-page';
+import { HomeBPage } from './home-b/page-content';
 import { getHomepageMetadata } from './homepage-metadata';
 
 type HomePageProps = {

@@ -1,8 +1,8 @@
 import { Star } from 'lucide-react';
 
-import { homeBTestimonials } from '../content';
-import { homeBDisplayFont } from '../fonts';
-import { HomeBReveal } from './home-b-reveal';
+import { homeBTestimonials } from '../../content';
+import { homeBDisplayFont } from '../../fonts';
+import { HomeBReveal } from '../../shared/reveal';
 
 function TestimonialStars({ accent }: { accent: (typeof homeBTestimonials)[number]['accent'] }) {
   const colorClass =

@@ -1,9 +1,9 @@
 import Image from 'next/image';
 
-import { homeBPreviewRounds } from '../content';
-import { homeBDisplayFont } from '../fonts';
-import { HomeBFormatExplorer } from './home-b-format-explorer';
-import { HomeBProofBand } from './home-b-proof-band';
+import { homeBPreviewRounds } from '../../content';
+import { homeBDisplayFont } from '../../fonts';
+import { HomeBFormatExplorer } from './format-explorer';
+import { HomeBProofBand } from './proof-band';
 
 const HERO_IMAGE =
   'https://images.unsplash.com/photo-1699480114704-ac153307d2a0?q=80&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0';

@@ -1,4 +1,4 @@
-import { homeBDisplayFont } from '../fonts';
+import { homeBDisplayFont } from '../../fonts';
 
 const footerColumns = [
   {

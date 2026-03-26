@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
-import { homeBFaqItems } from '../content';
-import { homeBDisplayFont } from '../fonts';
+import { homeBFaqItems } from '../../content';
+import { homeBDisplayFont } from '../../fonts';
 
 export function HomeBFaq() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);

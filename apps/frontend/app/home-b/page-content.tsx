@@ -1,11 +1,11 @@
-import { homeBBodyFont } from '../fonts';
-import { HomeBAudienceSplit } from './home-b-audience-split';
-import { HomeBFaq } from './home-b-faq';
-import { HomeBFeatureStories } from './home-b-feature-stories';
-import { HomeBFinalCta } from './home-b-final-cta';
-import { HomeBFooter } from './home-b-footer';
-import { HomeBHero } from './home-b-hero';
-import { HomeBStructuredData } from './home-b-structured-data';
+import { homeBBodyFont } from './fonts';
+import { HomeBStructuredData } from './seo/structured-data';
+import { HomeBAudienceSplit } from './sections/audience-split';
+import { HomeBFaq } from './sections/faq';
+import { HomeBFeatureStories } from './sections/feature-stories';
+import { HomeBFinalCta } from './sections/final-cta';
+import { HomeBFooter } from './sections/footer';
+import { HomeBHero } from './sections/hero';
 
 type HomeBPageProps = {
   siteUrl: string;

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import type { HomeBPreviewRound } from '../content';
+import type { HomeBPreviewRound } from '../../content';
 
 export type TypewriterPhase = 'typing' | 'idle' | 'deleting' | 'waiting';
 

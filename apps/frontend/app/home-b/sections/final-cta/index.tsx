@@ -3,10 +3,10 @@
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
-import { homeBDisplayFont } from '../fonts';
-import { useNewsletterSubscribe } from '../hooks/use-newsletter-subscribe';
-import { HomeBCtaLink } from './home-b-cta-link';
-import { HomeBReveal } from './home-b-reveal';
+import { homeBDisplayFont } from '../../fonts';
+import { HomeBCtaLink } from '../../shared/cta-link';
+import { HomeBReveal } from '../../shared/reveal';
+import { useNewsletterSubscribe } from './use-newsletter-subscribe';
 
 function NewsletterForm() {
   const [email, setEmail] = useState('');

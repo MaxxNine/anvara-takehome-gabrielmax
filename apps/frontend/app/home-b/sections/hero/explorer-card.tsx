@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import type { HomeBPreviewSlot } from '../content';
+import type { HomeBPreviewSlot } from '../../content';
 
 type HomeBExplorerCardProps = {
   slot: HomeBPreviewSlot;

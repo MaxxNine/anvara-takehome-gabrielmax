@@ -5,10 +5,10 @@ import {
   homeBPublisherBenefits,
   homeBPublisherInventoryItems,
   homeBSponsorFeatures,
-} from '../content';
-import { homeBDisplayFont } from '../fonts';
-import { HomeBReveal } from './home-b-reveal';
-import { SponsorShowcase } from './home-b-sponsor-showcase';
+} from '../../content';
+import { homeBDisplayFont } from '../../fonts';
+import { HomeBReveal } from '../../shared/reveal';
+import { SponsorShowcase } from './sponsor-showcase';
 
 const featureIconComponents = {
   chart: BarChart3,
