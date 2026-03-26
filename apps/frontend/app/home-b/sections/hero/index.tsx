@@ -31,15 +31,18 @@ export function HomeBHero() {
 
       {/* Content — pt-20 accounts for fixed nav */}
       <div className="relative mx-auto flex w-full max-w-7xl flex-1 items-center px-6 pb-10 pt-24 sm:px-8 sm:pb-14 sm:pt-28 lg:px-10 lg:pb-16 lg:pt-24 xl:px-12">
-        <div className="flex w-full flex-col gap-10 sm:gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-14 xl:gap-20">
-          <div className="max-w-xl text-left xl:max-w-2xl">
+        <div className="flex w-full flex-col gap-10 sm:gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-10 xl:gap-14">
+          <div className="max-w-xl text-left lg:max-w-[34rem] xl:max-w-[36rem]">
             <h1
               id="home-b-hero-title"
-              className={`${homeBDisplayFont.className} text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.05] xl:text-[4.5rem]`}
+              className={`${homeBDisplayFont.className} text-[2.5rem] font-bold leading-[1.08] tracking-tight text-white sm:text-[3.2rem] lg:text-[3.75rem] xl:text-[4.2rem]`}
             >
-              Connect Your Brand
-              <br />
-              to Culture at Scale
+              Connect Your Brand to{' '}
+              <br className="hidden sm:inline" />
+              <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                Culture
+              </span>{' '}
+              at Scale
             </h1>
 
             <p className="mt-5 max-w-lg text-base leading-7 text-white/75 sm:mt-6 sm:text-lg sm:leading-8">
@@ -58,11 +61,11 @@ export function HomeBHero() {
             </div>
 
             <div className="mt-8 w-full max-w-xl lg:hidden">
-              <HomeBFormatExplorer rounds={homeBPreviewRounds} />
+              <HomeBFormatExplorer rounds={homeBPreviewRounds} compact />
             </div>
           </div>
 
-          <div className="hidden w-full max-w-2xl lg:block lg:w-[32rem] lg:flex-shrink-0 xl:w-[34rem]">
+          <div className="hidden w-full max-w-2xl lg:block lg:w-[31rem] lg:flex-shrink-0 xl:w-[33rem]">
             <HomeBFormatExplorer rounds={homeBPreviewRounds} />
           </div>
         </div>
