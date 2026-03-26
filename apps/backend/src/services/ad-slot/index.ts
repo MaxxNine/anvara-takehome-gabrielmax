@@ -10,3 +10,4 @@ export {
   unbookAdSlot,
   updateAdSlot,
 } from './ad-slot.service.js';
+export { listMarketplaceAdSlots } from './ad-slot.marketplace.service.js';

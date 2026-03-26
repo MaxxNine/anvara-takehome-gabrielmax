@@ -2,28 +2,24 @@
 
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 
-import type { AdSlot, AdSlotType } from '@/lib/types';
+import type { AdSlotType } from '@/lib/types';
 
 import { defaultMarketplaceFilters } from './marketplace-filter.constants';
 import { serializeMarketplaceFiltersToSearchParams } from './marketplace-filter.query';
 import type {
   MarketplaceFilterBounds,
-  MarketplaceFilterResults,
   MarketplaceFilters,
   MarketplaceSortOption,
   NumericRange,
 } from './marketplace-filter.types';
 import {
-  applyMarketplaceFilters,
   clampMarketplaceFilters,
   getActiveAdvancedFilterCount,
-  getMarketplaceFilterBounds,
   hasActiveMarketplaceFilters,
-  normalizeMarketplaceSlots,
 } from './marketplace-filter.utils';
 
 type UseMarketplaceFiltersOptions = {
-  adSlots: AdSlot[];
+  bounds: MarketplaceFilterBounds;
   initialFilters: MarketplaceFilters;
 };
 
@@ -45,18 +41,16 @@ export type UseMarketplaceFiltersResult = {
   bounds: MarketplaceFilterBounds;
   filters: MarketplaceFilters;
   hasActiveFilters: boolean;
-  results: MarketplaceFilterResults;
+  requestFilters: MarketplaceFilters;
   ui: {
     advancedFiltersOpen: boolean;
   };
 };
 
 export function useMarketplaceFilters({
-  adSlots,
+  bounds,
   initialFilters,
 }: UseMarketplaceFiltersOptions): UseMarketplaceFiltersResult {
-  const normalizedSlots = useMemo(() => normalizeMarketplaceSlots(adSlots), [adSlots]);
-  const bounds = useMemo(() => getMarketplaceFilterBounds(normalizedSlots), [normalizedSlots]);
   const [filters, setFilters] = useState(() => clampMarketplaceFilters(initialFilters, bounds));
   const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(
     () => getActiveAdvancedFilterCount(initialFilters) > 0
@@ -83,7 +77,7 @@ export function useMarketplaceFilters({
     return () => window.clearTimeout(timeoutId);
   }, [filters]);
 
-  const effectiveFilters = useMemo(
+  const requestFilters = useMemo(
     () =>
       clampMarketplaceFilters(
         {
@@ -94,13 +88,9 @@ export function useMarketplaceFilters({
       ),
     [bounds, deferredQuery, filters]
   );
-  const results = useMemo(
-    () => applyMarketplaceFilters(normalizedSlots, effectiveFilters),
-    [effectiveFilters, normalizedSlots]
-  );
 
   const actions: MarketplaceFilterActions = {
-    resetFilters: () => setFilters(defaultMarketplaceFilters),
+    resetFilters: () => setFilters(clampMarketplaceFilters(defaultMarketplaceFilters, bounds)),
     setAvailability: (value) =>
       setFilters((current) =>
         clampMarketplaceFilters(
@@ -160,7 +150,7 @@ export function useMarketplaceFilters({
     bounds,
     filters,
     hasActiveFilters: hasActiveMarketplaceFilters(filters),
-    results,
+    requestFilters,
     ui: {
       advancedFiltersOpen,
     },

@@ -1,38 +1,46 @@
 'use client';
 
 import { homeBDisplayFont } from '@/app/home-b/fonts';
-import type { AdSlot } from '@/lib/types';
 
+import type { InitialMarketplaceSections } from '../marketplace.types';
 import { MarketplaceViewTracker } from '../components/marketplace-view-tracker';
 import { MarketplaceFiltersPanel } from './filters/marketplace-filters-panel';
 import type { MarketplaceFilters } from './filters/marketplace-filter.types';
 import { useMarketplaceFilters } from './filters/use-marketplace-filters';
 import { MarketplaceResultsB } from './results/marketplace-results-b';
+import { useMarketplaceInfiniteResults } from './results/use-marketplace-infinite-results';
 
 type MarketplaceGridBProps = {
-  adSlots: AdSlot[];
   initialFilters: MarketplaceFilters;
+  initialSections: InitialMarketplaceSections;
 };
 
-export function MarketplaceGridB({ adSlots, initialFilters }: MarketplaceGridBProps) {
+export function MarketplaceGridB({
+  initialFilters,
+  initialSections,
+}: MarketplaceGridBProps) {
+  const initialBounds = initialSections.available.meta.catalog.bounds;
   const {
     actions,
     activeAdvancedFilterCount,
     bounds,
     filters,
     hasActiveFilters,
-    results,
+    requestFilters,
     ui,
   } = useMarketplaceFilters({
-    adSlots,
+    bounds: initialBounds,
     initialFilters,
   });
-
-  const totalAvailableSlots = adSlots.filter((slot) => slot.isAvailable).length;
+  const results = useMarketplaceInfiniteResults({
+    filters: requestFilters,
+    initialFilters,
+    initialSections,
+  });
 
   return (
     <div className="theme-home-b min-h-screen pb-16 pt-24 sm:pt-28">
-      <MarketplaceViewTracker resultsCount={adSlots.length} />
+      <MarketplaceViewTracker resultsCount={results.catalog.totalSlots} />
 
       <div className="space-y-8 sm:space-y-10">
         <section className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,250,255,0.96))] p-6 shadow-[0_30px_80px_-46px_rgba(15,23,42,0.24)] sm:p-8 lg:p-10">
@@ -53,7 +61,8 @@ export function MarketplaceGridB({ adSlots, initialFilters }: MarketplaceGridBPr
                 transparent pricing, audience reach, and publisher context upfront.
               </p>
               <p className="mt-4 text-sm text-slate-500 sm:text-base">
-                {totalAvailableSlots} placements are currently available across the marketplace.
+                {results.catalog.availableSlots} placements are currently available across the
+                marketplace.
               </p>
             </div>
 
@@ -70,7 +79,11 @@ export function MarketplaceGridB({ adSlots, initialFilters }: MarketplaceGridBPr
           </div>
         </section>
 
-        <MarketplaceResultsB available={results.available} booked={results.booked} />
+        <MarketplaceResultsB
+          available={results.available}
+          booked={results.booked}
+          showBooked={results.showBooked}
+        />
       </div>
     </div>
   );

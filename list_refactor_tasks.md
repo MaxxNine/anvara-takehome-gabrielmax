@@ -377,3 +377,226 @@ That is the most maintainable path with the lowest long-term bug surface for thi
 - Treat virtualization and infinite scroll as separate concerns.
 - The current virtualization layer should optimize rendering for already-loaded data.
 - True infinite loading should be a follow-up phase only after the backend exposes paginated marketplace queries and the UI can show a real loading row, end-of-list state, and error recovery.
+
+## Pagination and Infinite Scroll Approach
+
+### Difficulty
+
+Gold-standard pagination plus infinite scroll is `medium-high`, not trivial.
+
+Why:
+
+- the current page now has URL-synced filters, client-side virtualization, and available/booked section semantics
+- infinite loading requires the backend and frontend contracts to change together
+- derived CPM filtering becomes materially more complex once pagination is introduced
+
+Rough implementation effort:
+
+- basic paginated loading without full filter parity: about half a day to one day
+- production-grade infinite loading with server filter parity, loading states, retries, and clean section handling: about two to three focused days
+
+### Recommended Contract
+
+Use cursor pagination, not page-number pagination, even if the initial page size is `10`.
+
+Recommended request shape:
+
+```txt
+GET /api/ad-slots?limit=10&cursor=<opaque>&type=VIDEO&available=true&verified=true&priceMin=1000&priceMax=5000&sort=price-desc&q=podcast
+```
+
+Recommended response shape:
+
+```ts
+type AdSlotConnection = {
+  items: AdSlot[];
+  pageInfo: {
+    hasNextPage: boolean;
+    nextCursor: string | null;
+  };
+  totalCount: number;
+};
+```
+
+Why cursor-based pagination is the gold-standard choice:
+
+- stable under inserts and deletes
+- avoids skipped or duplicated items more reliably than offset pagination
+- scales better as the dataset grows
+- works naturally with `useInfiniteQuery`
+
+### Backend Strategy
+
+The backend should become the source of truth for marketplace result filtering once pagination exists.
+
+Recommended backend responsibilities:
+
+- support `limit` with a default of `10`
+- support `cursor`
+- support `type`
+- support `available`
+- support `verified`
+- support `priceMin`
+- support `priceMax`
+- support `sort`
+- support text search across slot and publisher fields
+
+### CPM filtering note
+
+Estimated CPM is the hard part.
+
+Because CPM is derived from `basePrice` and publisher audience fields, client-side CPM filtering becomes incorrect once results are paginated.
+
+Gold-standard options:
+
+- compute CPM-compatible filtering in the backend query layer
+- expose a normalized server-side `audienceSize` concept and derive CPM from that consistently
+- if the ORM query becomes too awkward, use a focused raw SQL path for the marketplace listing query only
+
+Not recommended:
+
+- keeping CPM filtering client-side once pagination is added
+- paginating first and then filtering CPM in the browser
+
+### Frontend Strategy
+
+Use server-rendered first page plus client infinite loading after hydration.
+
+Recommended flow:
+
+- `page.tsx` parses URL filters
+- `data.ts` fetches the first page on the server with `limit=10`
+- `MarketplaceGridB` receives `initialPage`, `initialFilters`, and `initialPageInfo`
+- a client hook uses `useInfiniteQuery` for subsequent pages
+- the virtualized results layer renders the accumulated pages
+
+This keeps:
+
+- SSR for the initial page
+- shareable URL filters
+- smooth client-side loading after the first page
+
+### Recommended Frontend Modules
+
+```txt
+apps/frontend/app/(protected)/marketplace/
+  data.ts
+  components-b/
+    marketplace-grid-b.tsx
+    filters/
+      ...
+    results/
+      marketplace-results-b.tsx
+      use-marketplace-grid-columns.ts
+      use-marketplace-virtual-rows.ts
+      use-marketplace-infinite-results.ts
+      marketplace-load-more-sentinel.tsx
+      marketplace-loading-rows.tsx
+      marketplace-results-error-state.tsx
+```
+
+### Query Hook Shape
+
+Recommended hook:
+
+```ts
+useMarketplaceInfiniteResults({
+  filters,
+  initialPage,
+  initialPageInfo,
+  pageSize: 10,
+})
+```
+
+Responsibilities:
+
+- serialize filters into request params
+- own `useInfiniteQuery`
+- merge pages into a flat list
+- expose `isFetchingNextPage`
+- expose `hasNextPage`
+- expose `fetchNextPage`
+- reset cleanly when filters change
+
+### Infinite Loading Trigger
+
+Use an explicit sentinel near the end of the virtualized content.
+
+Recommended behavior:
+
+- observe a bottom sentinel with `IntersectionObserver`
+- call `fetchNextPage()` only when `hasNextPage` is true
+- suppress duplicate calls while a request is already in flight
+- prefetch slightly before the absolute end of the list
+
+### Loading and Error Feedback
+
+Gold-standard UI feedback should include:
+
+- skeleton rows while the next page is loading
+- a compact inline error state if the next page fails
+- a retry action for incremental fetch failures
+- a clear end-of-results state when `hasNextPage` becomes false
+
+### Virtualization Interaction
+
+Keep virtualization, but apply it to the accumulated loaded pages.
+
+Recommended rule:
+
+- first load and append pages through `useInfiniteQuery`
+- flatten loaded items into rows
+- virtualize those rows
+
+This is the correct layering:
+
+- data loading first
+- page accumulation second
+- virtualization last
+
+### Available and Booked Sections
+
+This needs an explicit decision because it affects both backend and frontend design.
+
+Gold-standard recommendation:
+
+- keep the default filter as `available`
+- paginate the available list first
+- when the user switches to `all`, treat `available` and `booked` as separate paginated feeds or intentionally redesign the UI into one unified feed
+
+Why this matters:
+
+- the current UI promises sectioned semantics
+- a single mixed paginated feed does not preserve those semantics cleanly
+
+### URL State
+
+Keep filters in the URL.
+
+Do not keep the cursor in the main shareable URL by default.
+
+Reason:
+
+- the URL should represent the query state, not the current scroll position
+- restoring an old cursor token is less stable and less useful than restoring the filters
+
+### Recommended Sequencing
+
+1. Extend the backend route and service to support `limit`, `cursor`, and server-side filter parity.
+2. Add a typed marketplace connection response.
+3. Update the server `data.ts` loader to fetch only the first page with `limit=10`.
+4. Add `use-marketplace-infinite-results.ts` with `useInfiniteQuery`.
+5. Add sentinel, loading rows, retry state, and end-of-list UI.
+6. Merge the new paginated data flow into the existing virtualized results layer.
+7. Add tests for page merging, cursor advancement, and filter-reset behavior.
+
+### Acceptance Criteria for the Next Phase
+
+- first paint renders only the first `10` items from the server
+- subsequent pages load incrementally on scroll
+- filters continue to be URL-driven
+- changing filters resets pagination correctly
+- no duplicate page fetches occur
+- no duplicate cards appear after appending pages
+- loading, retry, and end-of-list states are explicit
+- virtualization continues to bound DOM node count

@@ -6,7 +6,7 @@ import { getServerABVariant } from '@/lib/ab-testing/server';
 import { MarketplaceGridB } from './components-b/marketplace-grid-b';
 import { parseMarketplaceFiltersFromSearchParams } from './components-b/filters/marketplace-filter.query';
 import { AdSlotGrid } from './components/ad-slot-grid';
-import { getMarketplaceAdSlots } from './data';
+import { getInitialMarketplaceSections, getMarketplaceAdSlots } from './data';
 
 type MarketplacePageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -14,22 +14,23 @@ type MarketplacePageProps = {
 
 export default async function MarketplacePage({ searchParams }: MarketplacePageProps) {
   const resolvedSearchParams = (await searchParams) ?? {};
-  const requestHeaders = await headers();
-  const [adSlots, marketplaceVariant] = await Promise.all([
-    getMarketplaceAdSlots(requestHeaders),
+  const initialFilters = parseMarketplaceFiltersFromSearchParams(resolvedSearchParams);
+  const [requestHeaders, marketplaceVariant] = await Promise.all([
+    headers(),
     getServerABVariant('marketplace-layout', {
       forcedVariant: getForcedABTestVariant('marketplace-layout', resolvedSearchParams),
     }),
   ]);
 
   if (marketplaceVariant === 'B') {
+    const initialSections = await getInitialMarketplaceSections(initialFilters, requestHeaders);
+
     return (
-      <MarketplaceGridB
-        adSlots={adSlots}
-        initialFilters={parseMarketplaceFiltersFromSearchParams(resolvedSearchParams)}
-      />
+      <MarketplaceGridB initialFilters={initialFilters} initialSections={initialSections} />
     );
   }
+
+  const adSlots = await getMarketplaceAdSlots(requestHeaders);
 
   return (
     <div className="space-y-6">

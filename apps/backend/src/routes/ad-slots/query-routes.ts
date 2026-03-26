@@ -1,7 +1,14 @@
 import type { IRouter, NextFunction, Response } from 'express';
-import { getAdSlotById, isAdSlotType, listAdSlots } from '../../services/ad-slot/index.js';
+import {
+  getAdSlotById,
+  isAdSlotType,
+  listAdSlots,
+  listMarketplaceAdSlots,
+} from '../../services/ad-slot/index.js';
 import { NotFoundError, ValidationError, type AuthRequest } from '../../types/index.js';
 import { getParam } from '../../utils/helpers.js';
+
+import { parseMarketplaceAdSlotFilters } from './marketplace-query.js';
 
 export function registerAdSlotQueryRoutes(router: IRouter): void {
   router.get('/', async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -14,6 +21,21 @@ export function registerAdSlotQueryRoutes(router: IRouter): void {
       });
 
       res.json(adSlots);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.get('/marketplace', async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const marketplaceAdSlots = await listMarketplaceAdSlots(
+        parseMarketplaceAdSlotFilters(
+          req.query as Record<string, unknown>,
+          req.user?.role === 'PUBLISHER' ? req.user.publisherId : undefined
+        )
+      );
+
+      res.json(marketplaceAdSlots);
     } catch (error) {
       next(error);
     }
