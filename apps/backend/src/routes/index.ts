@@ -1,12 +1,13 @@
 import { Router, type IRouter } from 'express';
+import adSlotsRoutes from './ad-slots/index.js';
 import authRoutes from './auth.js';
+import campaignsRoutes from './campaigns/index.js';
 import sponsorsRoutes from './sponsors.js';
 import publishersRoutes from './publishers.js';
-import campaignsRoutes from './campaigns.js';
-import adSlotsRoutes from './adSlots.js';
 import placementsRoutes from './placements.js';
 import dashboardRoutes from './dashboard.js';
 import healthRoutes from './health.js';
+import newsletterRoutes from './newsletter.js';
 
 const router: IRouter = Router();
 
@@ -19,5 +20,6 @@ router.use('/ad-slots', adSlotsRoutes);
 router.use('/placements', placementsRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/health', healthRoutes);
+router.use('/newsletter', newsletterRoutes);
 
 export default router;

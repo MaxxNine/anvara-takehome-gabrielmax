@@ -57,10 +57,10 @@ Your solution should:
 
 ## Verification
 
-- [ ] Campaigns load without `useEffect`
-- [ ] Data appears in View Source (server-rendered)
-- [ ] Loading states work properly
-- [ ] No unnecessary client-side JavaScript
+- [x] Campaigns load without `useEffect`
+- [x] Data appears in View Source (server-rendered)
+- [x] Loading states work properly
+- [x] No unnecessary client-side JavaScript
 
 ## Resources
 

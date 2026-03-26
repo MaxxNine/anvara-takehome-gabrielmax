@@ -1,98 +1,50 @@
-'use client';
+import { headers } from 'next/headers';
 
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { authClient } from '@/auth-client';
+import { auth } from '@/auth';
+import { getCurrentUserProfile } from '@/lib/auth-helpers';
+import { getServerABVariant } from '@/lib/ab-testing/server';
+import type { UserRole } from '@/lib/types';
+import { NavVariantA } from './nav-variant-a';
+import { NavVariantB } from './nav-variant-b';
 
-type UserRole = 'sponsor' | 'publisher' | null;
+export type NavUser = {
+  name: string;
+  role: UserRole | null;
+} | null;
 
-export function Nav() {
-  const { data: session, isPending } = authClient.useSession();
-  const user = session?.user;
-  const [role, setRole] = useState<UserRole>(null);
+async function getNavUser(): Promise<NavUser> {
+  const requestHeaders = await headers();
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  });
 
-  // TODO: Convert to server component and fetch role server-side
-  // Fetch user role from backend when user is logged in
-  useEffect(() => {
-    if (user?.id) {
-      fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/auth/role/${user.id}`
-      )
-        .then((res) => res.json())
-        .then((data) => setRole(data.role))
-        .catch(() => setRole(null));
-    } else {
-      setRole(null);
-    }
-  }, [user?.id]);
+  if (!session?.user) {
+    return null;
+  }
 
-  // TODO: Add active link styling using usePathname() from next/navigation
-  // The current page's link should be highlighted differently
+  try {
+    const profile = await getCurrentUserProfile(requestHeaders);
 
-  return (
-    <header className="border-b border-[--color-border]">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between p-4">
-        <Link href="/" className="text-xl font-bold text-[--color-primary]">
-          Anvara
-        </Link>
+    return {
+      name: session.user.name,
+      role: profile.role,
+    };
+  } catch {
+    return {
+      name: session.user.name,
+      role: null,
+    };
+  }
+}
 
-        <div className="flex items-center gap-6">
-          <Link
-            href="/marketplace"
-            className="text-[--color-muted] hover:text-[--color-foreground]"
-          >
-            Marketplace
-          </Link>
+export async function Nav() {
+  const user = await getNavUser();
+  const role = user?.role ?? null;
+  const homeVariant = await getServerABVariant('home-hero-layout');
 
-          {user && role === 'sponsor' && (
-            <Link
-              href="/dashboard/sponsor"
-              className="text-[--color-muted] hover:text-[--color-foreground]"
-            >
-              My Campaigns
-            </Link>
-          )}
-          {user && role === 'publisher' && (
-            <Link
-              href="/dashboard/publisher"
-              className="text-[--color-muted] hover:text-[--color-foreground]"
-            >
-              My Ad Slots
-            </Link>
-          )}
+  if (homeVariant === 'B') {
+    return <NavVariantB user={user} role={role} />;
+  }
 
-          {isPending ? (
-            <span className="text-[--color-muted]">...</span>
-          ) : user ? (
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-[--color-muted]">
-                {user.name} {role && `(${role})`}
-              </span>
-              <button
-                onClick={async () => {
-                  await authClient.signOut({
-                    fetchOptions: {
-                      onSuccess: () => {
-                        window.location.href = '/';
-                      },
-                    },
-                  });
-                }}
-                className="rounded bg-gray-600 px-3 py-1.5 text-sm text-white hover:bg-gray-500"
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
-            <Link
-              href="/login"
-              className="rounded bg-[--color-primary] px-4 py-2 text-sm text-white hover:bg-[--color-primary-hover]"
-            >
-              Login
-            </Link>
-          )}
-        </div>
-      </nav>
-    </header>
-  );
+  return <NavVariantA user={user} role={role} />;
 }

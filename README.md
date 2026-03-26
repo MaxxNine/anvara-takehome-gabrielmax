@@ -105,6 +105,7 @@ apps/
 
 scripts/
 ├── setup.ts                  # Automated setup script
+├── reset.ts                  # Local reset script
 └── tsconfig.json             # Scripts TypeScript config
 ```
 

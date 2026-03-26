@@ -1,30 +1,28 @@
 // Frontend utility functions
 
 // Format a price for display
-// FIXME: 'price' has implicit 'any' type - should be 'number'
-// BUG: unusedFormatter is declared but never used
-export function formatPrice(price: any, locale = 'en-US') {
-  const unusedFormatter = new Intl.NumberFormat(locale);
+export function formatPrice(price: number | string, locale = 'en-US'): string {
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'USD',
-  }).format(price);
+  }).format(Number(price));
 }
 
 // Debounce function for search inputs
-// FIXME: Multiple 'any' types - fn should be typed, return type should be specified
-export function debounce(fn: any, delay: number) {
-  let timeoutId: any;
-  return (...args: any[]) => {
+export function debounce<TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void,
+  delay: number
+): (...args: TArgs) => void {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return (...args: TArgs) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => fn(...args), delay);
   };
 }
 
 // Parse query string parameters
-// FIXME: Return type uses 'any' - should be Record<string, string>
-export function parseQueryString(queryString: string): Record<string, any> {
-  const params: any = {};
+export function parseQueryString(queryString: string): Record<string, string> {
+  const params: Record<string, string> = {};
   const searchParams = new URLSearchParams(queryString);
 
   searchParams.forEach((value, key) => {
@@ -38,22 +36,19 @@ export function parseQueryString(queryString: string): Record<string, any> {
 export const isClient = typeof window !== 'undefined';
 
 // Truncate text with ellipsis
-// BUG: unusedCheck is declared but never used
 export function truncate(text: string, maxLength: number): string {
-  const unusedCheck = text.length > maxLength;
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength) + '...';
 }
 
 // Class name helper (simple cn alternative)
-// FIXME: 'classes' should be typed more strictly
-export function cn(...classes: any[]): string {
+export function cn(...classes: Array<string | false | null | undefined>): string {
   return classes.filter(Boolean).join(' ');
 }
 
 // Sleep utility for testing/debugging
-// BUG: Missing return type annotation
-export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 // Deep clone an object
 // NOTE: This doesn't handle circular references, dates, or functions
@@ -61,32 +56,50 @@ export function deepClone<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
 
-// Logger that only logs in development
-// FIXME: Logger methods use 'any' - should be typed as 'unknown'
+// Logger that only logs in development, since it is used for development, we can suppress lint.
 export const logger = {
-  log: (...args: any[]) => {
+  log: (...args: unknown[]) => {
     if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
       console.log('[App]', ...args);
     }
   },
-  error: (...args: any[]) => {
+  error: (...args: unknown[]) => {
+    // eslint-disable-next-line no-console
     console.error('[App Error]', ...args);
   },
-  warn: (...args: any[]) => {
+  warn: (...args: unknown[]) => {
+    // eslint-disable-next-line no-console
     console.warn('[App Warning]', ...args);
   },
 };
 
-// TODO: Add a proper date formatting utility
-// BUG: Doesn't handle timezone or invalid dates
-export function formatRelativeTime(date: any): string {
-  const now = new Date();
-  const then = new Date(date);
-  const diff = now.getTime() - then.getTime();
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+export function formatRelativeTime(date: string | number | Date): string {
+  const targetDate = new Date(date);
 
-  if (days === 0) return 'Today';
-  if (days === 1) return 'Yesterday';
-  if (days < 7) return `${days} days ago`;
-  return then.toLocaleDateString();
+  if (Number.isNaN(targetDate.getTime())) {
+    return 'Invalid date';
+  }
+
+  const now = Date.now();
+  const diffMs = targetDate.getTime() - now;
+  const absDiffMs = Math.abs(diffMs);
+  const minuteMs = 60 * 1000;
+  const hourMs = 60 * minuteMs;
+  const dayMs = 24 * hourMs;
+  const weekMs = 7 * dayMs;
+  const monthMs = 30 * dayMs;
+  const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+  if (absDiffMs < minuteMs) return 'Just now';
+  if (absDiffMs < hourMs) return rtf.format(Math.round(diffMs / minuteMs), 'minute');
+  if (absDiffMs < dayMs) return rtf.format(Math.round(diffMs / hourMs), 'hour');
+  if (absDiffMs < weekMs) return rtf.format(Math.round(diffMs / dayMs), 'day');
+  if (absDiffMs < monthMs) return rtf.format(Math.round(diffMs / weekMs), 'week');
+
+  return targetDate.toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 }

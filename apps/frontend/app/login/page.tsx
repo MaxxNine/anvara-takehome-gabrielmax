@@ -4,8 +4,8 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { authClient } from '@/auth-client';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+import { GA_EVENTS, trackEventAndRun } from '@/lib/analytics';
+import { resolveLoginRedirectAction } from './actions/resolve-login-redirect';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -32,26 +32,17 @@ export default function LoginPage() {
         onRequest: () => {
           setLoading(true);
         },
-        onSuccess: async (ctx) => {
-          // Fetch user role to determine redirect
-          try {
-            const userId = ctx.data?.user?.id;
-            if (userId) {
-              const roleRes = await fetch(`${API_URL}/api/auth/role/${userId}`);
-              const roleData = await roleRes.json();
-              if (roleData.role === 'sponsor') {
-                router.push('/dashboard/sponsor');
-              } else if (roleData.role === 'publisher') {
-                router.push('/dashboard/publisher');
-              } else {
-                router.push('/');
-              }
-            } else {
-              router.push('/');
-            }
-          } catch {
-            router.push('/');
-          }
+        onSuccess: async () => {
+          const redirectPath = await resolveLoginRedirectAction();
+
+          await trackEventAndRun(
+            GA_EVENTS.LOGIN_SUCCESS,
+            () => {
+              router.push(redirectPath);
+              router.refresh();
+            },
+            { method: 'email' }
+          );
         },
         onError: (ctx) => {
           setError(ctx.error.message || 'Login failed');

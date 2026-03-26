@@ -1,28 +1,61 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+import 'server-only';
 
-export type UserRole = 'sponsor' | 'publisher' | null;
+import { redirect } from 'next/navigation';
 
-export interface RoleData {
-  role: UserRole;
-  sponsorId?: string;
-  publisherId?: string;
-  name?: string;
-}
+import { auth } from '@/auth';
+import type { RoleInfo } from './types';
+import { serverApi, type ForwardedRequestHeaders } from './server-api';
 
 /**
- * Fetch user role from the backend based on userId.
- * Returns role info including sponsorId/publisherId if applicable.
+ * Fetch the authenticated user's frontend bootstrap profile from the backend.
+ * Forwarding request headers keeps this helper compatible with backend
+ * auth middleware that expects session cookies or auth headers.
  */
-export async function getUserRole(userId: string): Promise<RoleData> {
-  try {
-    const res = await fetch(`${API_URL}/api/auth/role/${userId}`, {
-      cache: 'no-store', // Always fetch fresh role data
-    });
-    if (!res.ok) {
-      return { role: null };
-    }
-    return await res.json();
-  } catch {
-    return { role: null };
+export async function getCurrentUserProfile(
+  requestHeaders?: ForwardedRequestHeaders
+): Promise<RoleInfo> {
+  return serverApi<RoleInfo>('/api/auth/profile', {
+    cache: 'no-store',
+    requestHeaders,
+  });
+}
+
+export async function requireAuthenticatedSession(requestHeaders: HeadersInit) {
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  });
+
+  if (!session?.user) {
+    redirect('/login');
   }
+
+  return session;
+}
+
+export async function getPostLoginRedirectPath(
+  requestHeaders: HeadersInit
+): Promise<string> {
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  });
+
+  if (!session?.user) {
+    return '/';
+  }
+
+  try {
+    const profile = await getCurrentUserProfile(requestHeaders);
+
+    if (profile.role === 'sponsor') {
+      return '/dashboard/sponsor';
+    }
+
+    if (profile.role === 'publisher') {
+      return '/dashboard/publisher';
+    }
+  } catch {
+    return '/';
+  }
+
+  return '/';
 }

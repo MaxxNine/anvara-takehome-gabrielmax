@@ -1,18 +1,28 @@
 import express, { type Application } from 'express';
 import cors from 'cors';
+import { getTrustProxySetting } from './config/trust-proxy.js';
+import { errorHandler } from './middleware/error-handler.js';
+import { authLimiter, globalLimiter } from './middleware/rate-limiter.js';
 import routes from './routes/index.js';
 
 const app: Application = express();
 const PORT = process.env.BACKEND_PORT || 4291;
 
 // Middleware
-// FIXME: CORS is configured with defaults - for production, specify allowed origins
-// TODO: Add rate limiting middleware to prevent abuse (e.g., express-rate-limit)
-app.use(cors());
+app.set('trust proxy', getTrustProxySetting());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3847',
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use('/api', globalLimiter);
+app.use('/api/auth', authLimiter);
 
 // Mount all API routes
 app.use('/api', routes);
+app.use(errorHandler);
 
 // ============================================================================
 // SERVER STARTUP
@@ -27,6 +37,7 @@ app.listen(PORT, () => {
   console.log('    GET    /api/sponsors');
   console.log('    GET    /api/sponsors/:id');
   console.log('    POST   /api/sponsors');
+  console.log('    PUT    /api/sponsors/:id');
   console.log('  Publishers:');
   console.log('    GET    /api/publishers');
   console.log('    GET    /api/publishers/:id');
@@ -34,10 +45,14 @@ app.listen(PORT, () => {
   console.log('    GET    /api/campaigns');
   console.log('    GET    /api/campaigns/:id');
   console.log('    POST   /api/campaigns');
+  console.log('    PUT    /api/campaigns/:id');
+  console.log('    DELETE /api/campaigns/:id');
   console.log('  Ad Slots:');
   console.log('    GET    /api/ad-slots');
   console.log('    GET    /api/ad-slots/:id');
   console.log('    POST   /api/ad-slots');
+  console.log('    PUT    /api/ad-slots/:id');
+  console.log('    DELETE /api/ad-slots/:id');
   console.log('  Placements:');
   console.log('    GET    /api/placements');
   console.log('    POST   /api/placements');

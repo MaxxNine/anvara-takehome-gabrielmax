@@ -7,14 +7,14 @@
  * 1. Checks prerequisites (Node.js, pnpm, Docker)
  * 2. Creates .env with unique database credentials
  * 3. Installs all dependencies
- * 4. Starts Docker containers (PostgreSQL)
+ * 4. Starts Docker containers (PostgreSQL + Redis)
  * 5. Creates database with unique credentials
  * 6. Runs Prisma migrations and seeds the database
  * 7. Verifies the setup
  */
 
 import { execSync } from 'child_process';
-import { existsSync, copyFileSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { randomBytes } from 'crypto';
@@ -23,20 +23,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT_DIR = join(__dirname, '..');
 const FINGERPRINT_FILE = join(ROOT_DIR, '.setup-fingerprint');
+const SAFE_DB_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
 
 // Load .env file into process.env
 function loadEnv(): void {
   const envPath = join(ROOT_DIR, '.env');
-  if (existsSync(envPath)) {
-    const envContent = readFileSync(envPath, 'utf-8');
-    envContent.split('\n').forEach((line) => {
-      const [key, ...valueParts] = line.split('=');
-      const value = valueParts.join('=');
-      if (key && value && !key.startsWith('#')) {
-        process.env[key.trim()] = value.trim();
-      }
-    });
+  if (!existsSync(envPath)) {
+    return;
   }
+
+  const envContent = readFileSync(envPath, 'utf-8');
+  envContent.split('\n').forEach((line) => {
+    const [key, ...valueParts] = line.split('=');
+    const value = valueParts.join('=');
+    if (key && value && !key.startsWith('#')) {
+      process.env[key.trim()] = value.trim();
+    }
+  });
 }
 
 // Colors for terminal output
@@ -50,10 +53,6 @@ const colors = {
 } as const;
 
 type ColorKey = keyof typeof colors;
-
-function log(message: string, color: ColorKey = 'reset'): void {
-  console.log(`${colors[color]}${message}${colors.reset}`);
-}
 
 function logStep(step: string, message: string): void {
   console.log(`\n${colors.cyan}[${step}]${colors.reset} ${message}`);
@@ -92,7 +91,9 @@ function run(command: string, options: RunOptions = {}): string | null {
       ...options,
     });
   } catch (error) {
-    if (options.ignoreError) return null;
+    if (options.ignoreError) {
+      return null;
+    }
     throw error;
   }
 }
@@ -110,6 +111,16 @@ function generateRandomString(length: number): string {
   return randomBytes(length).toString('hex').slice(0, length);
 }
 
+function ensureSafeDbName(dbName: string): void {
+  if (SAFE_DB_NAME.test(dbName)) {
+    return;
+  }
+
+  logError(`Unsafe database name detected: ${dbName}`);
+  logError('Use only letters, numbers, and underscores in DATABASE_URL database names.');
+  process.exit(1);
+}
+
 async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -117,7 +128,7 @@ async function sleep(ms: number): Promise<void> {
 async function waitForPostgres(maxAttempts = 30): Promise<boolean> {
   logStep('5b', 'Waiting for PostgreSQL to be ready...');
 
-  for (let i = 0; i < maxAttempts; i++) {
+  for (let i = 0; i < maxAttempts; i += 1) {
     try {
       const result = run('docker exec anvara_postgres pg_isready -U postgres', {
         silent: true,
@@ -128,7 +139,7 @@ async function waitForPostgres(maxAttempts = 30): Promise<boolean> {
         return true;
       }
     } catch {
-      // Ignore errors, keep waiting
+      // Ignore errors while waiting for the container to become healthy.
     }
     process.stdout.write('.');
     await sleep(1000);
@@ -137,6 +148,42 @@ async function waitForPostgres(maxAttempts = 30): Promise<boolean> {
   console.log('');
   logError('PostgreSQL failed to start within the timeout period');
   return false;
+}
+
+async function waitForRedis(maxAttempts = 30): Promise<boolean> {
+  logStep('5c', 'Waiting for Redis to be ready...');
+
+  for (let i = 0; i < maxAttempts; i += 1) {
+    try {
+      const result = run('docker exec anvara_redis redis-cli ping', {
+        silent: true,
+        ignoreError: true,
+      });
+      if (result && result.includes('PONG')) {
+        logSuccess('Redis is ready');
+        return true;
+      }
+    } catch {
+      // Ignore errors while waiting for the container to become healthy.
+    }
+    process.stdout.write('.');
+    await sleep(1000);
+  }
+
+  console.log('');
+  logError('Redis failed to start within the timeout period');
+  return false;
+}
+
+function ensureEnvValue(envContent: string, key: string, value: string): string {
+  const linePattern = new RegExp(`^${key}=.*$`, 'm');
+
+  if (linePattern.test(envContent)) {
+    return envContent.replace(linePattern, `${key}=${value}`);
+  }
+
+  const trimmed = envContent.trimEnd();
+  return `${trimmed}\n${key}=${value}\n`;
 }
 
 async function main(): Promise<void> {
@@ -148,8 +195,8 @@ ${colors.cyan}╔═════════════════════
 
   // Check if setup has already run
   if (existsSync(FINGERPRINT_FILE)) {
-    const timestamp = readFileSync(FINGERPRINT_FILE, 'utf-8');
-    logSuccess(`Setup previously completed at: ${timestamp}`);
+    const fingerprint = readFileSync(FINGERPRINT_FILE, 'utf-8');
+    logSuccess(`Setup previously completed at: ${fingerprint}`);
     console.log('');
   }
 
@@ -222,20 +269,21 @@ ${colors.cyan}╔═════════════════════
     writeFileSync(FINGERPRINT_FILE, fingerprintData);
     logSuccess(`Setup fingerprint created with database: ${dbName}`);
 
-    if (existsSync(envExamplePath)) {
-      let envContent = readFileSync(envExamplePath, 'utf-8');
-      envContent = envContent.replace(/DATABASE_URL=.*/, `DATABASE_URL=${databaseUrl}`);
-      envContent = envContent.replace(
-        /BETTER_AUTH_SECRET=.*/,
-        `BETTER_AUTH_SECRET=${betterAuthSecret}`
-      );
-      writeFileSync(envPath, envContent);
-      logSuccess('Created .env with unique credentials');
-      logSuccess('Authentication is ready - use demo accounts to login');
-    } else {
+    if (!existsSync(envExamplePath)) {
       logError('.env.example not found');
       process.exit(1);
     }
+
+    let envContent = readFileSync(envExamplePath, 'utf-8');
+    envContent = envContent.replace(/DATABASE_URL=.*/, `DATABASE_URL=${databaseUrl}`);
+    envContent = envContent.replace(
+      /BETTER_AUTH_SECRET=.*/,
+      `BETTER_AUTH_SECRET=${betterAuthSecret}`
+    );
+    envContent = ensureEnvValue(envContent, 'REDIS_URL', 'redis://localhost:6379');
+    writeFileSync(envPath, envContent);
+    logSuccess('Created .env with unique credentials');
+    logSuccess('Authentication is ready - use demo accounts to login');
   } else {
     // Read from existing .env
     const envContent = readFileSync(envPath, 'utf-8');
@@ -260,6 +308,14 @@ ${colors.cyan}╔═════════════════════
     logSuccess('.env file already exists');
   }
 
+  const currentEnvContent = readFileSync(envPath, 'utf-8');
+  const updatedEnvContent = ensureEnvValue(currentEnvContent, 'REDIS_URL', 'redis://localhost:6379');
+  if (updatedEnvContent !== currentEnvContent) {
+    writeFileSync(envPath, updatedEnvContent);
+    logSuccess('Added missing REDIS_URL to .env');
+  }
+
+  ensureSafeDbName(dbName);
   loadEnv();
 
   // Step 4: Install dependencies
@@ -279,8 +335,13 @@ ${colors.cyan}╔═════════════════════
     process.exit(1);
   }
 
-  // Step 5c: Create database
-  logStep('5c', 'Creating application database...');
+  const redisReady = await waitForRedis();
+  if (!redisReady) {
+    process.exit(1);
+  }
+
+  // Step 5d: Create database
+  logStep('5d', 'Creating application database...');
 
   // Create database (ignore error if it already exists)
   const createDatabaseCommand = `docker exec anvara_postgres psql -U postgres -c "CREATE DATABASE ${dbName};"`;
@@ -303,22 +364,18 @@ ${colors.cyan}╔═════════════════════
     if (verifyResult && verifyResult.includes('1 row')) {
       logSuccess(`Database '${dbName}' is accessible`);
     }
-  } catch (error) {
-    logWarning(`Database verification returned non-zero, but this may be OK`);
-    logSuccess(`Proceeding with setup...`);
+  } catch {
+    logWarning('Database verification returned non-zero, but this may be OK');
+    logSuccess('Proceeding with setup...');
   }
 
   // Step 6: Setup database schema
   logStep('6', 'Setting up database schema...');
 
   // 6a: Better Auth tables (user, session, account, verification)
-  // Use dotenv-cli to load .env from root directory
+  // Use the pinned workspace CLI instead of an unpinned runtime download.
   try {
-    execSync(`npx dotenv-cli -e ${join(ROOT_DIR, '.env')} -- npx @better-auth/cli migrate --yes`, {
-      cwd: join(ROOT_DIR, 'apps', 'frontend'),
-      stdio: 'inherit',
-      encoding: 'utf-8',
-    });
+    run('pnpm --filter @anvara/frontend exec better-auth migrate --yes');
     logSuccess('Better Auth tables created');
   } catch (error: any) {
     logError('Failed to create Better Auth tables');
@@ -375,6 +432,7 @@ ${colors.cyan}Services:${colors.reset}
   Frontend:  ${colors.green}http://localhost:3847${colors.reset}
   Backend:   ${colors.green}http://localhost:4291${colors.reset}
   Database:  ${colors.green}postgresql://localhost:5498${colors.reset}
+  Redis:     ${colors.green}redis://localhost:6379${colors.reset}
 
 ${colors.cyan}Useful Commands:${colors.reset}
   ${colors.dim}$${colors.reset} pnpm dev         ${colors.dim}# Run all services${colors.reset}
