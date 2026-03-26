@@ -7,10 +7,12 @@ import type { AdSlot, AdSlotType } from '@/lib/types';
 import { MarketplaceViewTracker } from '../components/marketplace-view-tracker';
 import { AdSlotCardB } from './ad-slot-card-b';
 import {
+  type EstimatedCpmFilter,
   MarketplaceFilterBar,
   type BudgetFilter,
   type SortOption,
 } from './marketplace-filter-bar';
+import { getAudienceSize, getEstimatedCpmValue } from './format-helpers';
 
 type MarketplaceGridBProps = {
   adSlots: AdSlot[];
@@ -22,6 +24,7 @@ function filterAndSort(
   typeFilter: AdSlotType | 'ALL',
   availabilityOnly: boolean,
   budgetFilter: BudgetFilter,
+  estimatedCpmFilter: EstimatedCpmFilter,
   sort: SortOption,
 ) {
   let filtered = slots;
@@ -45,6 +48,27 @@ function filterAndSort(
           return price >= 2000 && price <= 5000;
         case 'OVER_5K':
           return price > 5000;
+        default:
+          return true;
+      }
+    });
+  }
+
+  if (estimatedCpmFilter !== 'ALL') {
+    filtered = filtered.filter((slot) => {
+      const estimatedCpm = getEstimatedCpmValue(Number(slot.basePrice), getAudienceSize(slot));
+
+      if (estimatedCpm === null) {
+        return false;
+      }
+
+      switch (estimatedCpmFilter) {
+        case 'UNDER_10':
+          return estimatedCpm < 10;
+        case 'BETWEEN_10_AND_25':
+          return estimatedCpm >= 10 && estimatedCpm <= 25;
+        case 'OVER_25':
+          return estimatedCpm > 25;
         default:
           return true;
       }
@@ -80,15 +104,26 @@ function filterAndSort(
 }
 
 export function MarketplaceGridB({ adSlots }: MarketplaceGridBProps) {
+  const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<AdSlotType | 'ALL'>('ALL');
-  const [availabilityOnly, setAvailabilityOnly] = useState(false);
+  const [availabilityOnly, setAvailabilityOnly] = useState(true);
   const [budgetFilter, setBudgetFilter] = useState<BudgetFilter>('ALL');
+  const [estimatedCpmFilter, setEstimatedCpmFilter] = useState<EstimatedCpmFilter>('ALL');
   const [sort, setSort] = useState<SortOption>('price-desc');
 
   const filtered = useMemo(
-    () => filterAndSort(adSlots, search, typeFilter, availabilityOnly, budgetFilter, sort),
-    [adSlots, availabilityOnly, budgetFilter, search, typeFilter, sort],
+    () =>
+      filterAndSort(
+        adSlots,
+        search,
+        typeFilter,
+        availabilityOnly,
+        budgetFilter,
+        estimatedCpmFilter,
+        sort
+      ),
+    [adSlots, availabilityOnly, budgetFilter, estimatedCpmFilter, search, typeFilter, sort],
   );
 
   const available = filtered.filter((s) => s.isAvailable);
@@ -119,6 +154,8 @@ export function MarketplaceGridB({ adSlots }: MarketplaceGridBProps) {
             </div>
 
             <MarketplaceFilterBar
+              advancedFiltersOpen={advancedFiltersOpen}
+              onAdvancedFiltersToggle={() => setAdvancedFiltersOpen((current) => !current)}
               search={search}
               onSearchChange={setSearch}
               typeFilter={typeFilter}
@@ -127,9 +164,11 @@ export function MarketplaceGridB({ adSlots }: MarketplaceGridBProps) {
               onAvailabilityToggle={() => setAvailabilityOnly((current) => !current)}
               budgetFilter={budgetFilter}
               onBudgetFilterChange={setBudgetFilter}
+              estimatedCpmFilter={estimatedCpmFilter}
+              onEstimatedCpmFilterChange={setEstimatedCpmFilter}
               sort={sort}
               onSortChange={setSort}
-              resultCount={available.length}
+              resultCount={filtered.length}
             />
           </div>
         </section>

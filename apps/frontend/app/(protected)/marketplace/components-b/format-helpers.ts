@@ -44,11 +44,21 @@ export function formatAudienceSummary(type: AdSlotType, audienceSize: number): s
 }
 
 export function formatEstimatedCpm(price: number, audienceSize?: number | null): string | null {
+  const estimatedCpm = getEstimatedCpmValue(price, audienceSize);
+
+  if (estimatedCpm === null) {
+    return null;
+  }
+
+  return estimatedCpm.toFixed(2);
+}
+
+export function getEstimatedCpmValue(price: number, audienceSize?: number | null): number | null {
   if (!audienceSize || audienceSize <= 0) {
     return null;
   }
 
-  return (price / audienceSize * 1000).toFixed(2);
+  return price / audienceSize * 1000;
 }
 
 const accentColors: Record<AdSlotType, string> = {

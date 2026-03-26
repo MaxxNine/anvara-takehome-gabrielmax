@@ -32,3 +32,16 @@
 - [ ] 4.4 Variant B grid renders with filters and redesigned cards
 - [ ] 4.5 Variant B detail renders with publisher stats, trust/urgency, related listings
 - [ ] 4.6 Booking flow works end-to-end in variant B
+
+## Phase 5: Marketplace UX Polish
+
+- [x] 5.1 Add proper interactive affordance to filter chips (`cursor-pointer`, hover, focus-visible)
+- [x] 5.2 Add an icon-led toggle to show/hide advanced filters in the grid header
+- [x] 5.3 Clarify filter labels so budget reads as monthly slot price, not CPM
+- [x] 5.4 Rename `Types` to `Categories` in filter UI copy if that tests clearer with current inventory model
+- [x] 5.5 Add advanced filter controls for `Estimated CPM` and `Availability`; keep `Reach` as a sort signal unless UX proves a filter is necessary
+- [ ] 5.6 Rework card hierarchy so format, metric cues, and verification do not compete visually
+- [ ] 5.7 Add iconography to card metadata and trust/demand cues
+- [ ] 5.8 Replace weak text-only metric badges with icon-led treatments for existing metrics like reach and estimated CPM
+- [ ] 5.9 Strengthen verified publisher affordance on cards and in marketplace scanning states without inventing new trust labels
+- [ ] 5.10 Run responsive/visual QA on the updated grid after the filter and card polish pass
