@@ -4,7 +4,7 @@ import type {
   MarketplaceFilters,
   MarketplaceSortOption,
   NumericRange,
-} from './marketplace-filter.types';
+} from './types';
 
 export type FilterChipOption<T extends string> = {
   label: string;

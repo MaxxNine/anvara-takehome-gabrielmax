@@ -1,6 +1,6 @@
 import type { AdSlot } from '@/lib/types';
 
-import type { MarketplaceFilterBounds } from './components-b/filters/marketplace-filter.types';
+import type { MarketplaceFilterBounds } from './variant-b/filters/model/types';
 
 export type MarketplaceAvailabilitySegment = 'available' | 'booked';
 

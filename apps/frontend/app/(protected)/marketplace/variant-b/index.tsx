@@ -4,11 +4,11 @@ import { homeBDisplayFont } from '@/app/home-b/fonts';
 
 import type { InitialMarketplaceSections } from '../marketplace.types';
 import { MarketplaceViewTracker } from '../components/marketplace-view-tracker';
-import { MarketplaceFiltersPanel } from './filters/marketplace-filters-panel';
-import type { MarketplaceFilters } from './filters/marketplace-filter.types';
-import { useMarketplaceFilters } from './filters/use-marketplace-filters';
-import { MarketplaceResultsB } from './results/marketplace-results-b';
-import { useMarketplaceInfiniteResults } from './results/use-marketplace-infinite-results';
+import type { MarketplaceFilters } from './filters/model/types';
+import { useMarketplaceFilters } from './filters/model/use-filters';
+import { MarketplaceFiltersPanel } from './filters/ui/panel';
+import { useMarketplaceInfiniteResults } from './listing/model/use-infinite-results';
+import { MarketplaceResultsB } from './listing/ui/results-list';
 
 type MarketplaceGridBProps = {
   initialFilters: MarketplaceFilters;

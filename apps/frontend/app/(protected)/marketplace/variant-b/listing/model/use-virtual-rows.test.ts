@@ -2,7 +2,7 @@ import type { AdSlot } from '@/lib/types';
 
 import { describe, expect, it } from 'vitest';
 
-import { buildMarketplaceSlotRows } from './use-marketplace-virtual-rows';
+import { buildMarketplaceSlotRows } from './use-virtual-rows';
 
 const slots = ['one', 'two', 'three', 'four', 'five'].map(
   (id): AdSlot => ({

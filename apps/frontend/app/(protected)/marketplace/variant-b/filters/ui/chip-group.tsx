@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils';
 
-import type { FilterChipOption } from './marketplace-filter.constants';
+import type { FilterChipOption } from '../model/constants';
 
 type MarketplaceChipGroupProps<T extends string> = {
   onChange: (value: T) => void;

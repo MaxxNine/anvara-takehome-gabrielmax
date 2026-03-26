@@ -4,19 +4,19 @@ import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 
 import type { AdSlotType } from '@/lib/types';
 
-import { defaultMarketplaceFilters } from './marketplace-filter.constants';
-import { serializeMarketplaceFiltersToSearchParams } from './marketplace-filter.query';
+import { defaultMarketplaceFilters } from './constants';
+import { serializeMarketplaceFiltersToSearchParams } from './query-params';
 import type {
   MarketplaceFilterBounds,
   MarketplaceFilters,
   MarketplaceSortOption,
   NumericRange,
-} from './marketplace-filter.types';
+} from './types';
 import {
   clampMarketplaceFilters,
   getActiveAdvancedFilterCount,
   hasActiveMarketplaceFilters,
-} from './marketplace-filter.utils';
+} from './utils';
 
 type UseMarketplaceFiltersOptions = {
   bounds: MarketplaceFilterBounds;

@@ -21,17 +21,17 @@
 - [x] Preserve marketplace tracking and card-link analytics behavior.
 - [x] Run lint, typecheck, and targeted tests.
 - [x] Update the proposal document with implementation-driven adjustments.
-- [ ] Add a paginated marketplace backend contract with a default page size of `10`.
-- [ ] Move marketplace list fetching to server-backed filter parameters instead of loading the full dataset up front.
-- [ ] Decide and document the pagination contract: cursor-based pagination with `limit=10`, not offset-only pagination.
-- [ ] Support all active marketplace filters on the backend query path, including price range, search, verification, and sort.
-- [ ] Decide the server-side strategy for derived CPM filtering so pagination remains correct across pages.
-- [ ] Fetch the first marketplace page on the server for SSR and initial paint.
-- [ ] Add a client infinite-query hook for subsequent page loading.
-- [ ] Add a sentinel-based infinite-loading trigger with guarded prefetch behavior.
-- [ ] Add loading rows or skeleton rows for "fetch next page" feedback.
-- [ ] Add retry and error UI for incremental page fetch failures.
-- [ ] Reset the infinite list correctly when URL filter state changes.
-- [ ] Keep virtualization layered on top of the accumulated loaded pages.
-- [ ] Preserve or intentionally redesign the available/booked section behavior under pagination.
-- [ ] Add tests for cursor parsing, page merging, filter resets, and incremental loading behavior.
+- [x] Add a paginated marketplace backend contract with a default page size of `10`.
+- [x] Move marketplace list fetching to server-backed filter parameters instead of loading the full dataset up front.
+- [x] Decide and document the pagination contract: cursor-based pagination with `limit=10`, not offset-only pagination.
+- [x] Support all active marketplace filters on the backend query path, including price range, search, verification, and sort.
+- [x] Decide the server-side strategy for derived CPM filtering so pagination remains correct across pages.
+- [x] Fetch the first marketplace page on the server for SSR and initial paint.
+- [x] Add a client infinite-query hook for subsequent page loading.
+- [x] Add a sentinel-based infinite-loading trigger with guarded prefetch behavior.
+- [x] Add loading rows or skeleton rows for "fetch next page" feedback.
+- [x] Add retry and error UI for incremental page fetch failures.
+- [x] Reset the infinite list correctly when URL filter state changes.
+- [x] Keep virtualization layered on top of the accumulated loaded pages.
+- [x] Preserve or intentionally redesign the available/booked section behavior under pagination.
+- [x] Add tests for cursor parsing, page merging, filter resets, and incremental loading behavior.

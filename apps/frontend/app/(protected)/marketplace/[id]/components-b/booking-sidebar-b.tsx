@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import type { AdSlot } from '@/lib/types';
-import { formatEstimatedCpm, getAudienceSize } from '../../components-b/format-helpers';
+import { formatEstimatedCpm, getAudienceSize } from '../../variant-b/shared/format-helpers';
 import { TrustSignalsB } from './trust-signals-b';
 import { UrgencySignalsB } from './urgency-signals-b';
 

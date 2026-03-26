@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseMarketplaceAdSlotFilters } from './marketplace-query.js';
+import { parseMarketplaceAdSlotFilters } from './query-params.js';
 
 describe('parseMarketplaceAdSlotFilters', () => {
   it('applies defaults and publisher scoping for marketplace queries', () => {

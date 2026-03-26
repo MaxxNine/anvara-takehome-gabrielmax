@@ -3,8 +3,8 @@ import { headers } from 'next/headers';
 import { getForcedABTestVariant } from '@/lib/ab-testing';
 import { getServerABVariant } from '@/lib/ab-testing/server';
 
-import { MarketplaceGridB } from './components-b/marketplace-grid-b';
-import { parseMarketplaceFiltersFromSearchParams } from './components-b/filters/marketplace-filter.query';
+import { MarketplaceGridB } from './variant-b';
+import { parseMarketplaceFiltersFromSearchParams } from './variant-b/filters/model/query-params';
 import { AdSlotGrid } from './components/ad-slot-grid';
 import { getInitialMarketplaceSections, getMarketplaceAdSlots } from './data';
 

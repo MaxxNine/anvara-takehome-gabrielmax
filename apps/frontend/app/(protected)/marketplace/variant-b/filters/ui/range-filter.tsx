@@ -4,7 +4,7 @@ import { useId } from 'react';
 
 import { cn } from '@/lib/utils';
 
-import type { NumericRange, NumericRangeBounds } from './marketplace-filter.types';
+import type { NumericRange, NumericRangeBounds } from '../model/types';
 
 type MarketplaceRangeFilterProps = {
   bounds: NumericRangeBounds;

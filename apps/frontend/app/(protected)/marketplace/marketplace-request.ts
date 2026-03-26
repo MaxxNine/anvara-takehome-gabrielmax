@@ -1,5 +1,5 @@
-import { defaultMarketplaceFilters } from './components-b/filters/marketplace-filter.constants';
-import type { MarketplaceFilters, NumericRange } from './components-b/filters/marketplace-filter.types';
+import { defaultMarketplaceFilters } from './variant-b/filters/model/constants';
+import type { MarketplaceFilters, NumericRange } from './variant-b/filters/model/types';
 import type { MarketplaceAvailabilitySegment } from './marketplace.types';
 
 export const DEFAULT_MARKETPLACE_PAGE_SIZE = 10;

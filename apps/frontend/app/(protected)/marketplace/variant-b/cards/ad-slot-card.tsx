@@ -14,7 +14,7 @@ import {
   getAudienceSize,
   getTypeAccentColor,
   getTypeBadgeColor,
-} from '../format-helpers';
+} from '../shared/format-helpers';
 
 type AdSlotCardBProps = {
   slot: AdSlot;

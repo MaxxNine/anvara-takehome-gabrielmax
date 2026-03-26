@@ -8,7 +8,7 @@ import {
 import { NotFoundError, ValidationError, type AuthRequest } from '../../types/index.js';
 import { getParam } from '../../utils/helpers.js';
 
-import { parseMarketplaceAdSlotFilters } from './marketplace-query.js';
+import { parseMarketplaceAdSlotFilters } from './marketplace/query-params.js';
 
 export function registerAdSlotQueryRoutes(router: IRouter): void {
   router.get('/', async (req: AuthRequest, res: Response, next: NextFunction) => {

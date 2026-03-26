@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import type { AdSlot } from '@/lib/types';
-import { formatReach, getTypeBadgeColor } from '../../components-b/format-helpers';
+import { formatReach, getTypeBadgeColor } from '../../variant-b/shared/format-helpers';
 
 type RelatedListingsBProps = {
   listings: AdSlot[];

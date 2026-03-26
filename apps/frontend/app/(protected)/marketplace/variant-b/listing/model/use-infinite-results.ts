@@ -2,9 +2,9 @@
 
 import { useMemo } from 'react';
 
-import type { MarketplaceFilters } from '../filters/marketplace-filter.types';
-import type { InitialMarketplaceSections } from '../../marketplace.types';
-import { useMarketplaceSectionQuery } from './use-marketplace-section-query';
+import type { MarketplaceFilters } from '../../filters/model/types';
+import type { InitialMarketplaceSections } from '../../../marketplace.types';
+import { useMarketplaceSectionQuery } from './use-section-query';
 
 type UseMarketplaceInfiniteResultsOptions = {
   filters: MarketplaceFilters;

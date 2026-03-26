@@ -3,14 +3,14 @@ import type { AdSlotType } from '@/lib/types';
 import {
   defaultMarketplaceFilters,
   marketplaceSearchParamKeys,
-} from './marketplace-filter.constants';
+} from './constants';
 import type {
   MarketplaceFilterBounds,
   MarketplaceFilters,
   MarketplaceSortOption,
   NumericRange,
-} from './marketplace-filter.types';
-import { clampMarketplaceFilters } from './marketplace-filter.utils';
+} from './types';
+import { clampMarketplaceFilters } from './utils';
 
 type SearchParamsRecord = Record<string, string | string[] | undefined>;
 

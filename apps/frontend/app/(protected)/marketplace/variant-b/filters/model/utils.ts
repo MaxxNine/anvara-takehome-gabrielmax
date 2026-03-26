@@ -1,7 +1,7 @@
 import type { AdSlot } from '@/lib/types';
 
-import { getAudienceSize, getEstimatedCpmValue } from '../format-helpers';
-import { defaultMarketplaceFilters } from './marketplace-filter.constants';
+import { getAudienceSize, getEstimatedCpmValue } from '../../shared/format-helpers';
+import { defaultMarketplaceFilters } from './constants';
 import type {
   MarketplaceFilterBounds,
   MarketplaceFilterResults,
@@ -10,7 +10,7 @@ import type {
   NormalizedMarketplaceSlot,
   NumericRange,
   NumericRangeBounds,
-} from './marketplace-filter.types';
+} from './types';
 
 function clampNumber(value: number, bounds: NumericRangeBounds): number {
   return Math.min(Math.max(value, bounds.min), bounds.max);

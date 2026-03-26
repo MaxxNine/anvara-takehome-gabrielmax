@@ -15,7 +15,7 @@ import {
   formatEstimatedCpm,
   getAudienceSize,
   getTypeBadgeColor,
-} from '../../components-b/format-helpers';
+} from '../../variant-b/shared/format-helpers';
 import { PlacementRequestForm } from '../components/placement-request-form';
 import { PlacementSuccessNotice } from '../components/placement-success-notice';
 import { ResetListingButton } from '../components/reset-listing-button';

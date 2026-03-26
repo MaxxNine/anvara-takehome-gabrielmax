@@ -4,17 +4,17 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { api } from '@/lib/api';
 
-import type { MarketplaceFilters } from '../filters/marketplace-filter.types';
+import type { MarketplaceFilters } from '../../filters/model/types';
 import {
   buildMarketplaceSectionEndpoint,
   createMarketplaceSectionQueryKey,
   DEFAULT_MARKETPLACE_PAGE_SIZE,
-} from '../../marketplace-request';
+} from '../../../marketplace-request';
 import type {
   MarketplaceAvailabilitySegment,
   MarketplaceCatalogMeta,
   MarketplaceSectionConnection,
-} from '../../marketplace.types';
+} from '../../../marketplace.types';
 
 type UseMarketplaceSectionQueryOptions = {
   enabled: boolean;

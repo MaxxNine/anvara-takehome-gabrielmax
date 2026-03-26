@@ -1,11 +1,11 @@
-import type { AdSlotTypeValue } from '../../types/ad-slot.js';
+import type { AdSlotTypeValue } from '../../../types/ad-slot.js';
 import type {
   MarketplaceAdSlotFilters,
   MarketplaceAvailabilitySegment,
   MarketplaceNumericRange,
   MarketplaceSortOption,
-} from '../../types/index.js';
-import { isAdSlotType } from '../../services/ad-slot/index.js';
+} from '../../../types/index.js';
+import { isAdSlotType } from '../../../services/ad-slot/index.js';
 
 const DEFAULT_MARKETPLACE_LIMIT = 10;
 const MAX_MARKETPLACE_LIMIT = 30;

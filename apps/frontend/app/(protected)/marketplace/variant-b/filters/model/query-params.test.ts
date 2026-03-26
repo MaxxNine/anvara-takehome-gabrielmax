@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { defaultMarketplaceFilters } from './marketplace-filter.constants';
-import { parseMarketplaceFiltersFromSearchParams, serializeMarketplaceFiltersToSearchParams } from './marketplace-filter.query';
+import { defaultMarketplaceFilters } from './constants';
+import {
+  parseMarketplaceFiltersFromSearchParams,
+  serializeMarketplaceFiltersToSearchParams,
+} from './query-params';
 
 describe('parseMarketplaceFiltersFromSearchParams', () => {
   it('falls back to defaults for invalid values', () => {

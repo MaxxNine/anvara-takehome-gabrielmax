@@ -22,16 +22,16 @@ import { cn, formatPrice } from '@/lib/utils';
 import {
   marketplaceCategoryOptions,
   marketplaceSortOptions,
-} from './marketplace-filter.constants';
+} from '../model/constants';
 import type {
   MarketplaceFilterBounds,
   MarketplaceFilters,
   MarketplaceSortOption,
-} from './marketplace-filter.types';
-import { MarketplaceChipGroup } from './marketplace-chip-group';
-import { MarketplaceRangeFilter } from './marketplace-range-filter';
-import { MarketplaceToggleChip } from './marketplace-toggle-chip';
-import type { MarketplaceFilterActions } from './use-marketplace-filters';
+} from '../model/types';
+import type { MarketplaceFilterActions } from '../model/use-filters';
+import { MarketplaceChipGroup } from './chip-group';
+import { MarketplaceRangeFilter } from './range-filter';
+import { MarketplaceToggleChip } from './toggle-chip';
 
 type MarketplaceFiltersPanelProps = {
   actions: MarketplaceFilterActions;

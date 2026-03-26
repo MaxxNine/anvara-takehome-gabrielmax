@@ -3,7 +3,7 @@ import 'server-only';
 import type { AdSlot } from '@/lib/types';
 import { serverApi, type ForwardedRequestHeaders } from '@/lib/server-api';
 
-import type { MarketplaceFilters } from './components-b/filters/marketplace-filter.types';
+import type { MarketplaceFilters } from './variant-b/filters/model/types';
 import { buildMarketplaceSectionEndpoint } from './marketplace-request';
 import type {
   InitialMarketplaceSections,

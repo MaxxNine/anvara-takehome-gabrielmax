@@ -258,6 +258,28 @@ apps/frontend/app/(protected)/marketplace/components-b/
 - Create `use-marketplace-grid-columns.ts`.
 - Create `use-marketplace-virtual-rows.ts`.
 - Build a flattened virtual block model for section headers and rows.
+
+## Implemented Pagination and Infinite Loading
+
+- Added a dedicated backend marketplace contract at `GET /api/ad-slots/marketplace`.
+- Kept the existing `GET /api/ad-slots` route intact for the legacy list and other screens.
+- Standardized on cursor-based pagination with a default `limit=10` and a guarded max page size.
+- Moved marketplace B initial data loading to SSR first pages instead of hydrating the entire inventory.
+- Replaced client-side full-array filtering with server-backed filter params plus `useInfiniteQuery`.
+- Preserved the current UX semantics by using two paginated section feeds:
+  `segment=available`
+  `segment=booked`
+- Kept URL/search params as the source of truth for the user-visible filters, but not for pagination cursors.
+- Preserved virtualization on top of the loaded pages instead of replacing it with infinite loading.
+- Added sentinel-triggered loading, loading rows, and retry UI for incremental failures.
+- Kept price, search, type, sort, and verified filters on the backend query path.
+- Applied estimated CPM filtering after the Prisma query so pagination stays correct for the derived metric.
+- Returned catalog-level metadata with each section response so the hero, result counts, and stable range bounds no longer depend on the full dataset being loaded on the client.
+
+## Follow-Up Notes
+
+- The current CPM strategy is correct and modular, but it still materializes the filtered section in memory before cursor slicing because CPM is a derived value.
+- If the marketplace grows significantly, the next backend optimization should be denormalizing or query-level materializing audience/CPM fields so the expensive part can move deeper into the database layer.
 - Render rows with measured heights and stable keys.
 - Preserve the existing available/booked grouping.
 

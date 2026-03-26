@@ -4,13 +4,13 @@ import { useLayoutEffect, useRef, useState } from 'react';
 
 import { AlertCircle } from 'lucide-react';
 
-import { AdSlotCardB } from '../cards/ad-slot-card-b';
-import { MarketplaceLoadMoreSentinel } from './marketplace-load-more-sentinel';
-import { MarketplaceLoadingRows } from './marketplace-loading-rows';
-import { MarketplaceResultsErrorState } from './marketplace-results-error-state';
-import { useMarketplaceGridColumns } from './use-marketplace-grid-columns';
-import type { MarketplaceSectionQueryState } from './use-marketplace-section-query';
-import { useMarketplaceVirtualRows } from './use-marketplace-virtual-rows';
+import { AdSlotCardB } from '../../cards/ad-slot-card';
+import { useMarketplaceGridColumns } from '../model/use-grid-columns';
+import type { MarketplaceSectionQueryState } from '../model/use-section-query';
+import { useMarketplaceVirtualRows } from '../model/use-virtual-rows';
+import { MarketplaceLoadMoreSentinel } from './load-more-sentinel';
+import { MarketplaceLoadingRows } from './loading-rows';
+import { MarketplaceResultsErrorState } from './results-error-state';
 
 type MarketplaceResultsBProps = {
   available: MarketplaceSectionQueryState;

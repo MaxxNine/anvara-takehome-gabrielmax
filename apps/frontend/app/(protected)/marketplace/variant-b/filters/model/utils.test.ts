@@ -2,7 +2,7 @@ import type { AdSlot } from '@/lib/types';
 
 import { describe, expect, it } from 'vitest';
 
-import { defaultMarketplaceFilters } from './marketplace-filter.constants';
+import { defaultMarketplaceFilters } from './constants';
 import {
   applyMarketplaceFilters,
   clampMarketplaceFilters,
@@ -10,7 +10,7 @@ import {
   getMarketplaceFilterBounds,
   hasActiveMarketplaceFilters,
   normalizeMarketplaceSlots,
-} from './marketplace-filter.utils';
+} from './utils';
 
 const adSlots: AdSlot[] = [
   {
