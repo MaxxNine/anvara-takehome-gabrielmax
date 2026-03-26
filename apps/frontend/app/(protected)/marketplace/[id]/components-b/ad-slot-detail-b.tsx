@@ -10,7 +10,12 @@ import { getABTestVariantLabel } from '@/lib/ab-testing';
 import { adSlotEventParams, GA_EVENTS, trackEvent } from '@/lib/analytics';
 import type { ActionState } from '@/lib/action-types';
 import type { AdSlot, RoleInfo, SessionUser } from '@/lib/types';
-import { formatReach, getTypeBadgeColor } from '../../components-b/format-helpers';
+import {
+  formatAudienceSummary,
+  formatEstimatedCpm,
+  getAudienceSize,
+  getTypeBadgeColor,
+} from '../../components-b/format-helpers';
 import { PlacementRequestForm } from '../components/placement-request-form';
 import { PlacementSuccessNotice } from '../components/placement-success-notice';
 import { ResetListingButton } from '../components/reset-listing-button';
@@ -71,9 +76,31 @@ export function AdSlotDetailB({ adSlot, ctaVariant, relatedSlots, roleInfo, user
   const canRequestPlacement = roleInfo?.role === 'sponsor' && Boolean(roleInfo.sponsorId);
   const canResetListing =
     roleInfo?.role === 'publisher' && roleInfo.publisherId === currentAdSlot.publisherId;
-  const ctaLabel = getABTestVariantLabel('cta-button-text', ctaVariant) ?? 'Book This Placement';
+  const ctaFallbackLabel = 'Request booking';
+  const ctaLabel = getABTestVariantLabel('cta-button-text', ctaVariant) ?? ctaFallbackLabel;
   const publisher = currentAdSlot.publisher;
   const placementCount = currentAdSlot._count?.placements ?? 0;
+  const audienceSize = getAudienceSize(currentAdSlot);
+  const estimatedCpm = formatEstimatedCpm(Number(currentAdSlot.basePrice), audienceSize);
+  const summaryCards = [
+    {
+      icon: <Eye className="h-5 w-5 text-[#1b64f2]" />,
+      label: 'Reach',
+      value: audienceSize ? formatAudienceSummary(currentAdSlot.type, audienceSize) : 'Reach unavailable',
+    },
+    {
+      icon: <Users className="h-5 w-5 text-violet-600" />,
+      label: 'Audience',
+      value: publisher?.category ? `${publisher.category} audience` : 'Publisher inventory',
+    },
+    {
+      icon: <BarChart3 className="h-5 w-5 text-emerald-600" />,
+      label: estimatedCpm ? 'Estimated CPM' : 'Past demand',
+      value: estimatedCpm
+        ? `$${estimatedCpm}`
+        : `Booked ${placementCount} time${placementCount === 1 ? '' : 's'}`,
+    },
+  ];
 
   const resetControl = canResetListing ? (
     <ResetListingButton
@@ -138,26 +165,12 @@ export function AdSlotDetailB({ adSlot, ctaVariant, relatedSlots, roleInfo, user
               )}
             </div>
 
-          {/* Publisher stats */}
-          {publisher && (
+          {/* Business summary */}
               <div className="grid gap-4 sm:grid-cols-3">
-              <StatCard
-                icon={<Eye className="h-5 w-5 text-[#1b64f2]" />}
-                label="Monthly Reach"
-                value={publisher.monthlyViews ? formatReach(publisher.monthlyViews) : '—'}
-              />
-              <StatCard
-                icon={<Users className="h-5 w-5 text-violet-600" />}
-                label="Subscribers"
-                value={publisher.subscriberCount ? formatReach(publisher.subscriberCount) : '—'}
-              />
-              <StatCard
-                icon={<BarChart3 className="h-5 w-5 text-emerald-600" />}
-                label="Past Bookings"
-                value={String(placementCount)}
-              />
+              {summaryCards.map((card) => (
+                <StatCard key={card.label} icon={card.icon} label={card.label} value={card.value} />
+              ))}
             </div>
-          )}
 
           {/* Publisher bio */}
           {publisher?.bio && (
@@ -195,6 +208,7 @@ export function AdSlotDetailB({ adSlot, ctaVariant, relatedSlots, roleInfo, user
                 <PlacementRequestForm
                   adSlot={currentAdSlot}
                   companyName={companyName}
+                  ctaFallbackLabel={ctaFallbackLabel}
                   initialCtaVariant={ctaVariant}
                   onBooked={handleBooked}
                 />
@@ -216,8 +230,8 @@ function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string
   return (
     <div className="rounded-[1.5rem] border border-white/80 bg-white/92 p-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.3)]">
       <div className="mb-3">{icon}</div>
-      <p className="text-2xl font-bold tracking-tight text-slate-950">{value}</p>
-      <p className="mt-1 text-xs font-medium uppercase tracking-[0.16em] text-slate-500">{label}</p>
+      <p className="text-lg font-semibold leading-7 tracking-tight text-slate-950">{value}</p>
+      <p className="mt-2 text-xs font-medium uppercase tracking-[0.16em] text-slate-500">{label}</p>
     </div>
   );
 }

@@ -6,7 +6,11 @@ import { homeBDisplayFont } from '@/app/home-b/fonts';
 import type { AdSlot, AdSlotType } from '@/lib/types';
 import { MarketplaceViewTracker } from '../components/marketplace-view-tracker';
 import { AdSlotCardB } from './ad-slot-card-b';
-import { MarketplaceFilterBar, type SortOption } from './marketplace-filter-bar';
+import {
+  MarketplaceFilterBar,
+  type BudgetFilter,
+  type SortOption,
+} from './marketplace-filter-bar';
 
 type MarketplaceGridBProps = {
   adSlots: AdSlot[];
@@ -16,12 +20,35 @@ function filterAndSort(
   slots: AdSlot[],
   search: string,
   typeFilter: AdSlotType | 'ALL',
+  availabilityOnly: boolean,
+  budgetFilter: BudgetFilter,
   sort: SortOption,
 ) {
   let filtered = slots;
 
+  if (availabilityOnly) {
+    filtered = filtered.filter((s) => s.isAvailable);
+  }
+
   if (typeFilter !== 'ALL') {
     filtered = filtered.filter((s) => s.type === typeFilter);
+  }
+
+  if (budgetFilter !== 'ALL') {
+    filtered = filtered.filter((s) => {
+      const price = Number(s.basePrice);
+
+      switch (budgetFilter) {
+        case 'UNDER_2K':
+          return price < 2000;
+        case 'BETWEEN_2K_AND_5K':
+          return price >= 2000 && price <= 5000;
+        case 'OVER_5K':
+          return price > 5000;
+        default:
+          return true;
+      }
+    });
   }
 
   if (search.trim()) {
@@ -55,11 +82,13 @@ function filterAndSort(
 export function MarketplaceGridB({ adSlots }: MarketplaceGridBProps) {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<AdSlotType | 'ALL'>('ALL');
+  const [availabilityOnly, setAvailabilityOnly] = useState(false);
+  const [budgetFilter, setBudgetFilter] = useState<BudgetFilter>('ALL');
   const [sort, setSort] = useState<SortOption>('price-desc');
 
   const filtered = useMemo(
-    () => filterAndSort(adSlots, search, typeFilter, sort),
-    [adSlots, search, typeFilter, sort],
+    () => filterAndSort(adSlots, search, typeFilter, availabilityOnly, budgetFilter, sort),
+    [adSlots, availabilityOnly, budgetFilter, search, typeFilter, sort],
   );
 
   const available = filtered.filter((s) => s.isAvailable);
@@ -94,6 +123,10 @@ export function MarketplaceGridB({ adSlots }: MarketplaceGridBProps) {
               onSearchChange={setSearch}
               typeFilter={typeFilter}
               onTypeChange={setTypeFilter}
+              availabilityOnly={availabilityOnly}
+              onAvailabilityToggle={() => setAvailabilityOnly((current) => !current)}
+              budgetFilter={budgetFilter}
+              onBudgetFilterChange={setBudgetFilter}
               sort={sort}
               onSortChange={setSort}
               resultCount={available.length}

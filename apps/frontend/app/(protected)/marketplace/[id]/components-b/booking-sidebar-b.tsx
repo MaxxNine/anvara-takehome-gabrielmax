@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import type { AdSlot } from '@/lib/types';
+import { formatEstimatedCpm, getAudienceSize } from '../../components-b/format-helpers';
 import { TrustSignalsB } from './trust-signals-b';
 import { UrgencySignalsB } from './urgency-signals-b';
 
@@ -22,8 +23,9 @@ export function BookingSidebarB({
   successNotice,
 }: BookingSidebarBProps) {
   const price = Number(adSlot.basePrice);
+  const audienceSize = getAudienceSize(adSlot);
+  const estimatedCpm = formatEstimatedCpm(price, audienceSize);
   const monthlyViews = adSlot.publisher?.monthlyViews;
-  const costPer1K = monthlyViews ? ((price / monthlyViews) * 1000).toFixed(2) : null;
   const placementCount = adSlot._count?.placements ?? 0;
 
   return (
@@ -39,10 +41,10 @@ export function BookingSidebarB({
         <p className="text-sm text-slate-500">per month</p>
       </div>
 
-      {/* Cost per 1K views */}
-      {costPer1K && (
+      {/* Cost comparison */}
+      {estimatedCpm && (
         <p className="mb-5 text-sm text-slate-600">
-          ≈ ${costPer1K} per 1,000 {adSlot.type === 'PODCAST' ? 'listeners' : 'views'}
+          Estimated CPM: ${estimatedCpm}
         </p>
       )}
 

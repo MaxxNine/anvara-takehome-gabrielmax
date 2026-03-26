@@ -1,4 +1,4 @@
-import { Flame, TrendingUp, Users } from 'lucide-react';
+import { Flame, TrendingUp } from 'lucide-react';
 
 type UrgencySignalsBProps = {
   monthlyViews?: number;
@@ -21,11 +21,6 @@ export function UrgencySignalsB({ monthlyViews, placementCount }: UrgencySignals
       text: 'High-traffic placement',
     });
   }
-
-  signals.push({
-    icon: <Users className="h-3.5 w-3.5" />,
-    text: 'One sponsor per slot',
-  });
 
   return (
     <div className="space-y-2">

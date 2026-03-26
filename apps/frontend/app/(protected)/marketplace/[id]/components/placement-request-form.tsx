@@ -13,6 +13,7 @@ import { bookPlacementAction } from '../actions/book-placement';
 type PlacementRequestFormProps = {
   adSlot: AdSlot;
   companyName: string;
+  ctaFallbackLabel?: string;
   initialCtaVariant: string;
   onBooked: () => void;
 };
@@ -20,6 +21,7 @@ type PlacementRequestFormProps = {
 export function PlacementRequestForm({
   adSlot,
   companyName,
+  ctaFallbackLabel = 'Book This Placement',
   initialCtaVariant,
   onBooked,
 }: PlacementRequestFormProps) {
@@ -27,7 +29,7 @@ export function PlacementRequestForm({
   const handledSuccessRef = useRef(false);
   const adSlotId = adSlot.id;
   const ctaVariant = useABTest('cta-button-text', initialCtaVariant);
-  const ctaLabel = getABTestVariantLabel('cta-button-text', ctaVariant) ?? 'Book This Placement';
+  const ctaLabel = getABTestVariantLabel('cta-button-text', ctaVariant) ?? ctaFallbackLabel;
 
   useEffect(() => {
     if (state.success && !handledSuccessRef.current) {
