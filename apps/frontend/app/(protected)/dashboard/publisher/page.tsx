@@ -18,7 +18,7 @@ export default async function PublisherDashboard() {
   const adSlots = await getPublisherAdSlots(requestHeaders);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 py-24">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">My Ad Slots</h1>
         <CreateAdSlotButton />
