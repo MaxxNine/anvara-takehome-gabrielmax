@@ -37,6 +37,8 @@ export type HomeBShowcaseCardItem = {
   body: string;
   href: string;
   icon: 'chart' | 'eye' | 'zap';
+  imageAlt: string;
+  imageUrl: string;
   title: string;
 };
 
@@ -272,6 +274,9 @@ export const homeBShowcaseCards: HomeBShowcaseCardItem[] = [
     body: 'Anvara connects brands and rightsholders to high-impact sponsorships. Instantly discover opportunities, compare deals, and execute smoothly.',
     href: '/marketplace',
     icon: 'eye',
+    imageAlt: 'Crowd gathered inside a stadium during a live event.',
+    imageUrl:
+      'https://images.unsplash.com/photo-1740558467508-c8830c94047e?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
     title: 'Access & Visibility',
   },
   {
@@ -279,6 +284,9 @@ export const homeBShowcaseCards: HomeBShowcaseCardItem[] = [
     body: 'No more endless decks and emails. A dedicated module keeps material handoff, approvals, and delivery in one place for the full workflow.',
     href: '/marketplace',
     icon: 'zap',
+    imageAlt: 'Business team reviewing and signing a contract at a table.',
+    imageUrl:
+      'https://images.unsplash.com/photo-1758518731462-d091b0b4ed0d?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
     title: 'A-Z Execution',
   },
   {
@@ -286,6 +294,9 @@ export const homeBShowcaseCards: HomeBShowcaseCardItem[] = [
     body: 'Built-in performance reporting turns impressions, engagement, and delivery metrics into a dashboard the team can actually act on.',
     href: '/marketplace',
     icon: 'chart',
+    imageAlt: 'Wide computer monitor on a desk showing a clean digital dashboard.',
+    imageUrl:
+      'https://images.unsplash.com/photo-1547738765-ee82a7f07da8?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
     title: 'Analytics',
   },
 ];

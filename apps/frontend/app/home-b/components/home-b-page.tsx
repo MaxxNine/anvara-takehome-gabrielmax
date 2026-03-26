@@ -1,12 +1,11 @@
 import { homeBBodyFont } from '../fonts';
 import { HomeBAudienceSplit } from './home-b-audience-split';
-import { HomeBFeatureStories } from './home-b-feature-stories';
 import { HomeBFaq } from './home-b-faq';
+import { HomeBFeatureStories } from './home-b-feature-stories';
 import { HomeBFinalCta } from './home-b-final-cta';
 import { HomeBFooter } from './home-b-footer';
 import { HomeBHero } from './home-b-hero';
 import { HomeBStructuredData } from './home-b-structured-data';
-import { HomeBTopCanvas } from './home-b-top-canvas';
 
 type HomeBPageProps = {
   siteUrl: string;
@@ -19,7 +18,6 @@ export function HomeBPage({ siteUrl }: HomeBPageProps) {
     >
       <HomeBStructuredData siteUrl={siteUrl} />
       <HomeBHero />
-      <HomeBTopCanvas />
       <HomeBAudienceSplit />
       <HomeBFeatureStories />
       <HomeBFaq />

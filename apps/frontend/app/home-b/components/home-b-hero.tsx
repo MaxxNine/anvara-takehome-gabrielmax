@@ -29,36 +29,36 @@ export function HomeBHero() {
       {/* Extra bottom darkening for proof band */}
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/40 to-transparent" />
 
-      {/* Content */}
-      <div className="relative mx-auto flex max-w-7xl flex-1 items-center px-6 sm:px-10 lg:px-16">
-        <div className="flex w-full flex-col gap-14 lg:flex-row lg:items-center lg:justify-between xl:gap-20">
+      {/* Content — pt-20 accounts for fixed nav */}
+      <div className="relative mx-auto flex max-w-7xl flex-1 items-center px-5 pt-20 sm:px-10 lg:px-16">
+        <div className="flex w-full flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-14 xl:gap-20">
           <div className="max-w-xl text-left">
             <h1
               id="home-b-hero-title"
-              className={`${homeBDisplayFont.className} text-5xl font-bold tracking-tight text-white sm:text-6xl lg:leading-[1.05]`}
+              className={`${homeBDisplayFont.className} text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.05]`}
             >
               Connect Your Brand
               <br />
               to Culture at Scale
             </h1>
 
-            <p className="mt-7 text-lg leading-relaxed text-white/75">
+            <p className="mt-5 text-base leading-relaxed text-white/75 sm:mt-7 sm:text-lg">
               Anvara brands and rightsholders connect to high-impact sponsorships, instantly
               discover opportunities, compare options, close deals, and measure success — all in
               one platform.
             </p>
 
-            <div className="mt-10 flex">
+            <div className="mt-8 flex sm:mt-10">
               <a
                 href="/login"
-                className="inline-flex items-center justify-center rounded-full bg-[#1b64f2] px-8 py-4 text-sm font-bold text-white shadow-[0_16px_40px_-14px_rgba(27,100,242,0.75)] transition-all hover:bg-blue-500 hover:shadow-[0_18px_48px_-10px_rgba(27,100,242,0.8)] hover:-translate-y-0.5"
+                className="inline-flex items-center justify-center rounded-full bg-[#1b64f2] px-6 py-3 text-sm font-bold text-white shadow-[0_16px_40px_-14px_rgba(27,100,242,0.75)] transition-all hover:-translate-y-0.5 hover:bg-blue-500 hover:shadow-[0_18px_48px_-10px_rgba(27,100,242,0.8)] sm:px-8 sm:py-4"
               >
                 Try Anvara Free
               </a>
             </div>
           </div>
 
-          <div className="w-full max-w-2xl lg:w-[520px] lg:flex-shrink-0">
+          <div className="hidden w-full max-w-2xl lg:block lg:w-[520px] lg:flex-shrink-0">
             <HomeBFormatExplorer rounds={homeBPreviewRounds} />
           </div>
         </div>
