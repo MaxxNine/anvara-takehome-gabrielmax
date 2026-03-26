@@ -1,65 +1,70 @@
-import { homeBPreviewSlots } from '../content';
+import Image from 'next/image';
+
+import { homeBPreviewRounds } from '../content';
 import { homeBDisplayFont } from '../fonts';
-import { HomeBCtaLink } from './home-b-cta-link';
 import { HomeBFormatExplorer } from './home-b-format-explorer';
+import { HomeBProofBand } from './home-b-proof-band';
+
+const HERO_IMAGE =
+  'https://images.unsplash.com/photo-1699480114704-ac153307d2a0?q=80&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0';
 
 export function HomeBHero() {
   return (
     <section
       aria-labelledby="home-b-hero-title"
-      className="relative overflow-hidden rounded-[2rem] border border-[--color-border] bg-white px-6 py-10 shadow-[0_30px_100px_rgba(17,24,39,0.08)] sm:px-10 sm:py-12"
+      className="relative flex min-h-[100dvh] flex-col overflow-hidden"
     >
-      <div className="absolute inset-x-0 top-0 h-64 bg-[radial-gradient(circle_at_top_left,rgba(155,183,255,0.38),transparent_55%),radial-gradient(circle_at_top_right,rgba(220,231,255,0.92),transparent_48%),linear-gradient(180deg,rgba(247,248,252,0.98),rgba(255,255,255,1))]" />
-      <div className="absolute -left-16 top-16 h-40 w-40 rounded-full bg-[--color-home-highlight] blur-3xl" />
-      <div className="absolute right-0 top-8 h-56 w-56 rounded-full bg-[rgba(62,107,255,0.14)] blur-3xl" />
+      {/* Billboard background */}
+      <Image
+        src={HERO_IMAGE}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
 
-      <div className="relative grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div className="max-w-2xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[--color-primary]">
-            Sponsorship marketplace
-          </p>
-          <h1
-            id="home-b-hero-title"
-            className={`${homeBDisplayFont.className} mt-4 max-w-3xl text-4xl font-semibold tracking-[-0.04em] text-[--color-foreground] sm:text-5xl lg:text-6xl`}
-          >
-            Find sponsorship inventory with the clarity a marketplace should have.
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-[--color-muted] sm:text-lg">
-            Anvara helps sponsors browse structured placements and gives publishers a cleaner way
-            to present display, video, podcast, and newsletter inventory.
-          </p>
+      {/* Dark overlay — heavier on left for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30" />
+      {/* Extra bottom darkening for proof band */}
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/40 to-transparent" />
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <HomeBCtaLink href="/login" label="get_started" location="home_b_hero">
-              Get started
-            </HomeBCtaLink>
-            <HomeBCtaLink
-              href="/marketplace"
-              label="browse_marketplace"
-              location="home_b_hero"
-              variant="secondary"
+      {/* Content */}
+      <div className="relative mx-auto flex max-w-7xl flex-1 items-center px-6 sm:px-10 lg:px-16">
+        <div className="flex w-full flex-col gap-14 lg:flex-row lg:items-center lg:justify-between xl:gap-20">
+          <div className="max-w-xl text-left">
+            <h1
+              id="home-b-hero-title"
+              className={`${homeBDisplayFont.className} text-5xl font-bold tracking-tight text-white sm:text-6xl lg:leading-[1.05]`}
             >
-              Browse marketplace
-            </HomeBCtaLink>
+              Connect Your Brand
+              <br />
+              to Culture at Scale
+            </h1>
+
+            <p className="mt-7 text-lg leading-relaxed text-white/75">
+              Anvara brands and rightsholders connect to high-impact sponsorships, instantly
+              discover opportunities, compare options, close deals, and measure success — all in
+              one platform.
+            </p>
+
+            <div className="mt-10 flex">
+              <a
+                href="/login"
+                className="inline-flex items-center justify-center rounded-full bg-[#1b64f2] px-8 py-4 text-sm font-bold text-white shadow-[0_16px_40px_-14px_rgba(27,100,242,0.75)] transition-all hover:bg-blue-500 hover:shadow-[0_18px_48px_-10px_rgba(27,100,242,0.8)] hover:-translate-y-0.5"
+              >
+                Try Anvara Free
+              </a>
+            </div>
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-3 text-sm text-[--color-muted]">
-            <span className="rounded-full border border-[--color-border] bg-white px-4 py-2">
-              4 placement formats
-            </span>
-            <span className="rounded-full border border-[--color-border] bg-white px-4 py-2">
-              Pricing visible upfront
-            </span>
-            <span className="rounded-full border border-[--color-border] bg-white px-4 py-2">
-              Bright, structured inventory preview
-            </span>
+          <div className="w-full max-w-2xl lg:w-[520px] lg:flex-shrink-0">
+            <HomeBFormatExplorer rounds={homeBPreviewRounds} />
           </div>
-        </div>
-
-        <div className="relative">
-          <HomeBFormatExplorer slots={homeBPreviewSlots} />
         </div>
       </div>
+
+      <HomeBProofBand />
     </section>
   );
 }

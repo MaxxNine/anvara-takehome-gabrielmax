@@ -1,39 +1,19 @@
-import { homeBSteps } from '../content';
-import { homeBDisplayFont } from '../fonts';
+import { homeBShowcaseCards } from '../content';
+import { HomeBShowcaseCard } from './home-b-showcase-card';
 
 export function HomeBHowItWorks() {
   return (
-    <section
-      aria-labelledby="home-b-how-it-works-title"
-      className="rounded-[2rem] border border-[--color-border] bg-white px-6 py-8 sm:px-8"
-    >
-      <div className="max-w-2xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[--color-primary]">
-          How it works
-        </p>
-        <h2
-          id="home-b-how-it-works-title"
-          className={`${homeBDisplayFont.className} mt-3 text-3xl font-semibold tracking-[-0.04em] text-[--color-foreground]`}
-        >
-          Keep discovery simple and the next action obvious.
+    <section aria-labelledby="home-b-showcase-title" className="relative px-6 pb-24 pt-14 sm:px-10 sm:pb-28 lg:pt-16">
+      <div className="mx-auto max-w-7xl">
+        <h2 id="home-b-showcase-title" className="sr-only">
+          Why teams use Anvara
         </h2>
-      </div>
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-3">
-        {homeBSteps.map((step, index) => (
-          <article
-            key={step.title}
-            className="rounded-[1.5rem] border border-[--color-border] bg-[--color-home-surface-alt] px-5 py-6"
-          >
-            <div className="flex items-center gap-3">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[--color-primary] text-sm font-semibold text-white">
-                {index + 1}
-              </span>
-              <h3 className="text-lg font-semibold text-[--color-foreground]">{step.title}</h3>
-            </div>
-            <p className="mt-4 text-sm leading-6 text-[--color-muted]">{step.body}</p>
-          </article>
-        ))}
+        <div className="grid gap-8 lg:grid-cols-3">
+          {homeBShowcaseCards.map((item) => (
+            <HomeBShowcaseCard key={item.title} item={item} />
+          ))}
+        </div>
       </div>
     </section>
   );

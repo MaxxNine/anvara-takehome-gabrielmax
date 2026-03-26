@@ -37,6 +37,7 @@
   --color-primary-hover: #2e57d8;
   --color-secondary: #9bb7ff;
   --color-background: #f7f8fc;
+  --color-home-surface: #f7f8fc;
   --color-foreground: #151821;
   --color-muted: #667085;
   --color-border: #e7ebf3;
@@ -51,11 +52,13 @@ body:has(.theme-home-b) {
   --color-primary-hover: #2e57d8;
   --color-secondary: #9bb7ff;
   --color-background: #f7f8fc;
+  --color-home-surface: #f7f8fc;
   --color-foreground: #151821;
   --color-muted: #667085;
   --color-border: #e7ebf3;
   background-color: var(--color-background);
   color: var(--color-foreground);
+  overflow-x: hidden;
 }
 
 /* Dark mode support - TODO: Implement dark mode toggle */
@@ -81,9 +84,13 @@ body {
     sans-serif;
 }
 
-/*
- * HINT: Use Tailwind v4 arbitrary values with CSS vars:
- * - bg-[--color-primary] for custom backgrounds
- * - text-[--color-foreground] for custom text colors
- * - p-[--spacing-container] for custom spacing
- */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

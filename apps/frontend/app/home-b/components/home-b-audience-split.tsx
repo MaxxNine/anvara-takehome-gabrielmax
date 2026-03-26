@@ -1,44 +1,309 @@
-import { homeBAudiencePanels } from '../content';
+import {
+  homeBAudiencePanels,
+  homeBPublisherBenefits,
+  homeBPublisherInventoryItems,
+  homeBSponsorFeatures,
+} from '../content';
 import { homeBDisplayFont } from '../fonts';
 
-export function HomeBAudienceSplit() {
+function AudienceFeatureIcon({
+  kind,
+}: {
+  kind: (typeof homeBSponsorFeatures)[number]['icon'];
+}) {
+  if (kind === 'rocket') {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6">
+        <path
+          d="M5 19c3.5-1 6.5-4 7.5-7.5L18 6l2 2-5.5 5.5C11 14.5 8 17.5 7 21l-2-2Z"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path d="M13 5h6v6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  if (kind === 'chart') {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6">
+        <path d="M4 20V10" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M12 20V4" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M20 20v-7" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
   return (
-    <section aria-labelledby="home-b-audience-title" className="grid gap-4 lg:grid-cols-2">
-      <div className="rounded-[2rem] border border-[--color-border] bg-white px-6 py-8 sm:px-8 lg:col-span-2">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[--color-primary]">
-          Two-sided marketplace
-        </p>
-        <h2
-          id="home-b-audience-title"
-          className={`${homeBDisplayFont.className} mt-3 text-3xl font-semibold tracking-[-0.04em] text-[--color-foreground]`}
-        >
-          One homepage, two clear reasons to stay.
-        </h2>
-        <p className="mt-4 max-w-xl text-base leading-7 text-[--color-muted]">
-          Sponsors need confident inventory discovery. Publishers need a stronger way to present
-          what they sell. Both sides should recognize themselves here without the page splitting too
-          early.
-        </p>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6">
+      <path
+        d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="3" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+function SponsorShowcase() {
+  return (
+    <div className="relative rounded-[2rem] border border-slate-200 bg-white p-3 shadow-[0_32px_80px_-40px_rgba(15,23,42,0.28)]">
+      <div className="rounded-[1.6rem] border border-slate-200 bg-slate-50 p-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#1b64f2]" />
+            <p className="text-sm font-semibold text-slate-600">Sponsor Workspace</p>
+          </div>
+          <div className="rounded-full bg-white px-3 py-1 text-[11px] font-bold text-slate-500 shadow-sm">
+            3 active briefs
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="rounded-[1.35rem] bg-white p-4 shadow-sm ring-1 ring-slate-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#1b64f2]">
+                  Campaign Fit
+                </p>
+                <h3 className="mt-2 text-lg font-semibold text-slate-950">
+                  New product launch
+                </h3>
+              </div>
+              <div className="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold text-emerald-700">
+                12 matches
+              </div>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {[
+                ['Podcast', 'Creator Circuit Midroll', 'High intent'],
+                ['Newsletter', 'Operator Brief Feature', 'Operators'],
+                ['Display', 'Growth Memo Display', 'Awareness'],
+              ].map(([type, title, note]) => (
+                <div
+                  key={title}
+                  className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
+                >
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                      {type}
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-slate-800">{title}</p>
+                  </div>
+                  <span className="rounded-full bg-blue-50 px-3 py-1 text-[11px] font-bold text-[#1b64f2]">
+                    {note}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4">
+            <div className="rounded-[1.35rem] bg-[#111827] p-5 text-white shadow-[0_24px_48px_-28px_rgba(17,24,39,0.8)]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-blue-200">
+                Live Reach
+              </p>
+              <p className="mt-3 text-4xl font-bold tracking-tight">84.2k</p>
+              <p className="mt-2 text-sm text-slate-300">Projected engagement across selected placements</p>
+            </div>
+
+            <div className="rounded-[1.35rem] bg-white p-5 shadow-sm ring-1 ring-slate-200">
+              <div className="flex items-end gap-3">
+                {[42, 58, 50, 67, 61, 78].map((height, index) => (
+                  <div key={index} className="flex-1">
+                    <div
+                      className={`rounded-t-2xl ${
+                        index % 2 === 0 ? 'bg-[#1b64f2]' : 'bg-cyan-400'
+                      }`}
+                      style={{ height: `${height}px` }}
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 flex items-center justify-between text-xs font-medium text-slate-400">
+                <span>Reach</span>
+                <span>Conversion intent</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PublisherInventoryShowcase() {
+  return (
+    <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_28px_70px_-36px_rgba(15,23,42,0.25)]">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-slate-950">Inventory Manager</h3>
+        <div className="rounded-full bg-cyan-100 px-3 py-1 text-[11px] font-bold text-cyan-700">
+          + Add Slot
+        </div>
       </div>
 
-      {homeBAudiencePanels.map((panel) => (
-        <article
-          key={panel.eyebrow}
-          className="rounded-[2rem] border border-[--color-border] bg-white px-6 py-8 sm:px-8"
-        >
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[--color-primary]">
-            {panel.eyebrow}
-          </p>
-          <h3 className="mt-3 text-2xl font-semibold text-[--color-foreground]">{panel.title}</h3>
-          <ul className="mt-6 space-y-3 text-sm leading-6 text-[--color-muted]">
-            {panel.bullets.map((bullet) => (
-              <li key={bullet} className="rounded-2xl bg-[--color-home-surface-alt] px-4 py-3">
-                {bullet}
-              </li>
-            ))}
-          </ul>
-        </article>
-      ))}
-    </section>
+      <div className="mt-6 space-y-4">
+        {homeBPublisherInventoryItems.map((item) => (
+          <div
+            key={item.title}
+            className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-4 ring-1 ring-slate-200"
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className={`flex h-11 w-11 items-center justify-center rounded-2xl ${
+                  item.type === 'display'
+                    ? 'bg-blue-100 text-[#1b64f2]'
+                    : item.type === 'podcast'
+                      ? 'bg-purple-100 text-purple-700'
+                      : 'bg-cyan-100 text-cyan-700'
+                }`}
+              >
+                {item.type === 'display' ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-5 w-5">
+                    <rect x="3" y="5" width="18" height="14" rx="2" strokeWidth="1.8" />
+                    <path d="M8 19v2" strokeWidth="1.8" strokeLinecap="round" />
+                    <path d="M16 19v2" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                ) : item.type === 'podcast' ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-5 w-5">
+                    <path
+                      d="M12 3a4 4 0 0 0-4 4v5a4 4 0 1 0 8 0V7a4 4 0 0 0-4-4Z"
+                      strokeWidth="1.8"
+                    />
+                    <path d="M5 10v2a7 7 0 0 0 14 0v-2" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-5 w-5">
+                    <path d="M4 6h16v12H4z" strokeWidth="1.8" />
+                    <path
+                      d="m4 8 8 6 8-6"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-900">{item.title}</p>
+                <p className="text-xs text-slate-500">{item.subtitle}</p>
+              </div>
+            </div>
+
+            <span
+              className={`text-xs font-bold ${
+                item.status === 'Live' ? 'text-emerald-600' : 'text-amber-600'
+              }`}
+            >
+              {item.status}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function HomeBAudienceSplit() {
+  const [sponsorPanel, publisherPanel] = homeBAudiencePanels;
+
+  return (
+    <>
+      <section
+        id="marketplace"
+        aria-labelledby="home-b-sponsors-title"
+        className="relative overflow-hidden bg-white px-6 py-24 sm:px-10 sm:py-28"
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(27,100,242,0.06),rgba(255,255,255,0)_36%)]" />
+        <div className="relative mx-auto max-w-7xl">
+          <div className="mb-14 max-w-3xl">
+            <h2
+              id="home-b-sponsors-title"
+              className={`${homeBDisplayFont.className} text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl`}
+            >
+              Built for <span className="text-[#1b64f2]">Sponsors</span>
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-slate-600">{sponsorPanel.title}</p>
+          </div>
+
+          <div className="grid items-center gap-12 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <SponsorShowcase />
+            </div>
+
+            <div className="space-y-8 lg:col-span-5">
+              {homeBSponsorFeatures.map((feature) => (
+                <div key={feature.title} className="flex items-start gap-5">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-[#1b64f2]">
+                    <AudienceFeatureIcon kind={feature.icon} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-slate-950">{feature.title}</h3>
+                    <p className="mt-3 text-sm leading-7 text-slate-600">{feature.body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        aria-labelledby="home-b-publishers-title"
+        className="bg-[linear-gradient(180deg,#f7faff_0%,#f2f7ff_100%)] px-6 py-24 sm:px-10 sm:py-28"
+      >
+        <div className="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
+          <div className="order-2 lg:order-1">
+            <PublisherInventoryShowcase />
+          </div>
+
+          <div className="order-1 lg:order-2">
+            <h2
+              id="home-b-publishers-title"
+              className={`${homeBDisplayFont.className} text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl`}
+            >
+              Built for <span className="text-cyan-600">Publishers</span>
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-slate-600">{publisherPanel.title}</p>
+
+            <div className="mt-10 space-y-6">
+              {homeBPublisherBenefits.map((benefit) => (
+                <div key={benefit.title} className="flex items-start gap-4">
+                  <div className="mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-cyan-500 text-white">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-4 w-4">
+                      <path
+                        d="m5 13 4 4L19 7"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-950">{benefit.title}</h3>
+                    <p className="mt-2 text-sm leading-7 text-slate-600">{benefit.body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-10 flex flex-wrap gap-3">
+              {publisherPanel.bullets.map((bullet) => (
+                <span
+                  key={bullet}
+                  className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600"
+                >
+                  {bullet}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

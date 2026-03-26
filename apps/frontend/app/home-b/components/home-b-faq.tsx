@@ -5,35 +5,45 @@ export function HomeBFaq() {
   return (
     <section
       aria-labelledby="home-b-faq-title"
-      className="rounded-[2rem] border border-[--color-border] bg-white px-6 py-8 sm:px-8"
+      className="bg-[linear-gradient(180deg,#f5f8ff_0%,#f7f8fc_100%)] px-6 py-24 sm:px-10"
     >
-      <div className="max-w-2xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[--color-primary]">
-          FAQ
-        </p>
-        <h2
-          id="home-b-faq-title"
-          className={`${homeBDisplayFont.className} mt-3 text-3xl font-semibold tracking-[-0.04em] text-[--color-foreground]`}
-        >
-          Answer the real product questions people will actually have.
-        </h2>
-      </div>
-
-      <div className="mt-8 space-y-3">
-        {homeBFaqItems.map((item) => (
-          <details
-            key={item.question}
-            className="group rounded-[1.5rem] border border-[--color-border] bg-[--color-home-surface-alt] px-5 py-4"
+      <div className="mx-auto max-w-4xl">
+        <div className="mb-14 text-center">
+          <h2
+            id="home-b-faq-title"
+            className={`${homeBDisplayFont.className} text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl`}
           >
-            <summary className="cursor-pointer list-none text-base font-semibold text-[--color-foreground]">
-              <span className="flex items-center justify-between gap-4">
+            Common Questions
+          </h2>
+          <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg">
+            Everything you need to know about the Anvara marketplace.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          {homeBFaqItems.map((item) => (
+            <details
+              key={item.question}
+              className="group overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-[0_18px_40px_-34px_rgba(15,23,42,0.3)]"
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 px-6 py-5 text-left text-base font-semibold text-slate-950 sm:px-7 sm:py-6">
                 {item.question}
-                <span className="text-[--color-primary] transition group-open:rotate-45">+</span>
-              </span>
-            </summary>
-            <p className="mt-4 max-w-3xl text-sm leading-6 text-[--color-muted]">{item.answer}</p>
-          </details>
-        ))}
+                <svg
+                  className="h-5 w-5 flex-shrink-0 text-slate-400 transition-transform group-open:rotate-180"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
+                </svg>
+              </summary>
+              <p className="px-6 pb-6 text-sm leading-7 text-slate-600 sm:px-7 sm:pb-7">
+                {item.answer}
+              </p>
+            </details>
+          ))}
+        </div>
       </div>
     </section>
   );

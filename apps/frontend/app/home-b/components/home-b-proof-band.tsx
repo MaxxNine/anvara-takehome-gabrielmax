@@ -1,36 +1,26 @@
-import { homeBProofItems } from '../content';
-import { homeBDisplayFont } from '../fonts';
-
 export function HomeBProofBand() {
   return (
-    <section
-      aria-labelledby="home-b-proof-band-title"
-      className="rounded-[2rem] border border-[--color-border] bg-white px-6 py-8 sm:px-8"
-    >
-      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[--color-primary]">
-            Proof and breadth
-          </p>
-          <h2
-            id="home-b-proof-band-title"
-            className={`${homeBDisplayFont.className} mt-3 text-3xl font-semibold tracking-[-0.04em] text-[--color-foreground]`}
-          >
-            The marketplace for display, video, podcast, and newsletter placements.
-          </h2>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2">
-          {homeBProofItems.map((item) => (
-            <div
-              key={item}
-              className="rounded-2xl border border-[--color-border] bg-[--color-home-surface-alt] px-4 py-4 text-sm font-medium text-[--color-foreground]"
+    <div className="relative">
+      <div className="absolute inset-0 border-y border-white/10 bg-black/20 backdrop-blur-sm" />
+      <div className="relative mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
+        <p className="text-center text-[11px] font-bold uppercase tracking-[0.24em] text-white/50">
+          Used by teams at
+        </p>
+        <div className="mt-7 flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-16">
+          {['GRAZIA', 'SEPHORA', 'Huel', 'CR1821A', 'Huel'].map((brand, i) => (
+            <span
+              key={i}
+              className={`tracking-widest text-white/70 ${
+                i === 0 || i === 3
+                  ? 'font-serif text-[1.9rem] italic'
+                  : 'text-[1.85rem] font-semibold'
+              }`}
             >
-              {item}
-            </div>
+              {brand}
+            </span>
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

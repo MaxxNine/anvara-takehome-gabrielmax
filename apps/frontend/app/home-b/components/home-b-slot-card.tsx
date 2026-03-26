@@ -1,82 +1,63 @@
 import type { HomeBPreviewSlot } from '../content';
 
-type HomeBSlotPreviewCardProps = {
-  compact?: boolean;
-  slot: HomeBPreviewSlot;
+const typeClasses: Record<string, string> = {
+  DISPLAY: 'bg-blue-100 text-blue-700',
+  NATIVE: 'bg-slate-100 text-slate-700',
+  NEWSLETTER: 'bg-indigo-100 text-indigo-700',
+  PODCAST: 'bg-purple-100 text-purple-700',
+  VIDEO: 'bg-pink-100 text-pink-700',
 };
 
-const slotTypeClasses = {
-  DISPLAY: 'bg-blue-100 text-blue-700',
-  NEWSLETTER: 'bg-indigo-100 text-indigo-700',
-  NATIVE: 'bg-slate-100 text-slate-700',
-  PODCAST: 'bg-lime-100 text-lime-700',
-  VIDEO: 'bg-sky-100 text-sky-700',
-} as const;
-
 function getAvailabilityClasses(tone: HomeBPreviewSlot['availabilityTone']): string {
-  if (tone === 'available') {
-    return 'bg-lime-100 text-lime-800';
-  }
-
-  return 'bg-[--color-home-surface-alt] text-[--color-muted]';
+  return tone === 'available'
+    ? 'bg-emerald-100 text-emerald-800'
+    : 'bg-amber-100 text-amber-800';
 }
 
-export function HomeBSlotPreviewCard({
-  compact = false,
-  slot,
-}: HomeBSlotPreviewCardProps) {
-  return (
-    <article
-      className={`rounded-[1.75rem] border border-[--color-border] bg-white shadow-[0_24px_80px_rgba(17,24,39,0.08)] ${
-        compact ? 'p-5' : 'p-6 sm:p-7'
-      }`}
-    >
-      <div className="flex flex-wrap items-center gap-2">
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-semibold ${
-            slotTypeClasses[slot.type]
-          }`}
-        >
-          {slot.type}
-        </span>
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-medium ${getAvailabilityClasses(slot.availabilityTone)}`}
-        >
-          {slot.availabilityLabel}
-        </span>
-      </div>
+type HomeBSlotPreviewCardProps = {
+  slot: HomeBPreviewSlot;
+  compact?: boolean;
+};
 
-      <div className={compact ? 'mt-4 space-y-2' : 'mt-5 space-y-3'}>
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-[--color-muted]">{slot.publisher}</p>
-          <h3 className={`${compact ? 'text-xl' : 'text-2xl'} font-semibold text-[--color-foreground]`}>
+export function HomeBSlotPreviewCard({ slot, compact }: HomeBSlotPreviewCardProps) {
+  return (
+    <div className={`relative overflow-hidden rounded-[2rem] border border-gray-100 bg-white transition-all hover:shadow-md ${compact ? 'p-6 sm:p-8' : 'p-8 shadow-sm sm:p-10'}`}>
+      <div className="absolute right-0 top-0 h-48 w-48 -translate-y-16 translate-x-16 rounded-full bg-blue-50 blur-3xl" />
+      <div className="relative flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between text-left">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide shadow-sm ring-1 ring-black/5 ${typeClasses[slot.type] ?? 'bg-gray-100 text-gray-700'}`}
+            >
+              {slot.type}
+            </span>
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide shadow-sm ring-1 ring-black/5 ${getAvailabilityClasses(slot.availabilityTone)}`}
+            >
+              {slot.availabilityLabel}
+            </span>
+          </div>
+          <p className="mt-8 text-xs font-bold uppercase tracking-widest text-slate-500">
+            {slot.publisher}
+          </p>
+          <h3 className="mt-3 text-2xl font-bold text-slate-900 sm:text-3xl">
             {slot.name}
           </h3>
+          <p className="mt-4 text-base leading-relaxed text-slate-600 sm:max-w-md">
+            {slot.description}
+          </p>
         </div>
-
-        <p className="max-w-xl text-sm leading-6 text-[--color-muted]">{slot.description}</p>
-      </div>
-
-      <div
-        className={`mt-6 grid gap-3 ${
-          compact ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'
-        }`}
-      >
-        <div className="rounded-2xl bg-[--color-home-surface-alt] px-4 py-3">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-[--color-muted]">
-            Monthly rate
-          </p>
-          <p className="mt-2 text-lg font-semibold text-[--color-foreground]">{slot.priceLabel}</p>
-        </div>
-        <div className="rounded-2xl border border-[--color-border] px-4 py-3">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-[--color-muted]">
-            Marketplace fit
-          </p>
-          <p className="mt-2 text-sm font-medium text-[--color-foreground]">
-            Structured inventory with clearer sponsor context
-          </p>
+        <div className="mt-6 flex flex-col sm:mt-0 sm:items-end sm:text-right">
+          <div className="rounded-2xl border border-gray-100 bg-slate-50 px-6 py-5 shadow-inner">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+              Monthly rate
+            </p>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+              {slot.priceLabel}
+            </p>
+          </div>
         </div>
       </div>
-    </article>
+    </div>
   );
 }

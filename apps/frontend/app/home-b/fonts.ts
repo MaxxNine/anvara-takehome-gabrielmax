@@ -1,11 +1,11 @@
-import { Instrument_Sans, Space_Grotesk } from 'next/font/google';
+import { Manrope } from 'next/font/google';
 
-export const homeBBodyFont = Instrument_Sans({
+export const homeBBodyFont = Manrope({
   subsets: ['latin'],
   variable: '--font-home-b-body',
 });
 
-export const homeBDisplayFont = Space_Grotesk({
+export const homeBDisplayFont = Manrope({
   subsets: ['latin'],
   variable: '--font-home-b-display',
 });

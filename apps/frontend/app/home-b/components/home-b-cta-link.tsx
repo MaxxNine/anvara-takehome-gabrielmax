@@ -4,7 +4,7 @@ import { TrackedLink } from '@/app/components/tracked-link';
 import { GA_EVENTS } from '@/lib/analytics';
 
 type HomeBCtaLinkProps = {
-  children: string;
+  children: React.ReactNode;
   href: string;
   label: string;
   location: string;

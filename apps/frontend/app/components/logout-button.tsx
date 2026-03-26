@@ -6,7 +6,11 @@ import { useRouter } from 'next/navigation';
 import { authClient } from '@/auth-client';
 import { GA_EVENTS, trackEventAndRun } from '@/lib/analytics';
 
-export function LogoutButton() {
+type LogoutButtonProps = {
+  className?: string;
+};
+
+export function LogoutButton({ className }: LogoutButtonProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -43,7 +47,10 @@ export function LogoutButton() {
       type="button"
       onClick={() => void handleLogout()}
       disabled={isSubmitting}
-      className="rounded bg-gray-600 px-3 py-1.5 text-sm text-white hover:bg-gray-500 disabled:cursor-not-allowed disabled:opacity-70"
+      className={
+        className ??
+        'rounded bg-gray-600 px-3 py-1.5 text-sm text-white hover:bg-gray-500 disabled:cursor-not-allowed disabled:opacity-70'
+      }
     >
       {isSubmitting ? 'Logging out...' : 'Logout'}
     </button>

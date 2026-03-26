@@ -2,12 +2,11 @@ import { homeBBodyFont } from '../fonts';
 import { HomeBAudienceSplit } from './home-b-audience-split';
 import { HomeBFeatureStories } from './home-b-feature-stories';
 import { HomeBFaq } from './home-b-faq';
-import { HomeBFeaturedInventory } from './home-b-featured-inventory';
 import { HomeBFinalCta } from './home-b-final-cta';
+import { HomeBFooter } from './home-b-footer';
 import { HomeBHero } from './home-b-hero';
-import { HomeBHowItWorks } from './home-b-how-it-works';
-import { HomeBProofBand } from './home-b-proof-band';
 import { HomeBStructuredData } from './home-b-structured-data';
+import { HomeBTopCanvas } from './home-b-top-canvas';
 
 type HomeBPageProps = {
   siteUrl: string;
@@ -16,17 +15,16 @@ type HomeBPageProps = {
 export function HomeBPage({ siteUrl }: HomeBPageProps) {
   return (
     <div
-      className={`theme-home-b ${homeBBodyFont.className} bg-[var(--color-background)] text-[var(--color-foreground)] space-y-4 py-4 sm:space-y-5 sm:py-6`}
+      className={`theme-home-b ${homeBBodyFont.className} relative left-1/2 right-1/2 w-[100dvw] max-w-none -translate-x-1/2 overflow-x-hidden bg-[--color-background]`}
     >
       <HomeBStructuredData siteUrl={siteUrl} />
       <HomeBHero />
-      <HomeBProofBand />
-      <HomeBFeaturedInventory />
+      <HomeBTopCanvas />
       <HomeBAudienceSplit />
-      <HomeBHowItWorks />
       <HomeBFeatureStories />
       <HomeBFaq />
       <HomeBFinalCta />
+      <HomeBFooter />
     </div>
   );
 }

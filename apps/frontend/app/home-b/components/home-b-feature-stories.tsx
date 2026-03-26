@@ -1,97 +1,79 @@
-import { homeBFeatures } from '../content';
+import { homeBTestimonials } from '../content';
 import { homeBDisplayFont } from '../fonts';
 
-function getFeatureSectionClasses(tone: (typeof homeBFeatures)[number]['tone']): string {
-  if (tone === 'ink') {
-    return 'bg-[--color-home-ink] text-white shadow-[0_28px_80px_rgba(17,24,39,0.18)]';
-  }
+function TestimonialStars({ accent }: { accent: (typeof homeBTestimonials)[number]['accent'] }) {
+  const colorClass =
+    accent === 'secondary'
+      ? 'text-cyan-500'
+      : accent === 'tertiary'
+        ? 'text-violet-500'
+        : 'text-[#1b64f2]';
 
-  if (tone === 'soft') {
-    return 'bg-[--color-home-surface-alt] text-[--color-foreground]';
-  }
-
-  return 'bg-white text-[--color-foreground]';
-}
-
-function getMutedTextClasses(tone: (typeof homeBFeatures)[number]['tone']): string {
-  return tone === 'ink' ? 'text-white/72' : 'text-[--color-muted]';
+  return (
+    <div className={`flex gap-1 ${colorClass}`}>
+      {[0, 1, 2, 3, 4].map((index) => (
+        <svg key={index} viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+          <path d="m12 17.25-5.29 3.09 1.42-6.01L3 9.74l6.14-.52L12 3.5l2.86 5.72 6.14.52-5.13 4.59 1.42 6.01Z" />
+        </svg>
+      ))}
+    </div>
+  );
 }
 
 export function HomeBFeatureStories() {
   return (
-    <section aria-labelledby="home-b-feature-stories-title" className="space-y-4">
-      <div className="max-w-2xl px-1">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[--color-primary]">
-          Feature stories
-        </p>
-        <h2
-          id="home-b-feature-stories-title"
-          className={`${homeBDisplayFont.className} mt-3 text-3xl font-semibold tracking-[-0.04em] text-[--color-foreground]`}
-        >
-          A bright page still needs one strong contrast moment, not several.
-        </h2>
-      </div>
-
-      {homeBFeatures.map((feature, index) => (
-        <article
-          key={feature.title}
-          className={`grid gap-6 rounded-[2rem] border border-[--color-border] px-6 py-8 sm:px-8 lg:grid-cols-[1fr_0.9fr] lg:items-center ${
-            index % 2 === 1 ? 'lg:[&>*:first-child]:order-2' : ''
-          } ${getFeatureSectionClasses(feature.tone)}`}
-        >
-          <div>
-            <p
-              className={`text-sm font-semibold uppercase tracking-[0.2em] ${
-                feature.tone === 'ink' ? 'text-[--color-home-data]' : 'text-[--color-primary]'
-              }`}
-            >
-              {feature.eyebrow}
-            </p>
-            <h3 className="mt-3 text-2xl font-semibold">{feature.title}</h3>
-            <p className={`mt-4 text-base leading-7 ${getMutedTextClasses(feature.tone)}`}>
-              {feature.body}
-            </p>
-          </div>
-
-          <div
-            className={`rounded-[1.75rem] border px-5 py-5 ${
-              feature.tone === 'ink'
-                ? 'border-white/12 bg-white/6'
-                : 'border-[--color-border] bg-white'
-            }`}
+    <section className="bg-white px-6 py-24 sm:px-10 sm:py-28">
+      <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2
+            className={`${homeBDisplayFont.className} text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl`}
           >
-            <p className={`text-xs font-medium uppercase tracking-[0.18em] ${getMutedTextClasses(feature.tone)}`}>
-              Visual anchors
-            </p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              {feature.highlights.map((highlight) => (
-                <span
-                  key={highlight}
-                  className={`rounded-full px-4 py-2 text-sm font-medium ${
-                    feature.tone === 'ink'
-                      ? 'bg-white/10 text-white'
-                      : 'bg-[--color-home-surface-alt] text-[--color-foreground]'
+            Success Stories
+          </h2>
+          <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg">
+            Hear from marketing leads and publishers scaling culture-first partnerships with
+            Anvara.
+          </p>
+        </div>
+
+        <div className="mt-16 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+          {homeBTestimonials.map((testimonial) => (
+            <article
+              key={testimonial.name}
+              className="flex h-full flex-col justify-between rounded-[2rem] border border-slate-200 bg-slate-50 p-8 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.28)]"
+            >
+              <div>
+                <TestimonialStars accent={testimonial.accent} />
+                <p className="mt-6 text-base leading-8 text-slate-700">&quot;{testimonial.quote}&quot;</p>
+              </div>
+
+              <div className="mt-10 flex items-center gap-4">
+                <div
+                  className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold text-white ${
+                    testimonial.accent === 'secondary'
+                      ? 'bg-cyan-500'
+                      : testimonial.accent === 'tertiary'
+                        ? 'bg-violet-500'
+                        : 'bg-[#1b64f2]'
                   }`}
                 >
-                  {highlight}
-                </span>
-              ))}
-            </div>
-            <div
-              className={`mt-5 rounded-[1.5rem] px-4 py-4 ${
-                feature.tone === 'ink'
-                  ? 'bg-black/12'
-                  : 'border border-[--color-border] bg-[--color-home-surface-alt]'
-              }`}
-            >
-              <p className={`text-sm leading-6 ${getMutedTextClasses(feature.tone)}`}>
-                Use the darker ink treatment once, as the strongest feature emphasis on the page.
-                Everywhere else should stay inside the bright-white system.
-              </p>
-            </div>
-          </div>
-        </article>
-      ))}
+                  {testimonial.name
+                    .split(' ')
+                    .map((part) => part[0])
+                    .slice(0, 2)
+                    .join('')}
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-950">{testimonial.name}</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
+                    {testimonial.role}
+                  </p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

@@ -35,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen antialiased">
         <AnalyticsProvider>
           <Nav />
-          <main className="mx-auto max-w-6xl p-4">{children}</main>
+          <main className="mx-auto max-w-6xl p-4 pt-0">{children}</main>
         </AnalyticsProvider>
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ? (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />

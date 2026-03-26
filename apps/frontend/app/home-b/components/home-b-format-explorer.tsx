@@ -1,52 +1,61 @@
 'use client';
 
-import { useRotatingIndex } from './use-rotating-index';
-import type { HomeBPreviewSlot } from '../content';
-import { HomeBSlotPreviewCard } from './home-b-slot-card';
+import type { HomeBPreviewRound } from '../content';
+import { HomeBExplorerCard } from './home-b-explorer-card';
+import { useTypewriterRotation } from './use-typewriter-rotation';
 
 type HomeBFormatExplorerProps = {
-  slots: HomeBPreviewSlot[];
+  rounds: HomeBPreviewRound[];
 };
 
-export function HomeBFormatExplorer({ slots }: HomeBFormatExplorerProps) {
-  const { activeIndex, pauseRotation, resumeRotation, setActiveIndex } = useRotatingIndex(
-    slots.length,
-    4200
-  );
+export function HomeBFormatExplorer({ rounds }: HomeBFormatExplorerProps) {
+  const { activeRound, displayText, phase } = useTypewriterRotation(rounds);
 
-  const activeSlot = slots[activeIndex];
+  // Results visible once enough of the query is typed, and during idle hold.
+  // Hidden during deletion and waiting (data swaps while hidden).
+  const resultsVisible = phase === 'idle' || (phase === 'typing' && displayText.length > 8);
 
   return (
-    <div
-      className="relative"
-      onMouseEnter={pauseRotation}
-      onMouseLeave={resumeRotation}
-      onFocusCapture={pauseRotation}
-      onBlurCapture={resumeRotation}
-    >
-      <div className="mb-5 flex flex-wrap gap-2">
-        {slots.map((slot, index) => {
-          const isActive = index === activeIndex;
-
-          return (
-            <button
-              key={`${slot.type}-${slot.name}`}
-              type="button"
-              onClick={() => setActiveIndex(index)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                isActive
-                  ? 'bg-[--color-primary] text-white shadow-[0_14px_30px_rgba(62,107,255,0.25)]'
-                  : 'border border-[--color-border] bg-white text-[--color-foreground] hover:border-[--color-primary] hover:text-[--color-primary]'
-              }`}
-              aria-pressed={isActive}
-            >
-              {slot.type}
-            </button>
-          );
-        })}
+    <div className="w-full rounded-[1.5rem] border border-white/15 bg-white/10 p-4 backdrop-blur-md sm:p-5">
+      {/* Search input */}
+      <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="flex-shrink-0 text-white/40"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <div className="flex min-h-[20px] items-center text-sm font-medium leading-none">
+          <span className="text-white/50">I&apos;m looking to </span>
+          <span className="pl-1 text-white">{displayText}</span>
+          <span className="ml-0.5 inline-block h-4 w-px animate-pulse bg-blue-400" />
+        </div>
       </div>
 
-      <HomeBSlotPreviewCard slot={activeSlot} />
+      {/* Results list — staggered card transitions */}
+      <div className="mt-4 space-y-3">
+        {activeRound.slots.map((slot, index) => (
+          <div
+            key={slot.name}
+            className={`transition-all duration-500 ease-out ${
+              resultsVisible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
+            }`}
+            style={{
+              transitionDelay: resultsVisible ? `${index * 150}ms` : '0ms',
+            }}
+          >
+            <HomeBExplorerCard slot={slot} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
