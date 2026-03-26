@@ -30,19 +30,19 @@ export function HomeBHero() {
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/40 to-transparent" />
 
       {/* Content — pt-20 accounts for fixed nav */}
-      <div className="relative mx-auto flex max-w-7xl flex-1 items-center px-5 pt-20 sm:px-10 lg:px-16">
-        <div className="flex w-full flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-14 xl:gap-20">
-          <div className="max-w-xl text-left">
+      <div className="relative mx-auto flex w-full max-w-7xl flex-1 items-center px-6 pb-10 pt-24 sm:px-8 sm:pb-14 sm:pt-28 lg:px-10 lg:pb-16 lg:pt-24 xl:px-12">
+        <div className="flex w-full flex-col gap-10 sm:gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-14 xl:gap-20">
+          <div className="max-w-xl text-left xl:max-w-2xl">
             <h1
               id="home-b-hero-title"
-              className={`${homeBDisplayFont.className} text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.05]`}
+              className={`${homeBDisplayFont.className} text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.05] xl:text-[4.5rem]`}
             >
               Connect Your Brand
               <br />
               to Culture at Scale
             </h1>
 
-            <p className="mt-5 text-base leading-relaxed text-white/75 sm:mt-7 sm:text-lg">
+            <p className="mt-5 max-w-lg text-base leading-7 text-white/75 sm:mt-6 sm:text-lg sm:leading-8">
               Anvara brands and rightsholders connect to high-impact sponsorships, instantly
               discover opportunities, compare options, close deals, and measure success — all in
               one platform.
@@ -56,9 +56,13 @@ export function HomeBHero() {
                 Try Anvara Free
               </a>
             </div>
+
+            <div className="mt-8 w-full max-w-xl lg:hidden">
+              <HomeBFormatExplorer rounds={homeBPreviewRounds} />
+            </div>
           </div>
 
-          <div className="hidden w-full max-w-2xl lg:block lg:w-[520px] lg:flex-shrink-0">
+          <div className="hidden w-full max-w-2xl lg:block lg:w-[32rem] lg:flex-shrink-0 xl:w-[34rem]">
             <HomeBFormatExplorer rounds={homeBPreviewRounds} />
           </div>
         </div>

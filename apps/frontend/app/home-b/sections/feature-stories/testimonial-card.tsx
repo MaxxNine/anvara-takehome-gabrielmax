@@ -50,15 +50,17 @@ type TestimonialCardProps = {
 
 export function TestimonialCard({ testimonial }: TestimonialCardProps) {
   return (
-    <article className="flex h-full flex-col justify-between rounded-[2rem] border border-slate-200 bg-slate-50 p-8 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.28)]">
+    <article className="flex h-full flex-col justify-between rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.28)] sm:rounded-[2rem] sm:p-8">
       <div>
         <TestimonialStars accent={testimonial.accent} />
-        <p className="mt-6 text-base leading-8 text-slate-700">&quot;{testimonial.quote}&quot;</p>
+        <p className="mt-5 text-[15px] leading-7 text-slate-700 sm:mt-6 sm:text-base sm:leading-8">
+          &quot;{testimonial.quote}&quot;
+        </p>
       </div>
 
-      <div className="mt-10 flex items-center gap-4">
+      <div className="mt-8 flex items-center gap-4 sm:mt-10">
         <div
-          className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold text-white ${getAccentAvatarClass(
+          className={`flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold text-white sm:h-12 sm:w-12 ${getAccentAvatarClass(
             testimonial.accent
           )}`}
         >

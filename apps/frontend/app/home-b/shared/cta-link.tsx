@@ -20,8 +20,8 @@ export function HomeBCtaLink({
 }: HomeBCtaLinkProps) {
   const className =
     variant === 'primary'
-      ? 'inline-flex items-center justify-center rounded-full bg-[--color-primary] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[--color-primary-hover]'
-      : 'inline-flex items-center justify-center rounded-full border border-[--color-border] bg-white px-5 py-3 text-sm font-semibold text-[--color-foreground] transition hover:border-[--color-primary] hover:text-[--color-primary]';
+      ? 'inline-flex w-full items-center justify-center rounded-full bg-[--color-primary] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[--color-primary-hover] sm:w-auto sm:px-6 sm:py-3.5'
+      : 'inline-flex w-full items-center justify-center rounded-full border border-[--color-border] bg-white px-5 py-3 text-sm font-semibold text-[--color-foreground] transition hover:border-[--color-primary] hover:text-[--color-primary] sm:w-auto sm:px-6 sm:py-3.5';
 
   return (
     <TrackedLink

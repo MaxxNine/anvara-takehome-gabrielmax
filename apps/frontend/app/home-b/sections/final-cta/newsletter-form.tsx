@@ -19,7 +19,7 @@ export function NewsletterForm() {
   }
 
   return (
-    <div className="mx-auto mt-14 max-w-md text-center" role="region" aria-label="Newsletter signup">
+    <div className="mx-auto mt-10 max-w-lg text-center sm:mt-14" role="region" aria-label="Newsletter signup">
       <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
       <p className="mt-8 text-sm font-medium text-slate-400" id="newsletter-description">
         Not ready yet? Get marketplace insights delivered weekly.
@@ -35,7 +35,7 @@ export function NewsletterForm() {
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="mt-4 flex gap-2"
+          className="mt-4 flex flex-col gap-2 sm:flex-row"
           aria-describedby="newsletter-description"
         >
           <label htmlFor="newsletter-email" className="sr-only">
@@ -54,12 +54,12 @@ export function NewsletterForm() {
             disabled={status === 'loading'}
             aria-invalid={status === 'error' ? 'true' : undefined}
             aria-describedby={status === 'error' ? 'newsletter-error' : undefined}
-            className="flex-1 rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-blue-400/50 focus:outline-none focus:ring-1 focus:ring-blue-400/50 disabled:opacity-50"
+            className="min-w-0 flex-1 rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-blue-400/50 focus:outline-none focus:ring-1 focus:ring-blue-400/50 disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="cursor-pointer rounded-full border border-white/15 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
+            className="cursor-pointer rounded-full border border-white/15 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50 sm:px-6"
           >
             {status === 'loading' ? (
               <>

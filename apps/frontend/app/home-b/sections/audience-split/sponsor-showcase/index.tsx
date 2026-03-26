@@ -23,16 +23,16 @@ export function SponsorShowcase() {
   return (
     <motion.div
       ref={ref}
-      className="relative rounded-[2rem] border border-slate-200 bg-white p-3 shadow-[0_32px_80px_-40px_rgba(15,23,42,0.28)]"
+      className="relative rounded-[1.75rem] border border-slate-200 bg-white p-2.5 shadow-[0_32px_80px_-40px_rgba(15,23,42,0.28)] sm:rounded-[2rem] sm:p-3"
       {...getRevealProps({
         hidden: { opacity: 0, scale: 0.94 },
         isVisible,
         prefersReducedMotion,
       })}
     >
-      <div className="rounded-[1.6rem] border border-slate-200 bg-slate-50 p-5">
+      <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4 sm:rounded-[1.6rem] sm:p-5">
         <motion.div
-          className="flex items-center justify-between"
+          className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
           {...getRevealProps({
             delay: 0.2,
             hidden: { opacity: 0, y: 16 },
@@ -78,9 +78,9 @@ export function SponsorShowcase() {
           </motion.div>
         </motion.div>
 
-        <div className="mt-5 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="mt-5 grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
           <motion.div
-            className="rounded-[1.35rem] bg-white p-4 shadow-sm ring-1 ring-slate-200"
+            className="rounded-[1.25rem] bg-white p-4 shadow-sm ring-1 ring-slate-200 sm:rounded-[1.35rem]"
             {...getRevealProps({
               delay: 0.4,
               hidden: { opacity: 0, y: 24 },
@@ -88,7 +88,7 @@ export function SponsorShowcase() {
               prefersReducedMotion,
             })}
           >
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#1b64f2]">
                   Campaign Fit

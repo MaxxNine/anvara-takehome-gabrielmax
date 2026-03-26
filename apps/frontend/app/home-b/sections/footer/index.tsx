@@ -29,10 +29,10 @@ const footerColumns = [
 
 export function HomeBFooter() {
   return (
-    <footer className="border-t border-slate-200 bg-white px-6 pb-10 pt-16 sm:px-10">
+    <footer className="border-t border-slate-200 bg-white px-6 pb-10 pt-16 sm:px-8 sm:pb-12 sm:pt-20 lg:px-10 lg:pt-24 xl:px-12">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-12 border-b border-slate-200 pb-14 lg:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]">
-          <div className="max-w-sm">
+        <div className="grid gap-10 border-b border-slate-200 pb-12 sm:grid-cols-2 sm:gap-12 sm:pb-14 lg:grid-cols-[1.2fr_repeat(3,minmax(0,1fr))]">
+          <div className="max-w-sm sm:col-span-2 lg:col-span-1">
             <a
               href="/"
               className={`${homeBDisplayFont.className} text-2xl font-bold tracking-tight text-slate-950`}
@@ -48,7 +48,7 @@ export function HomeBFooter() {
           {footerColumns.map((column) => (
             <div key={column.title}>
               <h3
-                className={`${homeBDisplayFont.className} text-sm font-bold uppercase tracking-[0.18em] text-slate-900`}
+                className={`${homeBDisplayFont.className} text-xs font-bold uppercase tracking-[0.18em] text-slate-900 sm:text-sm`}
               >
                 {column.title}
               </h3>
@@ -68,9 +68,9 @@ export function HomeBFooter() {
           ))}
         </div>
 
-        <div className="flex flex-col gap-4 pt-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col items-center gap-4 pt-6 text-center text-sm text-slate-500 sm:pt-8 sm:text-left md:flex-row md:justify-between">
           <p>© 2026 Anvara Marketplace. All rights reserved.</p>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
             <a href="/" className="transition hover:text-[#1b64f2]">
               X
             </a>

@@ -16,31 +16,35 @@ const typeBadgeClasses: Record<string, string> = {
 
 export function HomeBExplorerCard({ slot }: HomeBExplorerCardProps) {
   return (
-    <article className="flex items-center gap-3.5 rounded-xl bg-white p-3 shadow-sm">
-      <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg">
+    <article className="flex items-center gap-3 rounded-lg bg-white p-2.5 shadow-sm sm:gap-3.5 sm:rounded-xl sm:p-3">
+      <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg sm:h-16 sm:w-16">
         <Image
           src={slot.imageUrl}
           alt={slot.imageAlt}
           fill
-          sizes="64px"
+          sizes="(max-width: 640px) 56px, 64px"
           className="object-cover"
         />
       </div>
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <h3 className="truncate text-sm font-semibold text-slate-900">{slot.name}</h3>
+          <h3 className="truncate text-[13px] font-semibold text-slate-900 sm:text-sm">
+            {slot.name}
+          </h3>
         </div>
-        <p className="mt-0.5 text-xs text-slate-500">{slot.publisher}</p>
+        <p className="mt-0.5 truncate text-[11px] text-slate-500 sm:text-xs">{slot.publisher}</p>
         <div className="mt-1.5 flex items-center gap-2">
           <span
-            className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+            className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider sm:text-[10px] ${
               typeBadgeClasses[slot.type] ?? 'bg-slate-100 text-slate-800'
             }`}
           >
             {slot.type}
           </span>
-          <span className="text-xs font-semibold text-slate-700">{slot.priceLabel}</span>
+          <span className="truncate text-[11px] font-semibold text-slate-700 sm:text-xs">
+            {slot.priceLabel}
+          </span>
         </div>
       </div>
     </article>

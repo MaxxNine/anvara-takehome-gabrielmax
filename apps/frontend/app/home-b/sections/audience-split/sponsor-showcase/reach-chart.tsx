@@ -15,7 +15,7 @@ export function ReachChart({ isVisible, prefersReducedMotion }: ReachChartProps)
 
   return (
     <motion.div
-      className="rounded-[1.35rem] bg-white p-5 shadow-sm ring-1 ring-slate-200"
+      className="rounded-[1.25rem] bg-white p-4 shadow-sm ring-1 ring-slate-200 sm:rounded-[1.35rem] sm:p-5"
       {...getRevealProps({
         delay: 1,
         hidden: { opacity: 0, y: 24 },
@@ -24,7 +24,7 @@ export function ReachChart({ isVisible, prefersReducedMotion }: ReachChartProps)
       })}
     >
       <motion.div
-        className="mb-4 flex items-center justify-between"
+        className="mb-4 flex items-center justify-between gap-3"
         {...getRevealProps({
           delay: 1.1,
           duration: 0.5,
@@ -40,7 +40,7 @@ export function ReachChart({ isVisible, prefersReducedMotion }: ReachChartProps)
         </div>
       </motion.div>
 
-      <div className="flex items-end gap-2" style={{ height: '78px' }}>
+      <div className="flex items-end gap-1.5 sm:gap-2" style={{ height: '72px' }}>
         {REACH_CHART_DATA.map((bar, index) => (
           <div
             key={bar.label}
@@ -106,7 +106,7 @@ export function ReachChart({ isVisible, prefersReducedMotion }: ReachChartProps)
       </div>
 
       <motion.div
-        className="mt-3 flex items-center justify-center gap-4"
+        className="mt-3 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
         {...getRevealProps({
           delay: 1.8,
           duration: 0.5,

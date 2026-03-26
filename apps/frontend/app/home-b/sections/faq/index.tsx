@@ -12,13 +12,13 @@ export function HomeBFaq() {
   return (
     <section
       aria-labelledby="home-b-faq-title"
-      className="bg-[linear-gradient(180deg,#f5f8ff_0%,#f7f8fc_100%)] px-6 py-24 sm:px-10"
+      className="bg-[linear-gradient(180deg,#f5f8ff_0%,#f7f8fc_100%)] px-6 py-20 sm:px-8 sm:py-24 lg:px-10 lg:py-28 xl:px-12"
     >
       <div className="mx-auto max-w-4xl">
-        <div className="mb-14 text-center">
+        <div className="mb-12 text-center sm:mb-14">
           <h2
             id="home-b-faq-title"
-            className={`${homeBDisplayFont.className} text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl`}
+            className={`${homeBDisplayFont.className} text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl`}
           >
             Common Questions
           </h2>
@@ -27,7 +27,7 @@ export function HomeBFaq() {
           </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {homeBFaqItems.map((item, index) => {
             const isOpen = openIndex === index;
             const buttonId = `home-b-faq-button-${index}`;
@@ -36,7 +36,7 @@ export function HomeBFaq() {
             return (
               <article
                 key={item.question}
-                className="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-[0_18px_40px_-34px_rgba(15,23,42,0.3)]"
+                className="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white shadow-[0_18px_40px_-34px_rgba(15,23,42,0.3)] sm:rounded-[1.5rem]"
               >
                 <h3>
                   <button
@@ -49,7 +49,7 @@ export function HomeBFaq() {
                         currentOpenIndex === index ? null : index
                       )
                     }
-                    className="flex w-full cursor-pointer items-center justify-between gap-6 px-6 py-5 text-left text-base font-semibold text-slate-950 sm:px-7 sm:py-6"
+                    className="flex w-full cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left text-[15px] font-semibold text-slate-950 sm:gap-6 sm:px-6 sm:py-5 sm:text-base lg:px-7 lg:py-6"
                   >
                     <span>{item.question}</span>
                     <ChevronDown
@@ -61,7 +61,7 @@ export function HomeBFaq() {
                 </h3>
 
                 <div
-                  className={`grid overflow-hidden px-6 transition-[grid-template-rows,opacity] duration-300 ease-out sm:px-7 ${
+                  className={`grid overflow-hidden px-5 transition-[grid-template-rows,opacity] duration-300 ease-out sm:px-6 lg:px-7 ${
                     isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
                   }`}
                 >
@@ -73,7 +73,7 @@ export function HomeBFaq() {
                   >
                     <p
                       className={`text-sm leading-7 text-slate-600 transition-[padding-bottom] duration-300 ease-out ${
-                        isOpen ? 'pb-6 sm:pb-7' : 'pb-0'
+                        isOpen ? 'pb-5 sm:pb-6 lg:pb-7' : 'pb-0'
                       }`}
                     >
                       {item.answer}
