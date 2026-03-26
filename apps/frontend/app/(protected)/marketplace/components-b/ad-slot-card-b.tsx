@@ -1,4 +1,9 @@
-import { BadgeCheck, Eye, TrendingUp } from 'lucide-react';
+'use client';
+
+import { useState, type ReactNode } from 'react';
+
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowUpRight, BadgeCheck, Eye, Flame, Gauge } from 'lucide-react';
 
 import { adSlotEventParams } from '@/lib/analytics';
 import type { AdSlot } from '@/lib/types';
@@ -15,38 +20,127 @@ type AdSlotCardBProps = {
   slot: AdSlot;
 };
 
-function getMomentumBadge(slot: AdSlot): { label: string; className: string } | null {
-  const placementCount = slot._count?.placements ?? 0;
-  const audienceSize = getAudienceSize(slot);
+type CardMetricItem = {
+  key: string;
+  icon: ReactNode;
+  label: string;
+  value: string;
+  className?: string;
+};
 
-  if (placementCount >= 3) {
-    return {
-      label: 'Most Booked',
-      className: 'bg-amber-50 text-amber-700',
-    };
-  }
+function CardSignalTooltip({
+  icon,
+  label,
+  tone = 'default',
+}: {
+  icon: ReactNode;
+  label: string;
+  tone?: 'default' | 'emphasis';
+}) {
+  const [open, setOpen] = useState(false);
 
-  if (audienceSize && audienceSize >= 100_000) {
-    return {
-      label: 'High Reach',
-      className: 'bg-emerald-50 text-emerald-700',
-    };
-  }
+  return (
+    <div className="relative pointer-events-auto">
+      <button
+        type="button"
+        aria-label={label}
+        aria-expanded={open}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          setOpen((current) => !current);
+        }}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+        className={`flex h-8 w-8 items-center justify-center rounded-full border bg-white/95 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.35)] transition hover:border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1b64f2]/20 ${
+          tone === 'emphasis'
+            ? 'border-amber-200 text-amber-700'
+            : 'border-slate-200 text-[#1b64f2]'
+        }`}
+      >
+        {icon}
+      </button>
 
-  return null;
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.16, ease: 'easeOut' }}
+            className="pointer-events-none absolute right-0 top-full z-20 mt-2 whitespace-nowrap rounded-lg bg-slate-950 px-2.5 py-1.5 text-xs font-medium text-white shadow-[0_20px_40px_-28px_rgba(15,23,42,0.5)]"
+            role="tooltip"
+          >
+            {label}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function CardMetric({
+  className,
+  icon,
+  label,
+  value,
+}: {
+  className?: string;
+  icon: ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div
+      className={`rounded-[1rem] border border-slate-200/80 bg-slate-50/85 px-3.5 py-3 ${
+        className ?? ''
+      }`}
+    >
+      <div className="flex items-center gap-2">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-slate-500 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.45)]">
+          {icon}
+        </span>
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">{label}</p>
+          <p className="truncate text-sm font-semibold text-slate-700">{value}</p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function CardContent({ slot }: AdSlotCardBProps) {
-  const placementCount = slot._count?.placements ?? 0;
   const audienceSize = getAudienceSize(slot);
   const estimatedCpm = formatEstimatedCpm(Number(slot.basePrice), audienceSize);
-  const momentumBadge = getMomentumBadge(slot);
-  const audienceCategory = slot.publisher?.category;
+  const hasHighReachSignal = Boolean(audienceSize && audienceSize > 100_000);
+
+  const metrics: CardMetricItem[] = [];
+
+  if (audienceSize) {
+    metrics.push({
+      key: 'reach',
+      icon: <Eye className="h-4 w-4" />,
+      label: 'Reach',
+      value: formatReachLabel(slot.type, audienceSize),
+      className: 'min-w-0',
+    });
+  }
+
+  if (estimatedCpm) {
+    metrics.push({
+      key: 'cpm',
+      icon: <Gauge className="h-4 w-4" />,
+      label: 'Est. CPM',
+      value: `$${estimatedCpm}`,
+      className: 'w-full sm:w-[9rem] sm:min-w-[9rem]',
+    });
+  }
 
   return (
     <>
-      {/* Header: type badge + momentum signal */}
-      <div className="mb-4 flex flex-wrap items-center gap-2">
+      <div className="mb-5 flex items-start justify-between gap-3">
         <span
           className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.16em] ${getTypeBadgeColor(
             slot.type
@@ -54,57 +148,50 @@ function CardContent({ slot }: AdSlotCardBProps) {
         >
           {slot.type}
         </span>
-        {momentumBadge && (
-          <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${momentumBadge.className}`}>
-            {momentumBadge.label}
-          </span>
-        )}
+
+        <div className="flex items-center gap-2">
+          {hasHighReachSignal && (
+            <CardSignalTooltip
+              icon={<Flame className="h-4 w-4" />}
+              label="High-reach placement"
+              tone="emphasis"
+            />
+          )}
+          {slot.publisher?.isVerified && (
+            <CardSignalTooltip
+              icon={<BadgeCheck className="h-4 w-4" />}
+              label="Verified publisher"
+            />
+          )}
+        </div>
       </div>
 
-      {/* Title */}
-      <h3 className="text-lg font-semibold tracking-tight text-slate-950">{slot.name}</h3>
+      <h3 className="text-[1.35rem] font-semibold leading-tight tracking-tight text-slate-950">{slot.name}</h3>
 
-      {/* Publisher row */}
       {slot.publisher && (
-        <div className="mt-2 flex items-center gap-1.5">
-          <span className="text-sm text-slate-600">by {slot.publisher.name}</span>
-          {slot.publisher.isVerified && (
-            <BadgeCheck className="h-3.5 w-3.5 text-[#1b64f2]" />
-          )}
+        <div className="mt-2 flex items-center gap-1.5 text-sm text-slate-600">
+          <span>by {slot.publisher.name}</span>
         </div>
       )}
 
-      {audienceCategory && <p className="mt-2 text-sm font-medium text-slate-500">Audience: {audienceCategory}</p>}
-
-      {/* Description */}
       {slot.description && (
-        <p className="mt-3 text-sm leading-7 text-slate-600 line-clamp-2">
-          {slot.description}
-        </p>
+        <p className="mt-3 text-sm leading-7 text-slate-600 line-clamp-2">{slot.description}</p>
       )}
 
-      {/* Social proof row */}
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        {audienceSize ? (
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
-            <Eye className="h-3.5 w-3.5" />
-            <span>{formatReachLabel(slot.type, audienceSize)}</span>
-          </div>
-        ) : null}
-        {estimatedCpm && (
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-medium text-[#1b64f2]">
-            <span>Est. CPM ${estimatedCpm}</span>
-          </div>
-        )}
-        {placementCount > 0 && (
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700">
-            <TrendingUp className="h-3.5 w-3.5" />
-            <span>Booked {placementCount}x</span>
-          </div>
-        )}
-      </div>
+      {metrics.length > 0 && (
+        <div className="mt-5 grid gap-2 sm:grid-cols-[minmax(0,1fr)_9rem]">
+          {metrics.map((metric) => (
+            <CardMetric
+              key={metric.key}
+              icon={metric.icon}
+              label={metric.label}
+              value={metric.value}
+              className={metric.className}
+            />
+          ))}
+        </div>
+      )}
 
-      {/* Footer: availability + price */}
       <div className="mt-6 flex items-end justify-between border-t border-slate-200 pt-4">
         <div>
           <span
@@ -120,12 +207,13 @@ function CardContent({ slot }: AdSlotCardBProps) {
             {slot.isAvailable ? 'Available' : 'Booked'}
           </span>
           {slot.isAvailable && (
-            <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[#1b64f2]">
+            <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-[#1b64f2]">
               View details
-              <span aria-hidden="true">→</span>
+              <ArrowUpRight className="h-4 w-4" />
             </span>
           )}
         </div>
+
         <div className="text-right">
           <p className="text-xl font-bold tracking-tight text-slate-950">
             ${Number(slot.basePrice).toLocaleString()}
@@ -139,24 +227,31 @@ function CardContent({ slot }: AdSlotCardBProps) {
 
 export function AdSlotCardB({ slot }: AdSlotCardBProps) {
   const accentBorder = getTypeAccentColor(slot.type);
+  const cardShell = `relative overflow-hidden rounded-[1.5rem] border border-slate-200 border-l-4 ${accentBorder} p-6`;
 
   if (!slot.isAvailable) {
     return (
-      <div
-        className={`relative overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-50/90 border-l-4 ${accentBorder} p-6 opacity-80`}
-      >
+      <div className={`${cardShell} bg-slate-50/90 opacity-80`}>
         <CardContent slot={slot} />
       </div>
     );
   }
 
   return (
-    <AdSlotCardLink
-      eventParams={adSlotEventParams(slot)}
-      slotId={slot.id}
-      className={`block overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white border-l-4 ${accentBorder} p-6 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.45)] transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_28px_70px_-38px_rgba(27,100,242,0.28)]`}
+    <div
+      className={`${cardShell} group bg-white shadow-[0_24px_60px_-42px_rgba(15,23,42,0.45)] transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_28px_70px_-38px_rgba(27,100,242,0.28)]`}
     >
-      <CardContent slot={slot} />
-    </AdSlotCardLink>
+      <AdSlotCardLink
+        eventParams={adSlotEventParams(slot)}
+        slotId={slot.id}
+        className="absolute inset-0 z-0 rounded-[1.5rem]"
+      >
+        <span className="sr-only">View details for {slot.name}</span>
+      </AdSlotCardLink>
+
+      <div className="relative z-10 pointer-events-none">
+        <CardContent slot={slot} />
+      </div>
+    </div>
   );
 }

@@ -25,6 +25,7 @@ function filterAndSort(
   availabilityOnly: boolean,
   budgetFilter: BudgetFilter,
   estimatedCpmFilter: EstimatedCpmFilter,
+  verifiedOnly: boolean,
   sort: SortOption,
 ) {
   let filtered = slots;
@@ -35,6 +36,10 @@ function filterAndSort(
 
   if (typeFilter !== 'ALL') {
     filtered = filtered.filter((s) => s.type === typeFilter);
+  }
+
+  if (verifiedOnly) {
+    filtered = filtered.filter((s) => Boolean(s.publisher?.isVerified));
   }
 
   if (budgetFilter !== 'ALL') {
@@ -110,6 +115,7 @@ export function MarketplaceGridB({ adSlots }: MarketplaceGridBProps) {
   const [availabilityOnly, setAvailabilityOnly] = useState(true);
   const [budgetFilter, setBudgetFilter] = useState<BudgetFilter>('ALL');
   const [estimatedCpmFilter, setEstimatedCpmFilter] = useState<EstimatedCpmFilter>('ALL');
+  const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [sort, setSort] = useState<SortOption>('price-desc');
 
   const filtered = useMemo(
@@ -121,9 +127,10 @@ export function MarketplaceGridB({ adSlots }: MarketplaceGridBProps) {
         availabilityOnly,
         budgetFilter,
         estimatedCpmFilter,
+        verifiedOnly,
         sort
       ),
-    [adSlots, availabilityOnly, budgetFilter, estimatedCpmFilter, search, typeFilter, sort],
+    [adSlots, availabilityOnly, budgetFilter, estimatedCpmFilter, search, typeFilter, verifiedOnly, sort],
   );
 
   const available = filtered.filter((s) => s.isAvailable);
@@ -166,6 +173,8 @@ export function MarketplaceGridB({ adSlots }: MarketplaceGridBProps) {
               onBudgetFilterChange={setBudgetFilter}
               estimatedCpmFilter={estimatedCpmFilter}
               onEstimatedCpmFilterChange={setEstimatedCpmFilter}
+              verifiedOnly={verifiedOnly}
+              onVerifiedToggle={() => setVerifiedOnly((current) => !current)}
               sort={sort}
               onSortChange={setSort}
               resultCount={filtered.length}

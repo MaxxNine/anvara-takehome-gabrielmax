@@ -1,7 +1,17 @@
 'use client';
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { BadgeCheck, ChevronDown, ChevronUp, DollarSign, Gauge, Search, SlidersHorizontal, Tag } from 'lucide-react';
+import {
+  BadgeCheck,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  DollarSign,
+  Gauge,
+  Search,
+  SlidersHorizontal,
+  Tag,
+} from 'lucide-react';
 
 import type { AdSlotType } from '@/lib/types';
 
@@ -21,10 +31,12 @@ type MarketplaceFilterBarProps = {
   onAvailabilityToggle: () => void;
   onBudgetFilterChange: (value: BudgetFilter) => void;
   onEstimatedCpmFilterChange: (value: EstimatedCpmFilter) => void;
+  onVerifiedToggle: () => void;
   resultCount: number;
   search: string;
   sort: SortOption;
   typeFilter: AdSlotType | 'ALL';
+  verifiedOnly: boolean;
 };
 
 const selectClasses =
@@ -104,14 +116,19 @@ export function MarketplaceFilterBar({
   onAvailabilityToggle,
   onBudgetFilterChange,
   onEstimatedCpmFilterChange,
+  onVerifiedToggle,
   resultCount,
   search,
   sort,
   typeFilter,
+  verifiedOnly,
 }: MarketplaceFilterBarProps) {
   const shouldReduceMotion = useReducedMotion();
   const activeAdvancedFilterCount =
-    Number(typeFilter !== 'ALL') + Number(budgetFilter !== 'ALL') + Number(estimatedCpmFilter !== 'ALL');
+    Number(typeFilter !== 'ALL') +
+    Number(budgetFilter !== 'ALL') +
+    Number(estimatedCpmFilter !== 'ALL') +
+    Number(verifiedOnly);
   const advancedPanelId = 'marketplace-advanced-filters';
 
   const categoryOptions: FilterChipOption<AdSlotType | 'ALL'>[] = [
@@ -238,18 +255,34 @@ export function MarketplaceFilterBar({
                   />
                 </FilterGroup>
 
-                <FilterGroup icon={<BadgeCheck className="h-4 w-4" />} label="Availability">
-                  <button
-                    type="button"
-                    onClick={onAvailabilityToggle}
-                    className={`${filterChipClasses} ${
-                      availabilityOnly
-                        ? 'border-blue-200 bg-blue-50 text-[#1b64f2]'
-                        : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300 hover:text-slate-950'
-                    }`}
-                  >
-                    Available now
-                  </button>
+                <FilterGroup icon={<BadgeCheck className="h-4 w-4" />} label="Listing checks">
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={onAvailabilityToggle}
+                      className={`${filterChipClasses} ${
+                        availabilityOnly
+                          ? 'border-blue-200 bg-blue-50 text-[#1b64f2]'
+                          : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300 hover:text-slate-950'
+                      }`}
+                    >
+                      <CheckCircle2 className="mr-1.5 h-4 w-4" />
+                      Available now
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={onVerifiedToggle}
+                      className={`${filterChipClasses} ${
+                        verifiedOnly
+                          ? 'border-blue-200 bg-blue-50 text-[#1b64f2]'
+                          : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300 hover:text-slate-950'
+                      }`}
+                    >
+                      <BadgeCheck className="mr-1.5 h-4 w-4" />
+                      Verified publishers
+                    </button>
+                  </div>
                 </FilterGroup>
               </motion.div>
             </motion.div>
