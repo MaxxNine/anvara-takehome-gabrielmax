@@ -1,11 +1,18 @@
 // Utility helpers for the API
 
 // Helper to safely extract route/query params
-// BUG: Return type should be 'string' but function can return empty string silently
-export function getParam(param: unknown): string {
-  if (typeof param === 'string') return param;
-  if (Array.isArray(param) && typeof param[0] === 'string') return param[0];
-  return '';
+export function getParam(param: unknown): string | undefined {
+  if (typeof param === 'string') {
+    const value = param.trim();
+    return value.length > 0 ? value : undefined;
+  }
+
+  if (Array.isArray(param) && typeof param[0] === 'string') {
+    const value = param[0].trim();
+    return value.length > 0 ? value : undefined;
+  }
+
+  return undefined;
 }
 
 // Helper to format currency values
@@ -58,23 +65,28 @@ export const buildFilters = (
   return filters;
 };
 
-// Unused export that should be removed or marked deprecated
+/** @deprecated Legacy config kept for compatibility with older callers. */
 export const DEPRECATED_CONFIG = {
   apiVersion: 'v1',
   timeout: 5000,
 };
 
-// BUG: This function has a logic error - it doesn't handle negative numbers correctly
 export function clampValue(value: number, min: number, max: number): number {
-  // Should use Math.max(min, Math.min(max, value)) but this is wrong
-  if (value < min) return min;
-  if (value > max) return max;
-  return value;
+  const lowerBound = Math.min(min, max);
+  const upperBound = Math.max(min, max);
+  return Math.max(lowerBound, Math.min(upperBound, value));
 }
 
-// TODO: Add proper date formatting helper
-// This is a stub that candidates might notice and implement
 export function formatDate(date: string | number | Date): string {
-  // BUG: Doesn't handle invalid dates
-  return new Date(date).toLocaleDateString();
+  const parsedDate = new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return 'Invalid date';
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(parsedDate);
 }

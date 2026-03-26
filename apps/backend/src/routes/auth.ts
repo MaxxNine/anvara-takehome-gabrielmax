@@ -39,18 +39,16 @@ router.get(
 
 // GET /api/auth/role/:userId - Deprecated compatibility endpoint. Use /api/auth/profile.
 router.get(
-  '/role/:userId',
-  requireAuth,
-  async (req: AuthRequest, res: Response, next: NextFunction) => {
-    try {
-      const userId = getParam(req.params.userId);
+    '/role/:userId',
+    requireAuth,
+    async (req: AuthRequest, res: Response, next: NextFunction) => {
+      try {
+        const userId = getParam(req.params.userId);
 
-      if (!userId) {
-        throw new ValidationError('userId is required');
-      }
+        if (!userId) throw new ValidationError('userId is required');
 
-      if (!req.user || req.user.id !== userId) {
-        throw new ForbiddenError();
+        if (!req.user || req.user.id !== userId) {
+          throw new ForbiddenError();
       }
 
       res.setHeader('Deprecation', 'true');

@@ -1,6 +1,6 @@
 import type { IRouter, NextFunction, Response } from 'express';
 import { getCampaignById, isCampaignStatus, listCampaigns } from '../../services/campaign/index.js';
-import { NotFoundError, type AuthRequest } from '../../types/index.js';
+import { NotFoundError, ValidationError, type AuthRequest } from '../../types/index.js';
 import { getParam } from '../../utils/helpers.js';
 
 export function registerCampaignQueryRoutes(router: IRouter): void {
@@ -20,7 +20,11 @@ export function registerCampaignQueryRoutes(router: IRouter): void {
 
   router.get('/:id', async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-      const campaign = await getCampaignById(getParam(req.params.id));
+      const id = getParam(req.params.id);
+
+      if (!id) throw new ValidationError('id is required');
+
+      const campaign = await getCampaignById(id);
 
       if (!campaign) throw new NotFoundError('Campaign not found');
       if (req.user?.role === 'SPONSOR' && campaign.sponsorId !== req.user.sponsorId) {

@@ -45,6 +45,9 @@ export function registerAdSlotMutationRoutes(router: IRouter): void {
   router.post('/:id/book', roleMiddleware(['SPONSOR']), async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const id = getParam(req.params.id);
+
+      if (!id) throw new ValidationError('id is required');
+
       const adSlot = await getAdSlotById(id);
 
       if (!adSlot) throw new NotFoundError('Ad slot not found');
@@ -63,6 +66,9 @@ export function registerAdSlotMutationRoutes(router: IRouter): void {
   router.post('/:id/unbook', roleMiddleware(['PUBLISHER']), async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const id = getParam(req.params.id);
+
+      if (!id) throw new ValidationError('id is required');
+
       await getOwnedAdSlot(id, getPublisherId(req));
 
       res.json({
@@ -78,6 +84,9 @@ export function registerAdSlotMutationRoutes(router: IRouter): void {
   router.put('/:id', roleMiddleware(['PUBLISHER']), async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const id = getParam(req.params.id);
+
+      if (!id) throw new ValidationError('id is required');
+
       await getOwnedAdSlot(id, getPublisherId(req));
       const adSlot = await updateAdSlot(id, buildUpdateAdSlotInput(req.body as Record<string, unknown>));
       res.json(adSlot);
@@ -89,6 +98,9 @@ export function registerAdSlotMutationRoutes(router: IRouter): void {
   router.delete('/:id', roleMiddleware(['PUBLISHER']), async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const id = getParam(req.params.id);
+
+      if (!id) throw new ValidationError('id is required');
+
       await getOwnedAdSlot(id, getPublisherId(req));
       await deleteAdSlot(id);
       res.status(204).send();

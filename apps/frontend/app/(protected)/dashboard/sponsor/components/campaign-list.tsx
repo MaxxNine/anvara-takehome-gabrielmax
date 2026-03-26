@@ -14,8 +14,9 @@ export function CampaignList({ campaigns }: CampaignListProps) {
     );
   }
 
-  // TODO: Add sorting options (by date, budget, status)
-  // TODO: Add pagination if campaigns list gets large
+  //  Add sorting options (by date, budget, status)
+  //  Add pagination if campaigns list gets large
+  // Done in B variant.
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {campaigns.map((campaign) => (

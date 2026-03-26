@@ -26,6 +26,12 @@ router.get('/', async (_req: Request, res: Response) => {
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const id = getParam(req.params.id);
+
+    if (!id) {
+      res.status(400).json({ error: 'id is required' });
+      return;
+    }
+
     const publisher = await prisma.publisher.findUnique({
       where: { id },
       include: {

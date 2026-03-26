@@ -8,11 +8,13 @@ const router: IRouter = Router();
 router.get('/', async (req: Request, res: Response) => {
   try {
     const { campaignId, publisherId, status } = req.query;
+    const resolvedCampaignId = getParam(campaignId);
+    const resolvedPublisherId = getParam(publisherId);
 
     const placements = await prisma.placement.findMany({
       where: {
-        ...(campaignId && { campaignId: getParam(campaignId) }),
-        ...(publisherId && { publisherId: getParam(publisherId) }),
+        ...(resolvedCampaignId && { campaignId: resolvedCampaignId }),
+        ...(resolvedPublisherId && { publisherId: resolvedPublisherId }),
         ...(status && {
           status: status as string as
             | 'PENDING'

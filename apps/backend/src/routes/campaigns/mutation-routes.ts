@@ -8,7 +8,7 @@ import {
   getCampaignById,
   updateCampaign,
 } from '../../services/campaign/index.js';
-import { ForbiddenError, NotFoundError, type AuthRequest } from '../../types/index.js';
+import { ForbiddenError, NotFoundError, ValidationError, type AuthRequest } from '../../types/index.js';
 import { getParam } from '../../utils/helpers.js';
 
 function getSponsorId(req: AuthRequest): string {
@@ -38,6 +38,9 @@ export function registerCampaignMutationRoutes(router: IRouter): void {
   router.put('/:id', roleMiddleware(['SPONSOR']), async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const id = getParam(req.params.id);
+
+      if (!id) throw new ValidationError('id is required');
+
       const existingCampaign = await getOwnedCampaign(id, getSponsorId(req));
       const campaign = await updateCampaign(
         id,
@@ -52,6 +55,9 @@ export function registerCampaignMutationRoutes(router: IRouter): void {
   router.delete('/:id', roleMiddleware(['SPONSOR']), async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const id = getParam(req.params.id);
+
+      if (!id) throw new ValidationError('id is required');
+
       await getOwnedCampaign(id, getSponsorId(req));
       await deleteCampaign(id);
       res.status(204).send();

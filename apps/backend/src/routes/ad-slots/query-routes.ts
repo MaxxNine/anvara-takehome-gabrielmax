@@ -1,6 +1,6 @@
 import type { IRouter, NextFunction, Response } from 'express';
 import { getAdSlotById, isAdSlotType, listAdSlots } from '../../services/ad-slot/index.js';
-import { NotFoundError, type AuthRequest } from '../../types/index.js';
+import { NotFoundError, ValidationError, type AuthRequest } from '../../types/index.js';
 import { getParam } from '../../utils/helpers.js';
 
 export function registerAdSlotQueryRoutes(router: IRouter): void {
@@ -21,7 +21,11 @@ export function registerAdSlotQueryRoutes(router: IRouter): void {
 
   router.get('/:id', async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-      const adSlot = await getAdSlotById(getParam(req.params.id));
+      const id = getParam(req.params.id);
+
+      if (!id) throw new ValidationError('id is required');
+
+      const adSlot = await getAdSlotById(id);
 
       if (!adSlot) throw new NotFoundError('Ad slot not found');
       if (req.user?.role === 'PUBLISHER' && adSlot.publisherId !== req.user.publisherId) {

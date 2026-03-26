@@ -74,16 +74,32 @@ export const logger = {
   },
 };
 
-// TODO: Add a proper date formatting utility
-// BUG: Doesn't handle timezone or invalid dates
 export function formatRelativeTime(date: string | number | Date): string {
-  const now = new Date();
-  const then = new Date(date);
-  const diff = now.getTime() - then.getTime();
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const targetDate = new Date(date);
 
-  if (days === 0) return 'Today';
-  if (days === 1) return 'Yesterday';
-  if (days < 7) return `${days} days ago`;
-  return then.toLocaleDateString();
+  if (Number.isNaN(targetDate.getTime())) {
+    return 'Invalid date';
+  }
+
+  const now = Date.now();
+  const diffMs = targetDate.getTime() - now;
+  const absDiffMs = Math.abs(diffMs);
+  const minuteMs = 60 * 1000;
+  const hourMs = 60 * minuteMs;
+  const dayMs = 24 * hourMs;
+  const weekMs = 7 * dayMs;
+  const monthMs = 30 * dayMs;
+  const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+  if (absDiffMs < minuteMs) return 'Just now';
+  if (absDiffMs < hourMs) return rtf.format(Math.round(diffMs / minuteMs), 'minute');
+  if (absDiffMs < dayMs) return rtf.format(Math.round(diffMs / hourMs), 'hour');
+  if (absDiffMs < weekMs) return rtf.format(Math.round(diffMs / dayMs), 'day');
+  if (absDiffMs < monthMs) return rtf.format(Math.round(diffMs / weekMs), 'week');
+
+  return targetDate.toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 }
