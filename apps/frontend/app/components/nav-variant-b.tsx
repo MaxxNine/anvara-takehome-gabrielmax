@@ -1,7 +1,7 @@
 'use client';
 
 import { Menu, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { UserRole } from '@/lib/types';
 import type { NavUser } from './nav';
@@ -16,6 +16,8 @@ type NavVariantBProps = {
 export function NavVariantB({ user, role }: NavVariantBProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [contactToastOpen, setContactToastOpen] = useState(false);
+  const contactToastTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     function onScroll() {
@@ -28,9 +30,17 @@ export function NavVariantB({ user, role }: NavVariantBProps) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (contactToastTimeoutRef.current) {
+        window.clearTimeout(contactToastTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const hasBg = scrolled || menuOpen;
 
-  const linkClass = `text-sm font-medium transition-colors duration-300 ${
+  const linkClass = `text-sm font-medium transition-colors duration-300 cursor-pointer ${
     hasBg ? 'text-slate-600 hover:text-slate-950' : 'text-white/80 hover:text-white'
   }`;
 
@@ -38,15 +48,30 @@ export function NavVariantB({ user, role }: NavVariantBProps) {
     setMenuOpen(false);
   }
 
+  function openContactToast() {
+    closeMenu();
+    setContactToastOpen(true);
+
+    if (contactToastTimeoutRef.current) {
+      window.clearTimeout(contactToastTimeoutRef.current);
+    }
+
+    contactToastTimeoutRef.current = window.setTimeout(() => {
+      setContactToastOpen(false);
+      contactToastTimeoutRef.current = null;
+    }, 3200);
+  }
+
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-        hasBg
-          ? 'border-b border-slate-200 bg-white/90 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/78'
-          : 'bg-transparent'
-      }`}
-    >
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
+    <>
+      <header
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+          hasBg
+            ? 'border-b border-slate-200 bg-white/90 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/78'
+            : 'bg-transparent'
+        }`}
+      >
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         <TrackedNavLink
           href="/"
           destination="/"
@@ -59,9 +84,15 @@ export function NavVariantB({ user, role }: NavVariantBProps) {
 
         {/* Desktop links */}
         <div className="hidden items-center gap-6 md:flex">
-          <TrackedNavLink href="/marketplace" destination="/marketplace" className={linkClass}>
-            Marketplace
-          </TrackedNavLink>
+          {user ? (
+            <TrackedNavLink href="/marketplace" destination="/marketplace" className={linkClass}>
+              Marketplace
+            </TrackedNavLink>
+          ) : (
+            <button type="button" onClick={openContactToast} className={linkClass}>
+              Contact us
+            </button>
+          )}
 
           {user && role === 'sponsor' ? (
             <TrackedNavLink
@@ -121,23 +152,33 @@ export function NavVariantB({ user, role }: NavVariantBProps) {
         >
           {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
-      </nav>
+        </nav>
 
-      {/* Mobile menu panel */}
-      <div
-        className={`overflow-hidden transition-all duration-300 md:hidden ${
-          menuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        }`}
-      >
-        <div className="border-t border-slate-200/50 px-4 pb-6 pt-4 sm:px-6">
-          <div className="flex flex-col gap-4">
-            <TrackedNavLink
-              href="/marketplace"
-              destination="/marketplace"
-              className="text-sm font-medium text-slate-600 transition hover:text-slate-950"
-            >
-              <span onClick={closeMenu}>Marketplace</span>
-            </TrackedNavLink>
+        {/* Mobile menu panel */}
+        <div
+          className={`overflow-hidden transition-all duration-300 md:hidden ${
+            menuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="border-t border-slate-200/50 px-4 pb-6 pt-4 sm:px-6">
+            <div className="flex flex-col gap-4">
+            {user ? (
+              <TrackedNavLink
+                href="/marketplace"
+                destination="/marketplace"
+                className="text-sm font-medium text-slate-600 transition hover:text-slate-950"
+              >
+                <span onClick={closeMenu}>Marketplace</span>
+              </TrackedNavLink>
+            ) : (
+              <button
+                type="button"
+                onClick={openContactToast}
+                className="w-fit text-sm font-medium text-slate-600 transition hover:text-slate-950"
+              >
+                Contact us
+              </button>
+            )}
 
             {user && role === 'sponsor' ? (
               <TrackedNavLink
@@ -171,12 +212,32 @@ export function NavVariantB({ user, role }: NavVariantBProps) {
                 destination="/login"
                 className="w-fit rounded-full bg-[#1b64f2] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(27,100,242,0.8)] transition hover:bg-blue-600"
               >
-                Login
+                <span onClick={closeMenu}>Login</span>
               </TrackedNavLink>
             )}
+            </div>
           </div>
         </div>
+
+      </header>
+
+      <div
+        aria-live="polite"
+        className="pointer-events-none fixed inset-x-4 bottom-4 z-[60] flex justify-end sm:inset-x-6 sm:bottom-6"
+      >
+        <div
+          className={`w-full max-w-sm rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-[0_24px_60px_-28px_rgba(15,23,42,0.45)] backdrop-blur transition-all duration-300 ${
+            contactToastOpen ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
+          }`}
+          role="status"
+        >
+          <p className="text-sm font-semibold text-slate-950">Contact us is mocked for now</p>
+          <p className="mt-1 text-sm leading-6 text-slate-600">
+            This CTA is a landing-page placeholder in the take-home. The real contact flow is not
+            wired yet.
+          </p>
+        </div>
       </div>
-    </header>
+    </>
   );
 }

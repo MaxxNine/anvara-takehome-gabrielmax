@@ -1,5 +1,7 @@
 import 'server-only';
 
+import { redirect } from 'next/navigation';
+
 import { auth } from '@/auth';
 import type { RoleInfo } from './types';
 import { serverApi, type ForwardedRequestHeaders } from './server-api';
@@ -16,6 +18,18 @@ export async function getCurrentUserProfile(
     cache: 'no-store',
     requestHeaders,
   });
+}
+
+export async function requireAuthenticatedSession(requestHeaders: HeadersInit) {
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  });
+
+  if (!session?.user) {
+    redirect('/login');
+  }
+
+  return session;
 }
 
 export async function getPostLoginRedirectPath(

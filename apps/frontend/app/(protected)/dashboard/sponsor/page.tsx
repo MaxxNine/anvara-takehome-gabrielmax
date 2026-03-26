@@ -1,7 +1,6 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { auth } from '@/auth';
 import { getCurrentUserProfile } from '@/lib/auth-helpers';
 import { CampaignList } from './components/campaign-list';
 import { CreateCampaignButton } from './components/create-campaign-button';
@@ -9,13 +8,6 @@ import { getSponsorCampaigns } from './data';
 
 export default async function SponsorDashboard() {
   const requestHeaders = await headers();
-  const session = await auth.api.getSession({
-    headers: requestHeaders,
-  });
-
-  if (!session?.user) {
-    redirect('/login');
-  }
 
   // Verify user has 'sponsor' role
   const roleData = await getCurrentUserProfile(requestHeaders);
