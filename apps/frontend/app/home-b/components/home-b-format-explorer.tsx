@@ -1,5 +1,7 @@
 'use client';
 
+import { Search } from 'lucide-react';
+
 import type { HomeBPreviewRound } from '../content';
 import { HomeBExplorerCard } from './home-b-explorer-card';
 import { useTypewriterRotation } from './use-typewriter-rotation';
@@ -19,20 +21,7 @@ export function HomeBFormatExplorer({ rounds }: HomeBFormatExplorerProps) {
     <div className="w-full rounded-[1.5rem] border border-white/15 bg-white/10 p-4 backdrop-blur-md sm:p-5">
       {/* Search input */}
       <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="flex-shrink-0 text-white/40"
-        >
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.3-4.3" />
-        </svg>
+        <Search className="h-[18px] w-[18px] flex-shrink-0 text-white/40" />
         <div className="flex min-h-[20px] items-center text-sm font-medium leading-none">
           <span className="text-white/50">I&apos;m looking to </span>
           <span className="pl-1 text-white">{displayText}</span>

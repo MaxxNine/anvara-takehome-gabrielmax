@@ -1,3 +1,4 @@
+import { BarChart3, Eye, Zap } from 'lucide-react';
 import Image from 'next/image';
 import type { CSSProperties } from 'react';
 
@@ -9,43 +10,15 @@ type HomeBShowcaseCardProps = {
   item: HomeBShowcaseCardItem;
 };
 
-const iconClassName = 'h-5 w-5 text-[#1b64f2]';
+const iconComponents = {
+  chart: BarChart3,
+  eye: Eye,
+  zap: Zap,
+} as const;
 
 function ShowcaseIcon({ kind }: { kind: HomeBShowcaseCardItem['icon'] }) {
-  if (kind === 'zap') {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className={iconClassName}>
-        <path
-          d="M13 2 3 14h8l-1 8 11-13h-8l1-7Z"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-
-  if (kind === 'chart') {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className={iconClassName}>
-        <path d="M4 20V10" strokeWidth="2" strokeLinecap="round" />
-        <path d="M12 20V4" strokeWidth="2" strokeLinecap="round" />
-        <path d="M20 20v-7" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className={iconClassName}>
-      <path
-        d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="12" r="3" strokeWidth="2" />
-    </svg>
-  );
+  const Icon = iconComponents[kind];
+  return <Icon className="h-5 w-5 text-[#1b64f2]" />;
 }
 
 const imageTintClasses: Record<HomeBShowcaseCardItem['artwork'], string> = {

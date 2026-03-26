@@ -1,3 +1,5 @@
+import { ChevronDown } from 'lucide-react';
+
 import { homeBFaqItems } from '../content';
 import { homeBDisplayFont } from '../fonts';
 
@@ -28,15 +30,7 @@ export function HomeBFaq() {
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-6 px-6 py-5 text-left text-base font-semibold text-slate-950 sm:px-7 sm:py-6">
                 {item.question}
-                <svg
-                  className="h-5 w-5 flex-shrink-0 text-slate-400 transition-transform group-open:rotate-180"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
-                </svg>
+                <ChevronDown className="h-5 w-5 flex-shrink-0 text-slate-400 transition-transform group-open:rotate-180" />
               </summary>
               <p className="px-6 pb-6 text-sm leading-7 text-slate-600 sm:px-7 sm:pb-7">
                 {item.answer}

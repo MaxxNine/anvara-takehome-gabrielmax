@@ -1,3 +1,5 @@
+import { Star } from 'lucide-react';
+
 import { homeBTestimonials } from '../content';
 import { homeBDisplayFont } from '../fonts';
 
@@ -12,9 +14,7 @@ function TestimonialStars({ accent }: { accent: (typeof homeBTestimonials)[numbe
   return (
     <div className={`flex gap-1 ${colorClass}`}>
       {[0, 1, 2, 3, 4].map((index) => (
-        <svg key={index} viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-          <path d="m12 17.25-5.29 3.09 1.42-6.01L3 9.74l6.14-.52L12 3.5l2.86 5.72 6.14.52-5.13 4.59 1.42 6.01Z" />
-        </svg>
+        <Star key={index} className="h-5 w-5 fill-current" />
       ))}
     </div>
   );

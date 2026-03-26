@@ -1,5 +1,6 @@
 'use client';
 
+import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import type { UserRole } from '@/lib/types';
@@ -11,33 +12,6 @@ type NavVariantBProps = {
   role: UserRole | null;
   user: NavUser;
 };
-
-function HamburgerIcon({ open }: { open: boolean }) {
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {open ? (
-        <>
-          <path d="M18 6 6 18" />
-          <path d="m6 6 12 12" />
-        </>
-      ) : (
-        <>
-          <path d="M4 8h16" />
-          <path d="M4 16h16" />
-        </>
-      )}
-    </svg>
-  );
-}
 
 export function NavVariantB({ user, role }: NavVariantBProps) {
   const [scrolled, setScrolled] = useState(false);
@@ -145,7 +119,7 @@ export function NavVariantB({ user, role }: NavVariantBProps) {
           }`}
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         >
-          <HamburgerIcon open={menuOpen} />
+          {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </nav>
 

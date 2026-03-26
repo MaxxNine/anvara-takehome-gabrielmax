@@ -1,3 +1,5 @@
+import { BarChart3, Check, Eye, Mail, Mic, Monitor, Rocket } from 'lucide-react';
+
 import {
   homeBAudiencePanels,
   homeBPublisherBenefits,
@@ -6,46 +8,19 @@ import {
 } from '../content';
 import { homeBDisplayFont } from '../fonts';
 
+const featureIconComponents = {
+  chart: BarChart3,
+  eye: Eye,
+  rocket: Rocket,
+} as const;
+
 function AudienceFeatureIcon({
   kind,
 }: {
   kind: (typeof homeBSponsorFeatures)[number]['icon'];
 }) {
-  if (kind === 'rocket') {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6">
-        <path
-          d="M5 19c3.5-1 6.5-4 7.5-7.5L18 6l2 2-5.5 5.5C11 14.5 8 17.5 7 21l-2-2Z"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path d="M13 5h6v6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
-  }
-
-  if (kind === 'chart') {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6">
-        <path d="M4 20V10" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M12 20V4" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M20 20v-7" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6">
-      <path
-        d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="12" r="3" strokeWidth="1.8" />
-    </svg>
-  );
+  const Icon = featureIconComponents[kind];
+  return <Icon className="h-6 w-6" />;
 }
 
 function SponsorShowcase() {
@@ -163,29 +138,11 @@ function PublisherInventoryShowcase() {
                 }`}
               >
                 {item.type === 'display' ? (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-5 w-5">
-                    <rect x="3" y="5" width="18" height="14" rx="2" strokeWidth="1.8" />
-                    <path d="M8 19v2" strokeWidth="1.8" strokeLinecap="round" />
-                    <path d="M16 19v2" strokeWidth="1.8" strokeLinecap="round" />
-                  </svg>
+                  <Monitor className="h-5 w-5" />
                 ) : item.type === 'podcast' ? (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-5 w-5">
-                    <path
-                      d="M12 3a4 4 0 0 0-4 4v5a4 4 0 1 0 8 0V7a4 4 0 0 0-4-4Z"
-                      strokeWidth="1.8"
-                    />
-                    <path d="M5 10v2a7 7 0 0 0 14 0v-2" strokeWidth="1.8" strokeLinecap="round" />
-                  </svg>
+                  <Mic className="h-5 w-5" />
                 ) : (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-5 w-5">
-                    <path d="M4 6h16v12H4z" strokeWidth="1.8" />
-                    <path
-                      d="m4 8 8 6 8-6"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <Mail className="h-5 w-5" />
                 )}
               </div>
               <div>
