@@ -47,8 +47,8 @@ export function cn(...classes: Array<string | false | null | undefined>): string
 }
 
 // Sleep utility for testing/debugging
-// BUG: Missing return type annotation
-export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 // Deep clone an object
 // NOTE: This doesn't handle circular references, dates, or functions
@@ -56,17 +56,20 @@ export function deepClone<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
 
-// Logger that only logs in development
+// Logger that only logs in development, since it is used for development, we can suppress lint.
 export const logger = {
   log: (...args: unknown[]) => {
     if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
       console.log('[App]', ...args);
     }
   },
   error: (...args: unknown[]) => {
+    // eslint-disable-next-line no-console
     console.error('[App Error]', ...args);
   },
   warn: (...args: unknown[]) => {
+    // eslint-disable-next-line no-console
     console.warn('[App Warning]', ...args);
   },
 };
