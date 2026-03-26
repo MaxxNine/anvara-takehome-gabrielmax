@@ -231,14 +231,7 @@ export function HomeBAudienceSplit() {
               {homeBPublisherBenefits.map((benefit) => (
                 <div key={benefit.title} className="flex items-start gap-4">
                   <div className="mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-cyan-500 text-white">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-4 w-4">
-                      <path
-                        d="m5 13 4 4L19 7"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                    <Check className="h-4 w-4" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-950">{benefit.title}</h3>
