@@ -37,6 +37,7 @@ app.listen(PORT, () => {
   console.log('    GET    /api/sponsors');
   console.log('    GET    /api/sponsors/:id');
   console.log('    POST   /api/sponsors');
+  console.log('    PUT    /api/sponsors/:id');
   console.log('  Publishers:');
   console.log('    GET    /api/publishers');
   console.log('    GET    /api/publishers/:id');
