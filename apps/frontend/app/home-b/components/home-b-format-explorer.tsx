@@ -4,7 +4,7 @@ import { Search } from 'lucide-react';
 
 import type { HomeBPreviewRound } from '../content';
 import { HomeBExplorerCard } from './home-b-explorer-card';
-import { useTypewriterRotation } from './use-typewriter-rotation';
+import { useTypewriterRotation } from '../hooks/use-typewriter-rotation';
 
 type HomeBFormatExplorerProps = {
   rounds: HomeBPreviewRound[];
