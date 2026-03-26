@@ -55,15 +55,17 @@ function formatCpmValue(value: number): string {
 
 function FilterGroup({
   children,
+  className,
   icon,
   label,
 }: {
   children: ReactNode;
+  className?: string;
   icon: ReactNode;
   label: string;
 }) {
   return (
-    <div className="space-y-3">
+    <div className={cn('space-y-3', className)}>
       <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
         <span className="text-slate-400">{icon}</span>
         <span>{label}</span>
@@ -201,9 +203,13 @@ export function MarketplaceFiltersPanel({
                     ? { duration: 0 }
                     : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
                 }
-                className="grid gap-5 border-t border-slate-200/80 pt-4 md:grid-cols-2 2xl:grid-cols-4"
+                className="grid gap-5 border-t border-slate-200/80 pt-4 md:grid-cols-2 xl:grid-cols-12"
               >
-                <FilterGroup icon={<Tag className="h-4 w-4" />} label="Categories">
+                <FilterGroup
+                  icon={<Tag className="h-4 w-4" />}
+                  label="Categories"
+                  className="md:col-span-2 xl:col-span-12"
+                >
                   <MarketplaceChipGroup<AdSlotType | 'ALL'>
                     selectedValue={filters.type}
                     options={marketplaceCategoryOptions}
@@ -211,34 +217,11 @@ export function MarketplaceFiltersPanel({
                   />
                 </FilterGroup>
 
-                <FilterGroup icon={<DollarSign className="h-4 w-4" />} label="Monthly slot price">
-                  <MarketplaceRangeFilter
-                    bounds={bounds.price}
-                    disabledLabel="Price data is not available for these listings."
-                    formatValue={(value) => formatPrice(value, 'en-US')}
-                    minInputLabel="Minimum price"
-                    maxInputLabel="Maximum price"
-                    onChange={actions.setPrice}
-                    step={50}
-                    value={filters.price}
-                  />
-                </FilterGroup>
-
-                <FilterGroup icon={<Gauge className="h-4 w-4" />} label="Estimated CPM">
-                  <MarketplaceRangeFilter
-                    bounds={bounds.estimatedCpm}
-                    disabledLabel="No listings currently have enough audience data for a CPM estimate."
-                    formatValue={formatCpmValue}
-                    helperText={activeCpmHelperText}
-                    minInputLabel="Minimum CPM"
-                    maxInputLabel="Maximum CPM"
-                    onChange={actions.setEstimatedCpm}
-                    step={0.5}
-                    value={filters.estimatedCpm}
-                  />
-                </FilterGroup>
-
-                <FilterGroup icon={<BadgeCheck className="h-4 w-4" />} label="Listing checks">
+                <FilterGroup
+                  icon={<BadgeCheck className="h-4 w-4" />}
+                  label="Listing checks"
+                  className="md:col-span-2 xl:col-span-12"
+                >
                   <div className="flex flex-wrap gap-2">
                     <MarketplaceToggleChip
                       pressed={filters.availability === 'available'}
@@ -271,6 +254,41 @@ export function MarketplaceFiltersPanel({
                       ? 'Booked placements are hidden by default.'
                       : 'Booked placements are included in the results.'}
                   </p>
+                </FilterGroup>
+
+                <FilterGroup
+                  icon={<DollarSign className="h-4 w-4" />}
+                  label="Monthly slot price"
+                  className="xl:col-span-6"
+                >
+                  <MarketplaceRangeFilter
+                    bounds={bounds.price}
+                    disabledLabel="Price data is not available for these listings."
+                    formatValue={(value) => formatPrice(value, 'en-US')}
+                    minInputLabel="Minimum price"
+                    maxInputLabel="Maximum price"
+                    onChange={actions.setPrice}
+                    step={50}
+                    value={filters.price}
+                  />
+                </FilterGroup>
+
+                <FilterGroup
+                  icon={<Gauge className="h-4 w-4" />}
+                  label="Estimated CPM"
+                  className="xl:col-span-6"
+                >
+                  <MarketplaceRangeFilter
+                    bounds={bounds.estimatedCpm}
+                    disabledLabel="No listings currently have enough audience data for a CPM estimate."
+                    formatValue={formatCpmValue}
+                    helperText={activeCpmHelperText}
+                    minInputLabel="Minimum CPM"
+                    maxInputLabel="Maximum CPM"
+                    onChange={actions.setEstimatedCpm}
+                    step={0.5}
+                    value={filters.estimatedCpm}
+                  />
                 </FilterGroup>
               </motion.div>
             </motion.div>
